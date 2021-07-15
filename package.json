@@ -1,0 +1,59 @@
+{
+  "name": "story-typer",
+  "description": "This example features how to use [chakra-ui](https://github.com/chakra-ui/chakra-ui) as the component library within a Next.js app with typescript.",
+  "version": "0.1.0",
+  "author": "Steven Webster",
+  "keywords": [
+    "typing",
+    "game",
+    "scraper"
+  ],
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^1.0.5",
+    "@chakra-ui/react": "^1.4.2",
+    "@chakra-ui/theme-tools": "1.1.2",
+    "@emotion/react": "11.1.5",
+    "@emotion/styled": "11.1.5",
+    "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.10",
+    "firebase": "^8.7.1",
+    "framer-motion": "^4.0.3",
+    "next": "latest",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/user-event": "^13.1.9",
+    "@types/node": "^14.6.0",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
+    "@typescript-eslint/parser": "^4.28.3",
+    "babel-jest": "^27.0.6",
+    "eslint": "^7.30.0",
+    "eslint-config-next": "^11.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^27.0.6",
+    "prettier": "^2.3.2",
+    "typescript": "4.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/budokans/story-typer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/budokans/story-typer/issues"
+  },
+  "homepage": "https://github.com/budokans/story-typer#readme"
+}
