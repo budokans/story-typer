@@ -5,16 +5,23 @@ import { ProvideAuth } from "../interfaces/context";
 export const useProvideAuth = (): ProvideAuth => {
   const [user, setUser] = useState<firebase.User | null>(null);
 
+  const handleUser = (user: firebase.User | null) => {
+    if (user) {
+      setUser(user);
+      return user;
+    } else {
+      setUser(null);
+      return null;
+    }
+  };
+
   const signInWithFacebook = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
       return await firebase
         .auth()
         .signInWithPopup(provider)
-        .then((response) => {
-          setUser(response.user);
-          return response.user;
-        });
+        .then((response) => handleUser(response.user));
     } catch (error) {
       console.log(error);
     }
@@ -25,7 +32,7 @@ export const useProvideAuth = (): ProvideAuth => {
       return await firebase
         .auth()
         .signOut()
-        .then(() => setUser(null));
+        .then(() => handleUser(null));
     } catch (error) {
       console.log(error);
     }
