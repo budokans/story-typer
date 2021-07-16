@@ -1,6 +1,6 @@
 {
   "name": "story-typer",
-  "description": "This example features how to use [chakra-ui](https://github.com/chakra-ui/chakra-ui) as the component library within a Next.js app with typescript.",
+  "description": "Read 50-word stories from great authors while upping your typing speed.",
   "version": "0.1.0",
   "author": "Steven Webster",
   "keywords": [
