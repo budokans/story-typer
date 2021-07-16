@@ -4,13 +4,15 @@ const Index: React.FC = () => {
   const auth = useAuth();
   console.log(auth?.user);
 
-  return (
+  return auth ? (
     <>
-      <div>{auth?.user?.email}</div>
-      <button onClick={() => auth?.signInWithFacebook()}>Sign In</button>
-      <button onClick={() => auth?.signOut()}>Sign Out</button>
+      <div>
+        <code>{auth.user ? auth.user.email : "None"}</code>
+      </div>
+      <button onClick={() => auth.signInWithFacebook()}>Sign In</button>
+      <button onClick={() => auth.signOut()}>Sign In</button>
     </>
-  );
+  ) : null;
 };
 
 export default Index;

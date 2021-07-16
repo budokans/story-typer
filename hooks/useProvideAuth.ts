@@ -1,18 +1,29 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { firebase } from "../lib/firebase";
-import { ProvideAuth } from "../interfaces/context";
+import { ProvideAuth } from "../interfaces";
+import { User } from "../interfaces";
 
 export const useProvideAuth = (): ProvideAuth => {
-  const [user, setUser] = useState<firebase.User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  const handleUser = (user: firebase.User | null) => {
-    if (user) {
+  const handleUser = useCallback((rawUser: firebase.User | null) => {
+    if (rawUser) {
+      const user = formatUser(rawUser);
       setUser(user);
       return user;
     } else {
       setUser(null);
       return null;
     }
+  }, []);
+
+  const formatUser = (user: firebase.User): User => {
+    return {
+      uid: user.uid,
+      name: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
+    };
   };
 
   const signInWithFacebook = async () => {
@@ -40,14 +51,10 @@ export const useProvideAuth = (): ProvideAuth => {
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
+      handleUser(user);
     });
     return () => unsubscribe();
-  }, []);
+  }, [handleUser]);
 
   return {
     user,

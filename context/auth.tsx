@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { useProvideAuth } from "../hooks/useProvideAuth";
-import { ProvideAuth } from "../interfaces/context";
+import { ProvideAuth } from "../interfaces";
 
 const authContext = createContext<ProvideAuth | null>(null);
 
