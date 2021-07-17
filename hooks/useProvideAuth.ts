@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { firebase } from "../lib/firebase";
-import { ProvideAuth } from "../interfaces";
-import { User } from "../interfaces";
+import { createUser } from "../lib/firestore";
+import { ProvideAuth, User } from "../interfaces";
 
 export const useProvideAuth = (): ProvideAuth => {
   const [user, setUser] = useState<User | null>(null);
@@ -9,6 +9,7 @@ export const useProvideAuth = (): ProvideAuth => {
   const handleUser = useCallback((rawUser: firebase.User | null) => {
     if (rawUser) {
       const user = formatUser(rawUser);
+      createUser(user.uid, user);
       setUser(user);
       return user;
     } else {

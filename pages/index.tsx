@@ -10,7 +10,7 @@ const Index: React.FC = () => {
         <code>{auth.user ? auth.user.email : "None"}</code>
       </div>
       <button onClick={() => auth.signInWithFacebook()}>Sign In</button>
-      <button onClick={() => auth.signOut()}>Sign In</button>
+      <button onClick={() => auth.signOut()}>Sign Out</button>
     </>
   ) : null;
 };
