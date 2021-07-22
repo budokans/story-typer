@@ -5,6 +5,21 @@ export interface User {
   photoURL: string | null;
 }
 
+export interface Story {
+  title: string;
+  author: {
+    name: string;
+    bio: string;
+  };
+  content: {
+    html: string;
+    text: string;
+  };
+  url: string;
+  dateScraped: string;
+  datePublished: string;
+}
+
 export interface ProvideAuth {
   user: User | null;
   signInWithFacebook: () => Promise<User | null | undefined>;
