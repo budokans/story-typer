@@ -1,4 +1,3 @@
-import "firebase/firestore";
 import { User } from "../interfaces";
 import { firebase } from "./firebase";
 
