@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getHTML, SCRAPE_URL } from "../../lib/scrape";
+import { getHTML, SCRAPE_URL } from "../../lib/scraper";
 
 export default async function handler(
   _: NextApiRequest,
