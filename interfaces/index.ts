@@ -6,11 +6,9 @@ export interface User {
 }
 
 export interface Story {
+  id: string;
   title: string;
-  author: {
-    name: string;
-    bio: string;
-  };
+  authorBio: string;
   content: {
     html: string;
     text: string;
