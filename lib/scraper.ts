@@ -2,20 +2,24 @@ import axios from "axios";
 
 export const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const PAGE_LIMIT = 10;
-const START_PAGE = 1;
 const PER_PAGE = 100;
+let PAGE_COUNT = 1;
 
 const getUrlWithParams = (url: string, page: number) => {
-  const timestamp = "";
-  return timestamp
-    ? `${url}?after=${timestamp}`
-    : `${url}?page=${page}&per_page=${PER_PAGE}`;
+  return `${url}?page=${page}&per_page=${PER_PAGE}`;
 };
 
-const getPosts = async (url: string): Promise<any[] | undefined> => {
+const getTimestamp = () => {
+  return "";
+};
+
+const getPosts = async (
+  url: string
+): Promise<{ scrapes: any[]; scrapeCount: number } | undefined> => {
   try {
-    const { data } = await axios.get(url);
-    return data;
+    const { data: scrapes } = await axios.get(url);
+    const scrapeCount = scrapes.length;
+    return { scrapes, scrapeCount };
   } catch (error) {
     if (error.response) {
       console.log(error.response.status);
@@ -28,8 +32,69 @@ const getPosts = async (url: string): Promise<any[] | undefined> => {
   }
 };
 
-export const scrape = async (): Promise<any[] | undefined> => {
-  const url = getUrlWithParams(API_ENDPOINT, START_PAGE);
-  const scrapes = await getPosts(url);
-  return scrapes;
+const scrapeAll = async (
+  url: string
+): Promise<{ scrapes: any[]; scrapeCount: number } | undefined> => {
+  try {
+    PAGE_COUNT++;
+    const onePage = await getPosts(url);
+    if (onePage) {
+      if (PAGE_COUNT < PAGE_LIMIT) {
+        const nextPageUrl = getUrlWithParams(API_ENDPOINT, PAGE_COUNT);
+        const nextPage = await scrapeAll(nextPageUrl);
+        if (nextPage) {
+          const { scrapes: nextPageScrapes, scrapeCount: nextPageScrapeCount } =
+            nextPage;
+          return {
+            scrapes: onePage.scrapes.concat(nextPageScrapes),
+            scrapeCount: onePage.scrapeCount + nextPageScrapeCount,
+          };
+        }
+      } else {
+        return onePage;
+      }
+    }
+  } catch (error) {
+    console.log(`Error scraping page ${PAGE_COUNT}`);
+    if (error.response) {
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log(`Error: ${error.message}`);
+    }
+  }
+};
+
+const scrapeLatest = async (url: string) => {
+  return getPosts(url);
+};
+
+export const scrape = async (): Promise<
+  { scrapes: any[]; scrapeCount: number } | undefined
+> => {
+  const timestamp = getTimestamp();
+
+  try {
+    if (timestamp) {
+      const data = await scrapeLatest(
+        `${API_ENDPOINT}?after=${timestamp}&per_page=${PER_PAGE}`
+      );
+      if (data) {
+        const { scrapes, scrapeCount } = data;
+        return { scrapes, scrapeCount };
+      }
+    } else {
+      const url = getUrlWithParams(API_ENDPOINT, PAGE_COUNT);
+      const data = await scrapeAll(url);
+      if (data) {
+        const { scrapes, scrapeCount } = data;
+        PAGE_COUNT = 1;
+        return { scrapes, scrapeCount };
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
