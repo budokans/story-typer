@@ -1,12 +1,12 @@
 import axios from "axios";
 
 export const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
-const PAGE_LIMIT = 10;
+const PAGE_LIMIT = 1;
 const PER_PAGE = 100;
 let PAGE_COUNT = 1;
 
 const getUrlWithParams = (url: string, page: number) => {
-  return `${url}?page=${page}&per_page=${PER_PAGE}`;
+  return `${url}?page=${page}&per_page=${PER_PAGE}&categories=112&categories_exclude=16`;
 };
 
 const getTimestamp = () => {
@@ -56,14 +56,6 @@ const scrapeAll = async (
     }
   } catch (error) {
     console.log(`Error scraping page ${PAGE_COUNT}`);
-    if (error.response) {
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log(error.request);
-    } else {
-      console.log(`Error: ${error.message}`);
-    }
   }
 };
 
@@ -79,7 +71,7 @@ export const scrape = async (): Promise<
   try {
     if (timestamp) {
       const data = await scrapeLatest(
-        `${API_ENDPOINT}?after=${timestamp}&per_page=${PER_PAGE}`
+        `${API_ENDPOINT}?per_page=${PER_PAGE}&categories=112&categories_exclude=16&after=${timestamp}`
       );
       if (data) {
         const { scrapes, scrapeCount } = data;
