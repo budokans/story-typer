@@ -1,12 +1,30 @@
 import axios from "axios";
 
 export const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
-const PAGE_LIMIT = 1;
+const CATEGORIES = 112; // Submissions
+const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
+const PAGE_LIMIT = 2;
 let PAGE_COUNT = 1;
+const DEFAULT_PARAMS = [
+  `per_page=${PER_PAGE}`,
+  `categories=${CATEGORIES}`,
+  `categories_exclude=${EXCLUDED_CATEGORIES}`,
+];
 
-const getUrlWithParams = (url: string, page: number) => {
-  return `${url}?page=${page}&per_page=${PER_PAGE}&categories=112&categories_exclude=16`;
+const getDefaultParams = () => {
+  return DEFAULT_PARAMS.join("&");
+};
+
+const getUrlWithParams = (
+  url: string,
+  timestamp?: string | null,
+  page?: number | null
+) => {
+  const defaultParams = getDefaultParams();
+  return timestamp
+    ? encodeURI(`${url}?${defaultParams}&after=${timestamp}`)
+    : encodeURI(`${url}?${defaultParams}&page=${page}`);
 };
 
 const getTimestamp = () => {
@@ -39,8 +57,8 @@ const scrapeAll = async (
     PAGE_COUNT++;
     const onePage = await getPosts(url);
     if (onePage) {
-      if (PAGE_COUNT < PAGE_LIMIT) {
-        const nextPageUrl = getUrlWithParams(API_ENDPOINT, PAGE_COUNT);
+      if (PAGE_COUNT <= PAGE_LIMIT) {
+        const nextPageUrl = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
         const nextPage = await scrapeAll(nextPageUrl);
         if (nextPage) {
           const { scrapes: nextPageScrapes, scrapeCount: nextPageScrapeCount } =
@@ -70,15 +88,14 @@ export const scrape = async (): Promise<
 
   try {
     if (timestamp) {
-      const data = await scrapeLatest(
-        `${API_ENDPOINT}?per_page=${PER_PAGE}&categories=112&categories_exclude=16&after=${timestamp}`
-      );
+      const url = getUrlWithParams(API_ENDPOINT, timestamp, null);
+      const data = await scrapeLatest(url);
       if (data) {
         const { scrapes, scrapeCount } = data;
         return { scrapes, scrapeCount };
       }
     } else {
-      const url = getUrlWithParams(API_ENDPOINT, PAGE_COUNT);
+      const url = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
       const data = await scrapeAll(url);
       if (data) {
         const { scrapes, scrapeCount } = data;
