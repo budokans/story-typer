@@ -16,7 +16,7 @@ const prune = (scrape: Scrape): Story => ({
   datePublished: scrape.date,
 });
 
-export const pruneScrapes = (scrapes: Scrape[]): Story[] => {
+const pruneScrapes = (scrapes: Scrape[]): Story[] => {
   return scrapes.map(prune);
 };
 
@@ -44,6 +44,8 @@ const formatScrape = (scrape: Story): Story => ({
   datePublished: scrape.datePublished,
 });
 
-export const formatScrapes = (stories: Story[]): Story[] => {
+const formatScrapes = (stories: Story[]): Story[] => {
   return stories.map(formatScrape);
 };
+
+export const formatStories = R.pipe(pruneScrapes, formatScrapes);
