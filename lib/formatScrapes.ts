@@ -1,3 +1,4 @@
+import * as R from "ramda";
 import * as entities from "entities";
 import unidecode from "unidecode";
 import { Scrape, Story } from "../interfaces";
@@ -22,14 +23,13 @@ export const pruneScrapes = (scrapes: Scrape[]): Story[] => {
 const removeLineBreaks = (text: string) => text.replace(/\n/g, "");
 const removeDoubleDashes = (text: string) => text.replace(/--/g, " - ");
 
-const formatText = (text: string) => {
-  const trimmed = text.trim();
-  const decoded = entities.decodeHTML(trimmed);
-  const unidecoded = unidecode(decoded);
-  const noLineBreaks = removeLineBreaks(unidecoded);
-  const noDoubleDashes = removeDoubleDashes(noLineBreaks);
-  return noDoubleDashes;
-};
+const formatText = R.pipe(
+  R.trim,
+  entities.decodeHTML,
+  unidecode,
+  removeLineBreaks,
+  removeDoubleDashes
+);
 
 const formatScrape = (scrape: Story): Story => ({
   id: scrape.id,
