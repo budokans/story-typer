@@ -1,5 +1,6 @@
 import axios from "axios";
-import { Scrape } from "../interfaces";
+import { Scrape, Story } from "../interfaces";
+import { pruneScrapes } from "./formatScrapes";
 
 export const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const CATEGORIES = 112; // Submissions
@@ -36,22 +37,17 @@ const getTimestamp = async (): Promise<string | undefined> => {
   }
 };
 
-const getPosts = async (
-  url: string
-): Promise<{ scrapes: Scrape[]; scrapeCount: number } | undefined> => {
+const getPosts = async (url: string): Promise<Scrape[] | undefined> => {
   try {
     const { data: scrapes } = await axios.get(url);
-    const scrapeCount = scrapes.length;
-    return { scrapes, scrapeCount };
+    return scrapes;
   } catch (e) {
     console.error(`Error getting posts from ${url}`);
     console.error(e);
   }
 };
 
-const scrapeAll = async (
-  url: string
-): Promise<{ scrapes: Scrape[]; scrapeCount: number } | undefined> => {
+const scrapeAll = async (url: string): Promise<Scrape[] | undefined> => {
   try {
     const onePage = await getPosts(url);
     PAGE_COUNT++;
@@ -60,12 +56,7 @@ const scrapeAll = async (
         const nextPageUrl = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
         const nextPage = await scrapeAll(nextPageUrl);
         if (nextPage) {
-          const { scrapes: nextPageScrapes, scrapeCount: nextPageScrapeCount } =
-            nextPage;
-          return {
-            scrapes: onePage.scrapes.concat(nextPageScrapes),
-            scrapeCount: onePage.scrapeCount + nextPageScrapeCount,
-          };
+          return [...nextPage, ...onePage];
         }
       } else {
         return onePage;
@@ -77,28 +68,29 @@ const scrapeAll = async (
   }
 };
 
-export const scrapeLatest = async (): Promise<
-  { scrapes: Scrape[]; scrapeCount: number } | undefined
-> => {
+export const scrapeLatest = async (): Promise<Story[] | undefined> => {
   try {
     const timestamp = await getTimestamp();
     if (timestamp) {
       const url = getUrlWithParams(API_ENDPOINT, timestamp, null);
-      return await getPosts(url);
+      const scrapes = await getPosts(url);
+      if (scrapes) {
+        return pruneScrapes(scrapes);
+      }
     }
   } catch (e) {
     console.error(e);
   }
 };
 
-export const seed = async (): Promise<
-  { scrapes: Scrape[]; scrapeCount: number } | undefined
-> => {
+export const seed = async (): Promise<Story[] | undefined> => {
   try {
     const url = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
-    const data = await scrapeAll(url);
-    PAGE_COUNT = 1;
-    return data;
+    const scrapes = await scrapeAll(url);
+    if (scrapes) {
+      PAGE_COUNT = 1;
+      return pruneScrapes(scrapes);
+    }
   } catch (e) {
     console.error(e);
   }

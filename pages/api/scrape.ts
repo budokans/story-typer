@@ -6,10 +6,9 @@ export default async function handler(
   res: NextApiResponse
 ): Promise<void> {
   try {
-    const data = await scrapeLatest();
+    const data = await seed();
     if (data) {
-      const { scrapeCount, scrapes } = data;
-      res.status(200).json({ scrapeCount, scrapes });
+      res.status(200).json(data);
     } else {
       res.status(500).json("Error: no data returned");
     }
