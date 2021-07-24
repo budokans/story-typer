@@ -19,14 +19,22 @@ export const pruneScrapes = (scrapes: Scrape[]): Story[] => {
   return scrapes.map(prune);
 };
 
+const removeLineBreaks = (text: string) => text.replace(/\n/g, "");
+const removeDoubleDashes = (text: string) => text.replace(/--/g, " - ");
+
 const formatText = (text: string) => {
-  return unidecode(entities.decodeHTML(text.trim()));
+  const trimmed = text.trim();
+  const decoded = entities.decodeHTML(trimmed);
+  const unidecoded = unidecode(decoded);
+  const noLineBreaks = removeLineBreaks(unidecoded);
+  const noDoubleDashes = removeDoubleDashes(noLineBreaks);
+  return noDoubleDashes;
 };
 
 const formatScrape = (scrape: Story): Story => ({
   id: scrape.id,
   title: formatText(scrape.title),
-  authorBio: scrape.authorBio,
+  authorBio: formatText(scrape.authorBio),
   content: {
     html: scrape.content.html,
     text: scrape.content.text,
