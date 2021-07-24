@@ -12,8 +12,8 @@ const DEFAULT_PARAMS = [
   `categories_exclude=${EXCLUDED_CATEGORIES}`,
 ];
 
-const getDefaultParams = () => {
-  return DEFAULT_PARAMS.join("&");
+const getDefaultParams = (params: string[]) => {
+  return params.join("&");
 };
 
 const getUrlWithParams = (
@@ -21,14 +21,18 @@ const getUrlWithParams = (
   timestamp?: string | null,
   page?: number | null
 ) => {
-  const defaultParams = getDefaultParams();
+  const defaultParams = getDefaultParams(DEFAULT_PARAMS);
   return timestamp
     ? encodeURI(`${url}?${defaultParams}&after=${timestamp}`)
     : encodeURI(`${url}?${defaultParams}&page=${page}`);
 };
 
-const getTimestamp = () => {
-  return "";
+const getTimestamp = async (): Promise<string | undefined> => {
+  try {
+    return "";
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const getPosts = async (
@@ -77,31 +81,38 @@ const scrapeAll = async (
   }
 };
 
-const scrapeLatest = async (url: string) => {
-  return getPosts(url);
-};
-
-export const scrape = async (): Promise<
+export const scrapeLatest = async (): Promise<
   { scrapes: any[]; scrapeCount: number } | undefined
 > => {
-  const timestamp = getTimestamp();
-
   try {
+    const timestamp = await getTimestamp();
     if (timestamp) {
       const url = getUrlWithParams(API_ENDPOINT, timestamp, null);
-      const data = await scrapeLatest(url);
+      const data = await getPosts(url);
       if (data) {
         const { scrapes, scrapeCount } = data;
         return { scrapes, scrapeCount };
+      } else {
+        return;
       }
     } else {
-      const url = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
-      const data = await scrapeAll(url);
-      if (data) {
-        const { scrapes, scrapeCount } = data;
-        PAGE_COUNT = 1;
-        return { scrapes, scrapeCount };
-      }
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const seed = async (): Promise<
+  { scrapes: any[]; scrapeCount: number } | undefined
+> => {
+  try {
+    const url = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
+    const data = await scrapeAll(url);
+    if (data) {
+      PAGE_COUNT = 1;
+      const { scrapes, scrapeCount } = data;
+      return { scrapes, scrapeCount };
     }
   } catch (error) {
     console.log(error);

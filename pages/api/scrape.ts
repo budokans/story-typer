@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { scrape } from "../../lib/scraper";
+import { seed } from "../../lib/scraper";
 
 export default async function handler(
   _: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  const data = await scrape();
+  const data = await seed();
   if (data) {
     const { scrapeCount, scrapes } = data;
     res.status(200).json({ scrapeCount, scrapes });
