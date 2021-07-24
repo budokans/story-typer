@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Scrape, Story } from "../interfaces";
-import { pruneScrapes } from "./formatScrapes";
+import { formatScrapes, pruneScrapes } from "./formatScrapes";
 
 export const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const CATEGORIES = 112; // Submissions
@@ -75,7 +75,8 @@ export const scrapeLatest = async (): Promise<Story[] | undefined> => {
       const url = getUrlWithParams(API_ENDPOINT, timestamp, null);
       const scrapes = await getPosts(url);
       if (scrapes) {
-        return pruneScrapes(scrapes);
+        const prunedScrapes = pruneScrapes(scrapes);
+        return formatScrapes(prunedScrapes);
       }
     }
   } catch (e) {
@@ -87,9 +88,10 @@ export const seed = async (): Promise<Story[] | undefined> => {
   try {
     const url = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
     const scrapes = await scrapeAll(url);
+    PAGE_COUNT = 1;
     if (scrapes) {
-      PAGE_COUNT = 1;
-      return pruneScrapes(scrapes);
+      const prunedScrapes = pruneScrapes(scrapes);
+      return formatScrapes(prunedScrapes);
     }
   } catch (e) {
     console.error(e);
