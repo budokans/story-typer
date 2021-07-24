@@ -29,9 +29,9 @@ const getUrlWithParams = (
 
 const getTimestamp = async (): Promise<string | undefined> => {
   try {
-    return "";
-  } catch (error) {
-    console.log(error);
+    return "2021-07-21T03:00:24";
+  } catch (e) {
+    console.error(e);
   }
 };
 
@@ -42,15 +42,9 @@ const getPosts = async (
     const { data: scrapes } = await axios.get(url);
     const scrapeCount = scrapes.length;
     return { scrapes, scrapeCount };
-  } catch (error) {
-    if (error.response) {
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log(error.request);
-    } else {
-      console.log(`Error: ${error.message}`);
-    }
+  } catch (e) {
+    console.error(`Error getting posts from ${url}`);
+    console.error(e);
   }
 };
 
@@ -58,8 +52,8 @@ const scrapeAll = async (
   url: string
 ): Promise<{ scrapes: any[]; scrapeCount: number } | undefined> => {
   try {
-    PAGE_COUNT++;
     const onePage = await getPosts(url);
+    PAGE_COUNT++;
     if (onePage) {
       if (PAGE_COUNT <= PAGE_LIMIT) {
         const nextPageUrl = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
@@ -76,8 +70,9 @@ const scrapeAll = async (
         return onePage;
       }
     }
-  } catch (error) {
-    console.log(`Error scraping page ${PAGE_COUNT}`);
+  } catch (e) {
+    console.error(`Error scraping page ${PAGE_COUNT}`);
+    console.error(e);
   }
 };
 
@@ -88,18 +83,10 @@ export const scrapeLatest = async (): Promise<
     const timestamp = await getTimestamp();
     if (timestamp) {
       const url = getUrlWithParams(API_ENDPOINT, timestamp, null);
-      const data = await getPosts(url);
-      if (data) {
-        const { scrapes, scrapeCount } = data;
-        return { scrapes, scrapeCount };
-      } else {
-        return;
-      }
-    } else {
-      return;
+      return await getPosts(url);
     }
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
+    console.error(e);
   }
 };
 
@@ -109,12 +96,9 @@ export const seed = async (): Promise<
   try {
     const url = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
     const data = await scrapeAll(url);
-    if (data) {
-      PAGE_COUNT = 1;
-      const { scrapes, scrapeCount } = data;
-      return { scrapes, scrapeCount };
-    }
-  } catch (error) {
-    console.log(error);
+    PAGE_COUNT = 1;
+    return data;
+  } catch (e) {
+    console.error(e);
   }
 };
