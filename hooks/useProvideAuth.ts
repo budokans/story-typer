@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { firebase } from "../lib/firebase";
 import { createUser } from "../lib/firestore";
+import { User as FirebaseUser } from "@firebase/auth-types";
 import { ProvideAuth, User } from "../interfaces";
 
 export const useProvideAuth = (): ProvideAuth => {
   const [user, setUser] = useState<User | null>(null);
 
-  const handleUser = useCallback((rawUser: firebase.User | null) => {
+  const handleUser = useCallback((rawUser: FirebaseUser | null) => {
     if (rawUser) {
       const user = formatUser(rawUser);
       createUser(user.uid, user);
@@ -18,7 +19,7 @@ export const useProvideAuth = (): ProvideAuth => {
     }
   }, []);
 
-  const formatUser = (user: firebase.User): User => {
+  const formatUser = (user: FirebaseUser): User => {
     return {
       uid: user.uid,
       name: user.displayName,
