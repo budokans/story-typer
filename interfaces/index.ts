@@ -5,6 +5,18 @@ export interface User {
   photoURL: string | null;
 }
 
+export interface Scrape {
+  id: number;
+  date: string;
+  link: string;
+  title: {
+    rendered: string;
+  };
+  content: {
+    rendered: string;
+  };
+}
+
 export interface Story {
   id: string;
   title: string;

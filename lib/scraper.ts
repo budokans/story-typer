@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Scrape } from "../interfaces";
 
 export const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const CATEGORIES = 112; // Submissions
@@ -37,7 +38,7 @@ const getTimestamp = async (): Promise<string | undefined> => {
 
 const getPosts = async (
   url: string
-): Promise<{ scrapes: any[]; scrapeCount: number } | undefined> => {
+): Promise<{ scrapes: Scrape[]; scrapeCount: number } | undefined> => {
   try {
     const { data: scrapes } = await axios.get(url);
     const scrapeCount = scrapes.length;
@@ -50,7 +51,7 @@ const getPosts = async (
 
 const scrapeAll = async (
   url: string
-): Promise<{ scrapes: any[]; scrapeCount: number } | undefined> => {
+): Promise<{ scrapes: Scrape[]; scrapeCount: number } | undefined> => {
   try {
     const onePage = await getPosts(url);
     PAGE_COUNT++;
@@ -77,7 +78,7 @@ const scrapeAll = async (
 };
 
 export const scrapeLatest = async (): Promise<
-  { scrapes: any[]; scrapeCount: number } | undefined
+  { scrapes: Scrape[]; scrapeCount: number } | undefined
 > => {
   try {
     const timestamp = await getTimestamp();
@@ -91,7 +92,7 @@ export const scrapeLatest = async (): Promise<
 };
 
 export const seed = async (): Promise<
-  { scrapes: any[]; scrapeCount: number } | undefined
+  { scrapes: Scrape[]; scrapeCount: number } | undefined
 > => {
   try {
     const url = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
