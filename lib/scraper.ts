@@ -28,22 +28,13 @@ const getPageUrl = () => {
   return encodeURI(`${API_ENDPOINT}?${defaultParams}&page=${PAGE_NUMBER}`);
 };
 
-const getTimestamp = async (): Promise<string | undefined> => {
-  try {
-    return "2021-07-21T03:00:24";
-  } catch (e) {
-    console.error(e);
-  }
+const getTimestamp = async (): Promise<string> => {
+  return "2021-07-21T03:00:24";
 };
 
-const getPosts = async (url: string): Promise<Scrape[] | undefined> => {
-  try {
-    const { data: scrapes } = await axios.get(url);
-    return scrapes;
-  } catch (e) {
-    console.error(`Error getting posts from ${url}`);
-    console.error(e);
-  }
+const getPosts = async (url: string): Promise<Scrape[]> => {
+  const { data: scrapes } = await axios.get(url);
+  return scrapes;
 };
 
 const scrapeAll = async (url: string): Promise<Scrape[] | undefined> => {
@@ -67,19 +58,12 @@ const scrapeAll = async (url: string): Promise<Scrape[] | undefined> => {
   }
 };
 
-export const scrapeLatest = async (): Promise<Story[] | undefined> => {
-  try {
-    const timestamp = await getTimestamp();
-    if (timestamp) {
-      const url = getScrapeLatestUrl(timestamp);
-      const scrapes = await getPosts(url);
-      if (scrapes) {
-        return formatStories(scrapes);
-      }
-    }
-  } catch (e) {
-    console.error(e);
-  }
+export const scrapeLatest = (): Promise<Story[] | void> => {
+  return getTimestamp()
+    .then((timestamp) => getScrapeLatestUrl(timestamp))
+    .then((url) => getPosts(url))
+    .then((posts) => formatStories(posts))
+    .catch((e) => console.error(e));
 };
 
 export const seed = async (): Promise<Story[] | undefined> => {
