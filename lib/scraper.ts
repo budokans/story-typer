@@ -14,6 +14,8 @@ const DEFAULT_PARAMS = [
   `categories_exclude=${EXCLUDED_CATEGORIES}`,
 ];
 
+const resetPageNumber = () => (PAGE_NUMBER = 1);
+
 const getDefaultParams = (params: string[]) => {
   return params.join("&");
 };
@@ -29,6 +31,7 @@ const getPageUrl = () => {
 };
 
 const getTimestamp = async (): Promise<string> => {
+  // TO DO: db query
   return "2021-07-21T03:00:24";
 };
 
@@ -37,24 +40,19 @@ const getPosts = async (url: string): Promise<Scrape[]> => {
   return scrapes;
 };
 
-const scrapeAll = async (url: string): Promise<Scrape[] | undefined> => {
-  try {
-    const onePage = await getPosts(url);
-    PAGE_NUMBER++;
-    if (onePage) {
-      if (PAGE_NUMBER <= PAGE_LIMIT) {
-        const nextPageUrl = getPageUrl();
-        const nextPage = await scrapeAll(nextPageUrl);
-        if (nextPage) {
-          return [...nextPage, ...onePage];
-        }
-      } else {
-        return onePage;
-      }
+const scrapeAll = async (url: string): Promise<Scrape[]> => {
+  const onePage = await getPosts(url);
+  PAGE_NUMBER++;
+  if (PAGE_NUMBER <= PAGE_LIMIT) {
+    const nextPageUrl = getPageUrl();
+    const nextPage = await scrapeAll(nextPageUrl);
+    if (nextPage) {
+      return [...nextPage, ...onePage];
+    } else {
+      return onePage;
     }
-  } catch (e) {
-    console.error(`Error scraping page ${PAGE_NUMBER}`);
-    console.error(e);
+  } else {
+    return onePage;
   }
 };
 
@@ -66,15 +64,12 @@ export const scrapeLatest = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
-export const seed = async (): Promise<Story[] | undefined> => {
-  try {
-    const url = getPageUrl();
-    const scrapes = await scrapeAll(url);
-    PAGE_NUMBER = 1;
-    if (scrapes) {
+export const seed = (): Promise<Story[] | void> => {
+  const url = getPageUrl();
+  return scrapeAll(url)
+    .then((scrapes) => {
+      resetPageNumber();
       return formatStories(scrapes);
-    }
-  } catch (e) {
-    console.error(e);
-  }
+    })
+    .catch((e) => console.error(e));
 };
