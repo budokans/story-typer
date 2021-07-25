@@ -5,7 +5,7 @@ import { Scrape, Story } from "../interfaces";
 
 const prune = (scrape: Scrape): Story => ({
   id: scrape.id.toString(),
-  title: unidecode(entities.decodeHTML(scrape.title.rendered)),
+  title: scrape.title.rendered,
   authorBio: scrape.content.rendered,
   content: {
     html: scrape.content.rendered,

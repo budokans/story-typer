@@ -7,7 +7,7 @@ const CATEGORIES = 112; // Submissions
 const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
 const PAGE_LIMIT = 2;
-let PAGE_COUNT = 1;
+let PAGE_NUMBER = 1;
 const DEFAULT_PARAMS = [
   `per_page=${PER_PAGE}`,
   `categories=${CATEGORIES}`,
@@ -18,15 +18,14 @@ const getDefaultParams = (params: string[]) => {
   return params.join("&");
 };
 
-const getUrlWithParams = (
-  url: string,
-  timestamp?: string | null,
-  page?: number | null
-) => {
+const getScrapeLatestUrl = (timestamp: string) => {
   const defaultParams = getDefaultParams(DEFAULT_PARAMS);
-  return timestamp
-    ? encodeURI(`${url}?${defaultParams}&after=${timestamp}`)
-    : encodeURI(`${url}?${defaultParams}&page=${page}`);
+  return encodeURI(`${API_ENDPOINT}?${defaultParams}&after=${timestamp}`);
+};
+
+const getPageUrl = () => {
+  const defaultParams = getDefaultParams(DEFAULT_PARAMS);
+  return encodeURI(`${API_ENDPOINT}?${defaultParams}&page=${PAGE_NUMBER}`);
 };
 
 const getTimestamp = async (): Promise<string | undefined> => {
@@ -50,10 +49,10 @@ const getPosts = async (url: string): Promise<Scrape[] | undefined> => {
 const scrapeAll = async (url: string): Promise<Scrape[] | undefined> => {
   try {
     const onePage = await getPosts(url);
-    PAGE_COUNT++;
+    PAGE_NUMBER++;
     if (onePage) {
-      if (PAGE_COUNT <= PAGE_LIMIT) {
-        const nextPageUrl = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
+      if (PAGE_NUMBER <= PAGE_LIMIT) {
+        const nextPageUrl = getPageUrl();
         const nextPage = await scrapeAll(nextPageUrl);
         if (nextPage) {
           return [...nextPage, ...onePage];
@@ -63,7 +62,7 @@ const scrapeAll = async (url: string): Promise<Scrape[] | undefined> => {
       }
     }
   } catch (e) {
-    console.error(`Error scraping page ${PAGE_COUNT}`);
+    console.error(`Error scraping page ${PAGE_NUMBER}`);
     console.error(e);
   }
 };
@@ -72,7 +71,7 @@ export const scrapeLatest = async (): Promise<Story[] | undefined> => {
   try {
     const timestamp = await getTimestamp();
     if (timestamp) {
-      const url = getUrlWithParams(API_ENDPOINT, timestamp, null);
+      const url = getScrapeLatestUrl(timestamp);
       const scrapes = await getPosts(url);
       if (scrapes) {
         return formatStories(scrapes);
@@ -85,9 +84,9 @@ export const scrapeLatest = async (): Promise<Story[] | undefined> => {
 
 export const seed = async (): Promise<Story[] | undefined> => {
   try {
-    const url = getUrlWithParams(API_ENDPOINT, null, PAGE_COUNT);
+    const url = getPageUrl();
     const scrapes = await scrapeAll(url);
-    PAGE_COUNT = 1;
+    PAGE_NUMBER = 1;
     if (scrapes) {
       return formatStories(scrapes);
     }
