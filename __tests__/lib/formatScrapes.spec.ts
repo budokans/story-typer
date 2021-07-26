@@ -68,18 +68,17 @@ describe("formatText", () => {
 });
 
 describe("formatScrape", () => {
-  test("takes an unformatted scrape and returns a formatted scrape", () => {
-    const scrape = {
-      date: "2021-07-21T03:00:24",
-      link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
-      title: {
-        rendered: "JOHN H. DROMEY: I Can&#8217;t Even Tell You the Title",
-      },
+  test("takes an unformatted, pruned scrape and returns a formatted scrape", () => {
+    const prunedScrape = {
+      title: "JOHN H. DROMEY: I Can&#8217;t Even Tell You the Title",
+      authorBio:
+        "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
       content: {
-        rendered:
-          "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
+        html: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
+        text: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
       },
-      shouldNotBeInReturnedObj: "foo",
+      url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      datePublished: "2021-07-21T03:00:24",
     };
 
     const expectedOutput = {
@@ -93,5 +92,8 @@ describe("formatScrape", () => {
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",
     };
+
+    const result = formatScrape(prunedScrape);
+    expect(result).toEqual(expectedOutput);
   });
 });
