@@ -48,4 +48,14 @@ const formatScrapes = (stories: Story[]): Story[] => {
   return stories.map(formatScrape);
 };
 
+export const testables = {
+  prune,
+  pruneScrapes,
+  removeLineBreaks,
+  removeDoubleDashes,
+  formatText,
+  formatScrape,
+  formatScrapes,
+};
+
 export const formatStories = R.pipe(pruneScrapes, formatScrapes);

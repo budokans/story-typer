@@ -12,6 +12,7 @@
   "private": true,
   "scripts": {
     "dev": "next",
+    "test": "jest --coverage",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -50,6 +51,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
+    "ts-node": "^10.1.0",
     "typescript": "4.3.2"
   },
   "repository": {
