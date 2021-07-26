@@ -21,16 +21,20 @@ describe("prune", () => {
     shouldNotBeInReturnedObj: "some value",
   };
 
+  const expectedOutput = {
+    title: "some title",
+    authorBio: "some sample text",
+    content: {
+      html: "some sample text",
+      text: "some sample text",
+    },
+    url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
+    datePublished: "2021-07-21T03:00:24",
+  };
+
   test("takes a scrape and produces a pruned scrape with the correct properties and values", () => {
     const pruned = prune(scrape);
-    expect(pruned.title).toEqual("some title");
-    expect(pruned.authorBio).toEqual("some sample text");
-    expect(pruned.content.html).toEqual("some sample text");
-    expect(pruned.content.text).toEqual("some sample text");
-    expect(pruned.url).toEqual(
-      "http://fiftywordstories.com/wp-json/wp/v2/posts"
-    );
-    expect(pruned.datePublished).toEqual("2021-07-21T03:00:24");
+    expect(pruned).toEqual(expectedOutput);
   });
 });
 

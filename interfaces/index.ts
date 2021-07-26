@@ -16,6 +16,8 @@ export interface Scrape {
   };
 }
 
+export type PrunedScrape = Omit<Story, "dateScraped">;
+
 export interface Story {
   title: string;
   authorBio: string;
@@ -24,8 +26,8 @@ export interface Story {
     text: string;
   };
   url: string;
-  dateScraped: string;
   datePublished: string;
+  dateScraped: string;
 }
 
 export interface ProvideAuth {

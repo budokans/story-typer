@@ -1,9 +1,7 @@
 import * as R from "ramda";
 import * as entities from "entities";
 import unidecode from "unidecode";
-import { Scrape, Story } from "../interfaces";
-
-type PrunedScrape = Omit<Story, "dateScraped">;
+import { Scrape, PrunedScrape, Story } from "../interfaces";
 
 const prune = (scrape: Scrape): PrunedScrape => ({
   title: scrape.title.rendered,
