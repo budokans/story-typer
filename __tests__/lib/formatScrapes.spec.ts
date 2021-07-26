@@ -49,3 +49,11 @@ describe("removeLineBreaks", () => {
     );
   });
 });
+
+describe("removeDoubleDashes", () => {
+  test("replaces '--' in the input string with ' - ' and returns the new string", () => {
+    const sampleString = "Yes--I mean no--I mean yes!";
+    const result = removeDoubleDashes(sampleString);
+    expect(result).toEqual("Yes - I mean no - I mean yes!");
+  });
+});
