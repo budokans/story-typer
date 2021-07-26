@@ -3,20 +3,9 @@ import * as entities from "entities";
 import unidecode from "unidecode";
 import { Scrape, Story } from "../interfaces";
 
-export interface PrunedScrape {
-  id: number;
-  title: string;
-  authorBio: string;
-  content: {
-    html: string;
-    text: string;
-  };
-  url: string;
-  datePublished: string;
-}
+type PrunedScrape = Omit<Story, "dateScraped">;
 
 const prune = (scrape: Scrape): PrunedScrape => ({
-  id: scrape.id,
   title: scrape.title.rendered,
   authorBio: scrape.content.rendered,
   content: {
@@ -31,6 +20,10 @@ const pruneScrapes = (scrapes: Scrape[]): PrunedScrape[] => {
   return scrapes.map(prune);
 };
 
+const addTimestamp = (scrape: PrunedScrape): Story => ({
+  ...scrape,
+  dateScraped: new Date().toISOString(),
+});
 const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
 const removeDoubleDashes = (text: string): string => text.replace(/--/g, " - ");
 
@@ -43,7 +36,6 @@ const formatText = R.pipe(
 );
 
 const formatScrape = (scrape: Story): Story => ({
-  id: scrape.id,
   title: formatText(scrape.title),
   authorBio: formatText(scrape.authorBio),
   content: {
@@ -61,6 +53,7 @@ const formatScrapes = (stories: Story[]): Story[] => {
 
 export const testables = {
   prune,
+  addTimestamp,
   removeLineBreaks,
   removeDoubleDashes,
   formatText,
