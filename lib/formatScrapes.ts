@@ -20,7 +20,7 @@ const pruneScrapes = (scrapes: Scrape[]): Story[] => {
   return scrapes.map(prune);
 };
 
-const removeLineBreaks = (text: string): string => text.replace(/\n/g, "");
+const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
 const removeDoubleDashes = (text: string): string => text.replace(/--/g, " - ");
 
 const formatText = R.pipe(

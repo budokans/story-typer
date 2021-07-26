@@ -40,12 +40,12 @@ describe("prune", () => {
 });
 
 describe("removeLineBreaks", () => {
-  test("replaces any line breaks in the input string with ''", () => {
+  test("replaces any line breaks in the input string with a space", () => {
     const sampleString =
       "\n<p>With no explication whatsoever, readers could only wonder what it was all about.</p>\n<hr>\n<p>";
     const result = removeLineBreaks(sampleString);
     expect(result).toEqual(
-      "<p>With no explication whatsoever, readers could only wonder what it was all about.</p><hr><p>"
+      " <p>With no explication whatsoever, readers could only wonder what it was all about.</p> <hr> <p>"
     );
   });
 });
