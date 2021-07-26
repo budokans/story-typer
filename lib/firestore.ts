@@ -8,5 +8,5 @@ export const createUser = (uid: string, data: User): void => {
 };
 
 export const createStory = (story: Story, collection: string): void => {
-  firestore.collection(collection).doc(story.id).set({ story });
+  firestore.collection(collection).add({ story });
 };
