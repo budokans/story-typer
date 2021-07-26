@@ -3,8 +3,20 @@ import * as entities from "entities";
 import unidecode from "unidecode";
 import { Scrape, Story } from "../interfaces";
 
-const prune = (scrape: Scrape): Story => ({
-  id: scrape.id.toString(),
+export interface PrunedScrape {
+  id: number;
+  title: string;
+  authorBio: string;
+  content: {
+    html: string;
+    text: string;
+  };
+  url: string;
+  datePublished: string;
+}
+
+const prune = (scrape: Scrape): PrunedScrape => ({
+  id: scrape.id,
   title: scrape.title.rendered,
   authorBio: scrape.content.rendered,
   content: {
@@ -12,11 +24,10 @@ const prune = (scrape: Scrape): Story => ({
     text: scrape.content.rendered,
   },
   url: scrape.link,
-  dateScraped: new Date().toISOString(),
   datePublished: scrape.date,
 });
 
-const pruneScrapes = (scrapes: Scrape[]): Story[] => {
+const pruneScrapes = (scrapes: Scrape[]): PrunedScrape[] => {
   return scrapes.map(prune);
 };
 
