@@ -50,12 +50,10 @@ const formatScrapes = (stories: Story[]): Story[] => {
 
 export const testables = {
   prune,
-  pruneScrapes,
   removeLineBreaks,
   removeDoubleDashes,
   formatText,
   formatScrape,
-  formatScrapes,
 };
 
 export const formatStories = R.pipe(pruneScrapes, formatScrapes);

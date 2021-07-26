@@ -57,3 +57,14 @@ describe("removeDoubleDashes", () => {
     expect(result).toEqual("Yes - I mean no - I mean yes!");
   });
 });
+
+describe("formatText", () => {
+  test("takes a string and returns a trimmed string that is typeable without using alt codes", () => {
+    const sampleString =
+      "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative";
+    const expected =
+      "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative";
+    const formatted = formatText(sampleString);
+    expect(formatted).toEqual(expected);
+  });
+});
