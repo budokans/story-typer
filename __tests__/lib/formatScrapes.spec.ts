@@ -1,7 +1,6 @@
 import { testables } from "../../lib/formatScrapes";
 const {
   prune,
-  pruneScrapes,
   removeLineBreaks,
   removeDoubleDashes,
   formatText,
@@ -37,5 +36,16 @@ describe("prune", () => {
       /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2}).([0-9]{3}[A-Z]{1})$/;
     expect(re.test(pruned.dateScraped)).toEqual(true);
     expect(pruned.datePublished).toEqual("2021-07-21T03:00:24");
+  });
+});
+
+describe("removeLineBreaks", () => {
+  test("replaces any line breaks in the input string with ''", () => {
+    const sampleString =
+      "\n<p>With no explication whatsoever, readers could only wonder what it was all about.</p>\n<hr>\n<p>";
+    const result = removeLineBreaks(sampleString);
+    expect(result).toEqual(
+      "<p>With no explication whatsoever, readers could only wonder what it was all about.</p><hr><p>"
+    );
   });
 });
