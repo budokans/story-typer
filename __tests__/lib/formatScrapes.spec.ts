@@ -1,7 +1,6 @@
 import { testables } from "../../lib/formatScrapes";
 const {
   prune,
-  addTimestamp,
   removeLineBreaks,
   removeDoubleDashes,
   formatText,
@@ -38,27 +37,6 @@ describe("prune", () => {
   });
 });
 
-describe("addTimeStamp", () => {
-  test("takes and object and returns a new object that is the same except for a dateScraped property", () => {
-    const prunedScrape = {
-      title: "title",
-      authorBio: "bio",
-      content: {
-        html: "html",
-        text: "text",
-      },
-      url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
-      datePublished: "2021-07-21T03:00:24",
-    };
-
-    const dateAdded = addTimestamp(prunedScrape);
-    expect(dateAdded).toHaveProperty("dateScraped");
-    const re =
-      /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2}).([0-9]{3}[A-Z]{1})$/;
-    expect(re.test(dateAdded.dateScraped)).toEqual(true);
-  });
-});
-
 describe("removeLineBreaks", () => {
   test("replaces any line breaks in the input string with a space", () => {
     const sampleString =
@@ -86,5 +64,34 @@ describe("formatText", () => {
       "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative";
     const formatted = formatText(sampleString);
     expect(formatted).toEqual(expected);
+  });
+});
+
+describe("formatScrape", () => {
+  test("takes an unformatted scrape and returns a formatted scrape", () => {
+    const scrape = {
+      date: "2021-07-21T03:00:24",
+      link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      title: {
+        rendered: "JOHN H. DROMEY: I Can&#8217;t Even Tell You the Title",
+      },
+      content: {
+        rendered:
+          "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
+      },
+      shouldNotBeInReturnedObj: "foo",
+    };
+
+    const expectedOutput = {
+      title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
+      authorBio:
+        "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
+      content: {
+        html: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
+        text: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
+      },
+      url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      datePublished: "2021-07-21T03:00:24",
+    };
   });
 });

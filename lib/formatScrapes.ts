@@ -1,9 +1,9 @@
 import * as R from "ramda";
 import * as entities from "entities";
 import unidecode from "unidecode";
-import { Scrape, PrunedScrape, Story } from "../interfaces";
+import { Scrape, Story } from "../interfaces";
 
-const prune = (scrape: Scrape): PrunedScrape => ({
+const prune = (scrape: Scrape): Story => ({
   title: scrape.title.rendered,
   authorBio: scrape.content.rendered,
   content: {
@@ -14,14 +14,10 @@ const prune = (scrape: Scrape): PrunedScrape => ({
   datePublished: scrape.date,
 });
 
-const pruneScrapes = (scrapes: Scrape[]): PrunedScrape[] => {
+const pruneScrapes = (scrapes: Scrape[]): Story[] => {
   return scrapes.map(prune);
 };
 
-const addTimestamp = (scrape: PrunedScrape): Story => ({
-  ...scrape,
-  dateScraped: new Date().toISOString(),
-});
 const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
 const removeDoubleDashes = (text: string): string => text.replace(/--/g, " - ");
 
@@ -41,7 +37,6 @@ const formatScrape = (scrape: Story): Story => ({
     text: scrape.content.text,
   },
   url: scrape.url,
-  dateScraped: scrape.dateScraped,
   datePublished: scrape.datePublished,
 });
 
@@ -51,7 +46,6 @@ const formatScrapes = (stories: Story[]): Story[] => {
 
 export const testables = {
   prune,
-  addTimestamp,
   removeLineBreaks,
   removeDoubleDashes,
   formatText,
