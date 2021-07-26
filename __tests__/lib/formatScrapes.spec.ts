@@ -1,3 +1,4 @@
+import { formatStories } from "../../lib/formatScrapes";
 import { testables } from "../../lib/formatScrapes";
 const {
   prune,
@@ -95,5 +96,43 @@ describe("formatScrape", () => {
 
     const result = formatScrape(prunedScrape);
     expect(result).toEqual(expectedOutput);
+  });
+});
+
+describe("formatStories", () => {
+  test("takes raw scrapes and returns formatted stories", () => {
+    const scrape = {
+      date: "2021-07-21T03:00:24",
+      link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      title: {
+        rendered: "JOHN H. DROMEY: I Can&#8217;t Even Tell You the Title",
+      },
+      content: {
+        rendered:
+          "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
+      },
+      shouldNotBeInReturnedObj: "foo",
+    };
+
+    const scrapesArr = Array(5);
+    scrapesArr.fill(scrape);
+
+    const expectedOutputStory = {
+      title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
+      authorBio:
+        "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
+      content: {
+        html: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
+        text: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
+      },
+      url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      datePublished: "2021-07-21T03:00:24",
+    };
+
+    const outputArr = Array(5);
+    outputArr.fill(expectedOutputStory);
+
+    const result = formatStories(scrapesArr);
+    expect(result).toEqual(outputArr);
   });
 });
