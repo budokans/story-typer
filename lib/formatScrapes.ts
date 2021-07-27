@@ -20,6 +20,7 @@ const pruneScrapes = (scrapes: Scrape[]): Story[] => {
 
 const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
 const removeDoubleDashes = (text: string): string => text.replace(/--/g, " - ");
+const removeHtmlTags = (text: string): string => text.replace(/<.+?>/g, "");
 
 const formatText = R.pipe(
   R.trim,
@@ -48,6 +49,7 @@ export const testables = {
   prune,
   removeLineBreaks,
   removeDoubleDashes,
+  removeHtmlTags,
   formatText,
   formatScrape,
 };
