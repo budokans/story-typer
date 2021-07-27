@@ -2,6 +2,7 @@ import { formatStories } from "../../lib/formatScrapes";
 import { testables } from "../../lib/formatScrapes";
 const {
   prune,
+  checkBioExists,
   removeLineBreaks,
   removeDoubleDashes,
   removeHtmlTags,
@@ -36,6 +37,19 @@ describe("prune", () => {
   test("takes a scrape and produces a pruned scrape with the correct properties and values", () => {
     const pruned = prune(scrape);
     expect(pruned).toEqual(expectedOutput);
+  });
+});
+
+describe("checkBioExists", () => {
+  test("takes a string containing HTML and returns true if a bio is present", () => {
+    const sampleString =
+      '<p>They take so many photos. Hold it up, down, wave it about! Nancy! Over here! Smile! A purple balloon, shiny as a sixpence, more beautiful than she has ever seen. She holds tight onto its string and the decades float away. She is six. She is happy. There is cake.</p>\n<hr>\n<p>Marie writes poetry and flash fiction and plays with writing prompts on Twitter at <a href="https://twitter.com/jamsaucer" rel="noopener" target="_blank">@jamsaucer</a>.</p>';
+    expect(checkBioExists(sampleString)).toEqual(true);
+  });
+
+  test("takes a string containing HTML and returns false if a bio is not present", () => {
+    const sampleString = "<p>Bio bio here";
+    expect(checkBioExists(sampleString)).toEqual(false);
   });
 });
 

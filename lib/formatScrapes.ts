@@ -18,6 +18,7 @@ const pruneScrapes = (scrapes: Scrape[]): Story[] => {
   return scrapes.map(prune);
 };
 
+const checkBioExists = (text: string): boolean => text.includes("<hr>");
 const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
 const removeDoubleDashes = (text: string): string => text.replace(/--/g, " - ");
 const removeHtmlTags = (text: string): string => text.replace(/<.+?>/g, "");
@@ -47,6 +48,7 @@ const formatScrapes = (stories: Story[]): Story[] => {
 
 export const testables = {
   prune,
+  checkBioExists,
   removeLineBreaks,
   removeDoubleDashes,
   removeHtmlTags,
