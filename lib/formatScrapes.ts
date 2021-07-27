@@ -35,7 +35,7 @@ const formatScrape = (scrape: Story): Story => ({
   authorBio: formatText(scrape.authorBio),
   content: {
     html: formatText(scrape.content.html),
-    text: formatText(scrape.content.text),
+    text: removeHtmlTags(formatText(scrape.content.text)),
   },
   url: scrape.url,
   datePublished: scrape.datePublished,
