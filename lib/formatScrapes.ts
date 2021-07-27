@@ -4,6 +4,11 @@ import unidecode from "unidecode";
 import { Scrape, Story } from "../interfaces";
 
 const checkBioExists = (text: string): boolean => text.includes("<hr");
+const getHrElement = (text: string): string | null => {
+  const match = text.match(/<hr\s?\/?>/);
+  return match ? match[0] : null;
+};
+
 const getBio = (text: string): string => {
   return checkBioExists(text)
     ? "Bio found"
@@ -54,6 +59,7 @@ const formatScrapes = (stories: Story[]): Story[] => {
 
 export const testables = {
   checkBioExists,
+  getHrElement,
   getBio,
   prune,
   removeLineBreaks,

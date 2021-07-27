@@ -2,6 +2,7 @@ import { formatStories } from "../../lib/formatScrapes";
 import { testables } from "../../lib/formatScrapes";
 const {
   checkBioExists,
+  getHrElement,
   getBio,
   prune,
   removeLineBreaks,
@@ -29,6 +30,21 @@ describe("checkBioExists", () => {
   test("takes a string containing HTML and returns false if a bio is not present", () => {
     const sampleString = "<p>No hr element so no bio here";
     expect(checkBioExists(sampleString)).toEqual(false);
+  });
+});
+
+describe("getHrElement", () => {
+  test("takes a string containing an hr and returns the hr element in its exact form", () => {
+    const sampleStrings = [
+      "</p>\n<hr>\n<p>Marie writes poetry",
+      "</p>\n<hr/>\n<p>Marie writes poetry",
+      "</p>\n<hr />\n<p>Marie writes poetry",
+    ];
+
+    const results = sampleStrings.map(getHrElement);
+    expect(results[0]).toEqual("<hr>");
+    expect(results[1]).toEqual("<hr/>");
+    expect(results[2]).toEqual("<hr />");
   });
 });
 
