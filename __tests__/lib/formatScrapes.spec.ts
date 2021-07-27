@@ -16,9 +16,13 @@ const {
  */
 
 describe("checkBioExists", () => {
-  test("takes a string containing HTML and returns true if a bio is present", () => {
-    const sampleString =
-      '<p>They take so many photos. Hold it up, down, wave it about! Nancy! Over here! Smile! A purple balloon, shiny as a sixpence, more beautiful than she has ever seen. She holds tight onto its string and the decades float away. She is six. She is happy. There is cake.</p>\n<hr>\n<p>Marie writes poetry and flash fiction and plays with writing prompts on Twitter at <a href="https://twitter.com/jamsaucer" rel="noopener" target="_blank">@jamsaucer</a>.</p>';
+  test("takes a string containing HTML and returns true if an <hr> is present", () => {
+    const sampleString = "</p>\n<hr>\n<p>Marie writes poetry";
+    expect(checkBioExists(sampleString)).toEqual(true);
+  });
+
+  test("takes a string containing HTML and returns true if an <hr /> is present", () => {
+    const sampleString = "</p>\n<hr />\n<p>Marie writes poetry";
     expect(checkBioExists(sampleString)).toEqual(true);
   });
 

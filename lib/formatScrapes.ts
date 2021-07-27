@@ -3,7 +3,7 @@ import * as entities from "entities";
 import unidecode from "unidecode";
 import { Scrape, Story } from "../interfaces";
 
-const checkBioExists = (text: string): boolean => text.includes("<hr>");
+const checkBioExists = (text: string): boolean => text.includes("<hr");
 const getBio = (text: string): string => {
   return checkBioExists(text)
     ? "Bio found"
