@@ -3,6 +3,7 @@ import { testables } from "../../lib/formatScrapes";
 const {
   checkBioExists,
   getHrElement,
+  getStartIndex,
   getBio,
   prune,
   removeLineBreaks,
@@ -45,6 +46,17 @@ describe("getHrElement", () => {
     expect(results[0]).toEqual("<hr>");
     expect(results[1]).toEqual("<hr/>");
     expect(results[2]).toEqual("<hr />");
+  });
+});
+
+describe("getStartIndex", () => {
+  test("return the index in the string of the character immediately following the end of the boundary", () => {
+    const case1 = ["</p>\n<hr>\n<p>Marie writes poetry", "<hr>"];
+    const case2 = ["</p>\n<hr/>\n<p>Marie writes poetry", "<hr/>"];
+    const case3 = ["</p>\n<hr />\n<p>Marie writes poetry", "<hr />"];
+    expect(getStartIndex(case1[0], case1[1])).toEqual(9);
+    expect(getStartIndex(case2[0], case2[1])).toEqual(10);
+    expect(getStartIndex(case3[0], case3[1])).toEqual(11);
   });
 });
 

@@ -8,6 +8,8 @@ const getHrElement = (text: string): string | null => {
   const match = text.match(/<hr\s?\/?>/);
   return match ? match[0] : null;
 };
+const getStartIndex = (text: string, boundary: string): number =>
+  text.indexOf(boundary) + boundary.length;
 
 const getBio = (text: string): string => {
   return checkBioExists(text)
@@ -60,6 +62,7 @@ const formatScrapes = (stories: Story[]): Story[] => {
 export const testables = {
   checkBioExists,
   getHrElement,
+  getStartIndex,
   getBio,
   prune,
   removeLineBreaks,
