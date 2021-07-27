@@ -3,6 +3,13 @@ import * as entities from "entities";
 import unidecode from "unidecode";
 import { Scrape, Story } from "../interfaces";
 
+const checkBioExists = (text: string): boolean => text.includes("<hr>");
+const getBio = (text: string): string => {
+  return checkBioExists(text)
+    ? "Bio found"
+    : "Sorry, we couldn't find a bio for this author.";
+};
+
 const prune = (scrape: Scrape): Story => ({
   title: scrape.title.rendered,
   authorBio: scrape.content.rendered,
@@ -18,7 +25,6 @@ const pruneScrapes = (scrapes: Scrape[]): Story[] => {
   return scrapes.map(prune);
 };
 
-const checkBioExists = (text: string): boolean => text.includes("<hr>");
 const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
 const removeDoubleDashes = (text: string): string => text.replace(/--/g, " - ");
 const removeHtmlTags = (text: string): string => text.replace(/<.+?>/g, "");
@@ -47,8 +53,9 @@ const formatScrapes = (stories: Story[]): Story[] => {
 };
 
 export const testables = {
-  prune,
   checkBioExists,
+  getBio,
+  prune,
   removeLineBreaks,
   removeDoubleDashes,
   removeHtmlTags,
