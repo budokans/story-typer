@@ -10,6 +10,12 @@ const getHrElement = (text: string): string | null => {
 };
 const getStartIndex = (text: string, boundary: string): number =>
   text.indexOf(boundary) + boundary.length;
+const extractBio = (text: string): string => {
+  const startBoundary = getHrElement(text) as string;
+  const startIndex = getStartIndex(text, startBoundary);
+  const endIndex = text.indexOf("<div");
+  return text.slice(startIndex, endIndex);
+};
 
 const getBio = (text: string): string => {
   return checkBioExists(text)
@@ -63,6 +69,7 @@ export const testables = {
   checkBioExists,
   getHrElement,
   getStartIndex,
+  extractBio,
   getBio,
   prune,
   removeLineBreaks,

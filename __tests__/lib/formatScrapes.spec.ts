@@ -4,6 +4,7 @@ const {
   checkBioExists,
   getHrElement,
   getStartIndex,
+  extractBio,
   getBio,
   prune,
   removeLineBreaks,
@@ -60,6 +61,16 @@ describe("getStartIndex", () => {
   });
 });
 
+describe("extractBio", () => {
+  test("returns only the portion of the html string that corresponds to the bio", () => {
+    const sampleString =
+      "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=";
+    const result = extractBio(sampleString);
+    const expected = "\n<p>Edward Mcinnis wrote this story.</p>\n";
+    expect(result).toEqual(expected);
+  });
+});
+
 describe("getBio", () => {
   test("returns a 'sorry' message if no bio exists", () => {
     const sampleString = "<p>No hr element so no bio here";
@@ -68,7 +79,7 @@ describe("getBio", () => {
     );
   });
 
-  test("returns only the portion of the html string that corresponds to the bio", () => {
+  test("returns a the bio if the bio exists", () => {
     const sampleString =
       "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=";
     const result = getBio(sampleString);
