@@ -21,6 +21,16 @@ const getBio = (text: string): string => {
     ? extractBio(text)
     : "Sorry, we couldn't find a bio for this author.";
 };
+const getStory = (text: string): string => {
+  const hrElement = getHrElement(text);
+  if (hrElement) {
+    const endIndex = text.indexOf(hrElement);
+    return text.slice(0, endIndex);
+  } else {
+    const endIndex = text.indexOf("<div");
+    return text.slice(0, endIndex);
+  }
+};
 
 const prune = (scrape: Scrape): Story => ({
   title: scrape.title.rendered,
@@ -70,6 +80,7 @@ export const testables = {
   getStartIndex,
   extractBio,
   getBio,
+  getStory,
   prune,
   removeLineBreaks,
   removeDoubleDashes,

@@ -6,6 +6,7 @@ const {
   getStartIndex,
   extractBio,
   getBio,
+  getStory,
   prune,
   removeLineBreaks,
   removeDoubleDashes,
@@ -85,6 +86,24 @@ describe("getBio", () => {
     const result = getBio(sampleString);
     const expected = "\n<p>Edward Mcinnis wrote this story.</p>\n";
     expect(result).toEqual(expected);
+  });
+});
+
+describe("getStory", () => {
+  test("returns only the portion of the html string that corresponds to the story", () => {
+    const stringWithHr =
+      '<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class="likebtn_container" style="">';
+    const expectedWithHr =
+      "<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n";
+    const resultWithHr = getStory(stringWithHr);
+    expect(resultWithHr).toEqual(expectedWithHr);
+
+    const stringWithoutHr =
+      '<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n<div class="likebtn_container" style="">';
+    const expectedWithoutHr =
+      "<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n";
+    const resultWithoutHr = getStory(stringWithoutHr);
+    expect(resultWithoutHr).toEqual(expectedWithoutHr);
   });
 });
 
