@@ -2,7 +2,7 @@ import axios from "axios";
 import { Scrape, Story } from "../interfaces";
 import { formatStories } from "./formatScrapes";
 
-export const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
+const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const CATEGORIES = 112; // Submissions
 const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
@@ -26,8 +26,8 @@ const getScrapeLatestUrl = (
   defaults: string[],
   timestamp: string
 ): string => {
-  const defaultParams = getParamsString(defaults);
-  return encodeURI(`${endpoint}?${defaultParams}&after=${timestamp}`);
+  const defaultParamsStr = getParamsString(defaults);
+  return encodeURI(`${endpoint}?${defaultParamsStr}&after=${timestamp}`);
 };
 
 const getPageUrl = (
@@ -35,8 +35,8 @@ const getPageUrl = (
   defaults: string[],
   pageNum: number
 ): string => {
-  const defaultParams = getParamsString(defaults);
-  return encodeURI(`${endpoint}?${defaultParams}&page=${pageNum}`);
+  const defaultParamsStr = getParamsString(defaults);
+  return encodeURI(`${endpoint}?${defaultParamsStr}&page=${pageNum}`);
 };
 
 const getPosts = async (url: string): Promise<Scrape[]> => {
@@ -69,9 +69,7 @@ export const scrapeLatest = (): Promise<Story[] | void> => {
 export const seed = (): Promise<Story[] | void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, STARTING_PAGE);
   return scrapeAll(url, STARTING_PAGE)
-    .then((scrapes) => {
-      return formatStories(scrapes);
-    })
+    .then((scrapes) => formatStories(scrapes))
     .catch((e) => console.error(e));
 };
 
