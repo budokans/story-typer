@@ -14,8 +14,6 @@ const DEFAULT_PARAMS = [
   `categories_exclude=${EXCLUDED_CATEGORIES}`,
 ];
 
-const resetPageNumber = () => (PAGE_NUMBER = 1);
-
 const getDefaultParams = (params: string[]) => {
   return params.join("&");
 };
@@ -68,8 +66,10 @@ export const seed = (): Promise<Story[] | void> => {
   const url = getPageUrl();
   return scrapeAll(url)
     .then((scrapes) => {
-      resetPageNumber();
+      PAGE_NUMBER = 1;
       return formatStories(scrapes);
     })
     .catch((e) => console.error(e));
 };
+
+export const testables = { getDefaultParams };
