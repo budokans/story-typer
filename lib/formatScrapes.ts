@@ -19,7 +19,7 @@ const extractBio = (text: string): string => {
 
 const getBio = (text: string): string => {
   return checkBioExists(text)
-    ? "Bio found"
+    ? extractBio(text)
     : "Sorry, we couldn't find a bio for this author.";
 };
 
