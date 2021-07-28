@@ -1,49 +1,86 @@
+import * as R from "ramda";
 import * as entities from "entities";
 import unidecode from "unidecode";
 import { Scrape, Story } from "../interfaces";
 
+const checkBioExists = (text: string): boolean => text.includes("<hr");
+
+const getHrElement = (text: string): string | null => {
+  const match = text.match(/<hr\s?\/?>/);
+  return match ? match[0] : null;
+};
+
+const getStartIndex = (text: string, boundary: string): number =>
+  text.indexOf(boundary) + boundary.length;
+
+const getBio = (text: string): string => {
+  const hrElement = getHrElement(text);
+  return hrElement
+    ? text.slice(getStartIndex(text, hrElement), text.indexOf("<div"))
+    : "Sorry, we couldn't find a bio for this author.";
+};
+
+const getStory = (text: string): string => {
+  const hrElement = getHrElement(text);
+  return hrElement
+    ? text.slice(0, text.indexOf(hrElement))
+    : text.slice(0, text.indexOf("<div"));
+};
+
 const prune = (scrape: Scrape): Story => ({
-  id: scrape.id.toString(),
-  title: unidecode(entities.decodeHTML(scrape.title.rendered)),
-  authorBio: scrape.content.rendered,
+  title: scrape.title.rendered,
+  authorBio: getBio(scrape.content.rendered),
   content: {
-    html: scrape.content.rendered,
-    text: scrape.content.rendered,
+    html: getStory(scrape.content.rendered),
+    text: getStory(scrape.content.rendered),
   },
   url: scrape.link,
-  dateScraped: new Date().toISOString(),
   datePublished: scrape.date,
 });
 
-export const pruneScrapes = (scrapes: Scrape[]): Story[] => {
+const pruneScrapes = (scrapes: Scrape[]): Story[] => {
   return scrapes.map(prune);
 };
 
-const removeLineBreaks = (text: string) => text.replace(/\n/g, "");
-const removeDoubleDashes = (text: string) => text.replace(/--/g, " - ");
+const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
+const removeDoubleDashes = (text: string): string => text.replace(/--/g, " - ");
+const removeHtmlTags = (text: string): string => text.replace(/<.+?>/g, "");
 
-const formatText = (text: string) => {
-  const trimmed = text.trim();
-  const decoded = entities.decodeHTML(trimmed);
-  const unidecoded = unidecode(decoded);
-  const noLineBreaks = removeLineBreaks(unidecoded);
-  const noDoubleDashes = removeDoubleDashes(noLineBreaks);
-  return noDoubleDashes;
-};
+const formatText = R.pipe(
+  R.trim,
+  entities.decodeHTML,
+  unidecode,
+  removeLineBreaks,
+  removeDoubleDashes
+);
 
 const formatScrape = (scrape: Story): Story => ({
-  id: scrape.id,
   title: formatText(scrape.title),
   authorBio: formatText(scrape.authorBio),
   content: {
-    html: scrape.content.html,
-    text: scrape.content.text,
+    html: formatText(scrape.content.html),
+    text: formatText(removeHtmlTags(scrape.content.text)),
   },
   url: scrape.url,
-  dateScraped: scrape.dateScraped,
   datePublished: scrape.datePublished,
 });
 
-export const formatScrapes = (stories: Story[]): Story[] => {
+const formatScrapes = (stories: Story[]): Story[] => {
   return stories.map(formatScrape);
 };
+
+export const testables = {
+  checkBioExists,
+  getHrElement,
+  getStartIndex,
+  getBio,
+  getStory,
+  prune,
+  removeLineBreaks,
+  removeDoubleDashes,
+  removeHtmlTags,
+  formatText,
+  formatScrape,
+};
+
+export const formatStories = R.pipe(pruneScrapes, formatScrapes);
