@@ -14,17 +14,15 @@ const DEFAULT_PARAMS = [
   `categories_exclude=${EXCLUDED_CATEGORIES}`,
 ];
 
-const getDefaultParams = (params: string[]) => {
-  return params.join("&");
-};
+const getParamsString = (params: string[]): string => params.join("&");
 
 const getScrapeLatestUrl = (timestamp: string) => {
-  const defaultParams = getDefaultParams(DEFAULT_PARAMS);
+  const defaultParams = getParamsString(DEFAULT_PARAMS);
   return encodeURI(`${API_ENDPOINT}?${defaultParams}&after=${timestamp}`);
 };
 
 const getPageUrl = () => {
-  const defaultParams = getDefaultParams(DEFAULT_PARAMS);
+  const defaultParams = getParamsString(DEFAULT_PARAMS);
   return encodeURI(`${API_ENDPOINT}?${defaultParams}&page=${PAGE_NUMBER}`);
 };
 
@@ -72,4 +70,4 @@ export const seed = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
-export const testables = { getDefaultParams };
+export const testables = { getParamsString };
