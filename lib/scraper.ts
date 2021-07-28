@@ -80,4 +80,9 @@ export const seed = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
-export const testables = { getParamsString, getScrapeLatestUrl, getPageUrl };
+export const testables = {
+  getParamsString,
+  getScrapeLatestUrl,
+  getPageUrl,
+  getPosts,
+};

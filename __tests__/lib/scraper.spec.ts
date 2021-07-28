@@ -1,9 +1,13 @@
+import axios from "axios";
 import { testables } from "../../lib/scraper";
-const { getParamsString, getScrapeLatestUrl, getPageUrl } = testables;
+const { getParamsString, getScrapeLatestUrl, getPageUrl, getPosts } = testables;
 
 const DEFAULT_PARAMS = ["1", "2", "3"];
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const PAGE_NUMBER = 10;
+
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("getParamsString", () => {
   test("joins returns a string of DEFAULT_PARAMS elements joined with &", () => {
@@ -28,5 +32,16 @@ describe("getPageUrl", () => {
     expect(URL).toEqual(
       "http://fiftywordstories.com/wp-json/wp/v2/posts?1&2&3&page=10"
     );
+  });
+});
+
+describe("getPosts", () => {
+  test("should fetch and return posts", async () => {
+    const posts = [{ title: "Story Title" }];
+    const response = { data: posts };
+    mockedAxios.get.mockImplementation(() => Promise.resolve(response));
+
+    const result = await getPosts(API_ENDPOINT);
+    expect(result).toEqual(posts);
   });
 });
