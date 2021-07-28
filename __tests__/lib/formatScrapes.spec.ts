@@ -50,7 +50,7 @@ describe("getHrElement", () => {
 });
 
 describe("getStartIndex", () => {
-  test("return the index in the string of the character immediately following the end of the boundary", () => {
+  test("returns the index in the string of the character immediately following the end of the boundary", () => {
     const case1 = ["</p>\n<hr>\n<p>Marie writes poetry", "<hr>"];
     const case2 = ["</p>\n<hr/>\n<p>Marie writes poetry", "<hr/>"];
     const case3 = ["</p>\n<hr />\n<p>Marie writes poetry", "<hr />"];
@@ -66,6 +66,14 @@ describe("getBio", () => {
     expect(getBio(sampleString)).toEqual(
       "Sorry, we couldn't find a bio for this author."
     );
+  });
+
+  test("returns only the portion of the html string that corresponds to the bio", () => {
+    const sampleString =
+      "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=";
+    const result = getBio(sampleString);
+    const expected = "\n<p>Edward Mcinnis wrote this story.</p>\n";
+    expect(result).toEqual(expected);
   });
 });
 
