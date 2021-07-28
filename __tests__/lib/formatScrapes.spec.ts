@@ -4,7 +4,6 @@ const {
   checkBioExists,
   getHrElement,
   getStartIndex,
-  extractBio,
   getBio,
   getStory,
   prune,
@@ -59,16 +58,6 @@ describe("getStartIndex", () => {
     expect(getStartIndex(case1[0], case1[1])).toEqual(9);
     expect(getStartIndex(case2[0], case2[1])).toEqual(10);
     expect(getStartIndex(case3[0], case3[1])).toEqual(11);
-  });
-});
-
-describe("extractBio", () => {
-  test("returns only the portion of the html string that corresponds to the bio", () => {
-    const sampleString =
-      "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=";
-    const result = extractBio(sampleString);
-    const expected = "\n<p>Edward Mcinnis wrote this story.</p>\n";
-    expect(result).toEqual(expected);
   });
 });
 

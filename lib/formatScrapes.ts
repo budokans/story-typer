@@ -10,26 +10,17 @@ const getHrElement = (text: string): string | null => {
 };
 const getStartIndex = (text: string, boundary: string): number =>
   text.indexOf(boundary) + boundary.length;
-const extractBio = (text: string): string => {
-  const startBoundary = getHrElement(text) as string;
-  const startIndex = getStartIndex(text, startBoundary);
-  const endIndex = text.indexOf("<div");
-  return text.slice(startIndex, endIndex);
-};
 const getBio = (text: string): string => {
-  return checkBioExists(text)
-    ? extractBio(text)
+  const hrElement = getHrElement(text);
+  return hrElement
+    ? text.slice(getStartIndex(text, hrElement), text.indexOf("<div"))
     : "Sorry, we couldn't find a bio for this author.";
 };
 const getStory = (text: string): string => {
   const hrElement = getHrElement(text);
-  if (hrElement) {
-    const endIndex = text.indexOf(hrElement);
-    return text.slice(0, endIndex);
-  } else {
-    const endIndex = text.indexOf("<div");
-    return text.slice(0, endIndex);
-  }
+  return hrElement
+    ? text.slice(0, text.indexOf(hrElement))
+    : text.slice(0, text.indexOf("<div"));
 };
 
 const prune = (scrape: Scrape): Story => ({
@@ -78,7 +69,6 @@ export const testables = {
   checkBioExists,
   getHrElement,
   getStartIndex,
-  extractBio,
   getBio,
   getStory,
   prune,
