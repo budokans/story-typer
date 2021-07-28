@@ -4,7 +4,6 @@ const { getParamsString, getScrapeLatestUrl, getPageUrl, getPosts } = testables;
 
 const DEFAULT_PARAMS = ["1", "2", "3"];
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
-const PAGE_NUMBER = 10;
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -28,7 +27,8 @@ describe("getScrapeLatestUrl", () => {
 
 describe("getPageUrl", () => {
   test("returns a URL in the correct format for scraping a given page for stories", () => {
-    const URL = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, PAGE_NUMBER);
+    const pageNum = 10;
+    const URL = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum);
     expect(URL).toEqual(
       "http://fiftywordstories.com/wp-json/wp/v2/posts?1&2&3&page=10"
     );
