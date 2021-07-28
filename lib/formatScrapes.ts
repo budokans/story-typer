@@ -4,18 +4,22 @@ import unidecode from "unidecode";
 import { Scrape, Story } from "../interfaces";
 
 const checkBioExists = (text: string): boolean => text.includes("<hr");
+
 const getHrElement = (text: string): string | null => {
   const match = text.match(/<hr\s?\/?>/);
   return match ? match[0] : null;
 };
+
 const getStartIndex = (text: string, boundary: string): number =>
   text.indexOf(boundary) + boundary.length;
+
 const getBio = (text: string): string => {
   const hrElement = getHrElement(text);
   return hrElement
     ? text.slice(getStartIndex(text, hrElement), text.indexOf("<div"))
     : "Sorry, we couldn't find a bio for this author.";
 };
+
 const getStory = (text: string): string => {
   const hrElement = getHrElement(text);
   return hrElement
