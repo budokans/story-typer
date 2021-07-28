@@ -23,16 +23,20 @@ const getTimestamp = async (): Promise<string> => {
 
 const getScrapeLatestUrl = (
   endpoint: string,
-  params: string[],
+  defaults: string[],
   timestamp: string
-) => {
-  const defaultParams = getParamsString(params);
+): string => {
+  const defaultParams = getParamsString(defaults);
   return encodeURI(`${endpoint}?${defaultParams}&after=${timestamp}`);
 };
 
-const getPageUrl = () => {
-  const defaultParams = getParamsString(DEFAULT_PARAMS);
-  return encodeURI(`${API_ENDPOINT}?${defaultParams}&page=${PAGE_NUMBER}`);
+const getPageUrl = (
+  endpoint: string,
+  defaults: string[],
+  pageNum: number
+): string => {
+  const defaultParams = getParamsString(defaults);
+  return encodeURI(`${endpoint}?${defaultParams}&page=${pageNum}`);
 };
 
 const getPosts = async (url: string): Promise<Scrape[]> => {
@@ -44,7 +48,7 @@ const scrapeAll = async (url: string): Promise<Scrape[]> => {
   const onePage = await getPosts(url);
   PAGE_NUMBER++;
   if (PAGE_NUMBER <= PAGE_LIMIT) {
-    const nextPageUrl = getPageUrl();
+    const nextPageUrl = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, PAGE_NUMBER);
     const nextPage = await scrapeAll(nextPageUrl);
     if (nextPage) {
       return [...nextPage, ...onePage];
@@ -67,7 +71,7 @@ export const scrapeLatest = (): Promise<Story[] | void> => {
 };
 
 export const seed = (): Promise<Story[] | void> => {
-  const url = getPageUrl();
+  const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, PAGE_NUMBER);
   return scrapeAll(url)
     .then((scrapes) => {
       PAGE_NUMBER = 1;
@@ -76,4 +80,4 @@ export const seed = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
-export const testables = { getParamsString, getScrapeLatestUrl };
+export const testables = { getParamsString, getScrapeLatestUrl, getPageUrl };
