@@ -16,19 +16,23 @@ const DEFAULT_PARAMS = [
 
 const getParamsString = (params: string[]): string => params.join("&");
 
-const getScrapeLatestUrl = (timestamp: string) => {
-  const defaultParams = getParamsString(DEFAULT_PARAMS);
-  return encodeURI(`${API_ENDPOINT}?${defaultParams}&after=${timestamp}`);
+const getTimestamp = async (): Promise<string> => {
+  // TO DO: db query
+  return "2021-07-21T03:00:24";
+};
+
+const getScrapeLatestUrl = (
+  endpoint: string,
+  params: string[],
+  timestamp: string
+) => {
+  const defaultParams = getParamsString(params);
+  return encodeURI(`${endpoint}?${defaultParams}&after=${timestamp}`);
 };
 
 const getPageUrl = () => {
   const defaultParams = getParamsString(DEFAULT_PARAMS);
   return encodeURI(`${API_ENDPOINT}?${defaultParams}&page=${PAGE_NUMBER}`);
-};
-
-const getTimestamp = async (): Promise<string> => {
-  // TO DO: db query
-  return "2021-07-21T03:00:24";
 };
 
 const getPosts = async (url: string): Promise<Scrape[]> => {
@@ -54,7 +58,9 @@ const scrapeAll = async (url: string): Promise<Scrape[]> => {
 
 export const scrapeLatest = (): Promise<Story[] | void> => {
   return getTimestamp()
-    .then((timestamp) => getScrapeLatestUrl(timestamp))
+    .then((timestamp) =>
+      getScrapeLatestUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
+    )
     .then((url) => getPosts(url))
     .then((posts) => formatStories(posts))
     .catch((e) => console.error(e));
@@ -70,4 +76,4 @@ export const seed = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
-export const testables = { getParamsString };
+export const testables = { getParamsString, getScrapeLatestUrl };
