@@ -103,7 +103,7 @@ describe("prune", () => {
     title: { rendered: "some title" },
     content: {
       rendered:
-        "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=",
+        '<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class="likebtn_container" style="">',
     },
     shouldNotBeInReturnedObj: "some value",
   };
@@ -112,8 +112,8 @@ describe("prune", () => {
     title: "some title",
     authorBio: "\n<p>Edward Mcinnis wrote this story.</p>\n",
     content: {
-      html: "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=",
-      text: "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=",
+      html: "<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n",
+      text: "<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n",
     },
     url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
     datePublished: "2021-07-21T03:00:24",
@@ -218,8 +218,8 @@ describe("formatStories", () => {
       title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
       authorBio: "<p>Edward Mcinnis wrote this story.</p>",
       content: {
-        html: '<p>My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today."</p> <p>"Oh!" she said brightly. "Happy birthday!"</p> <hr> <p>Edward Mcinnis wrote this story.</p> <div class="likebtn_container" style="">',
-        text: 'My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today." "Oh!" she said brightly. "Happy birthday!"  Edward Mcinnis wrote this story.',
+        html: '<p>My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today."</p> <p>"Oh!" she said brightly. "Happy birthday!"</p>',
+        text: 'My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today." "Oh!" she said brightly. "Happy birthday!"',
       },
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",

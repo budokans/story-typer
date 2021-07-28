@@ -27,8 +27,8 @@ const prune = (scrape: Scrape): Story => ({
   title: scrape.title.rendered,
   authorBio: getBio(scrape.content.rendered),
   content: {
-    html: scrape.content.rendered,
-    text: scrape.content.rendered,
+    html: getStory(scrape.content.rendered),
+    text: getStory(scrape.content.rendered),
   },
   url: scrape.link,
   datePublished: scrape.date,
