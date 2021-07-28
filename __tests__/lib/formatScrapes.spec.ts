@@ -93,16 +93,19 @@ describe("prune", () => {
     date: "2021-07-21T03:00:24",
     link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
     title: { rendered: "some title" },
-    content: { rendered: "some sample text" },
+    content: {
+      rendered:
+        "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=",
+    },
     shouldNotBeInReturnedObj: "some value",
   };
 
   const expectedOutput = {
     title: "some title",
-    authorBio: "some sample text",
+    authorBio: "\n<p>Edward Mcinnis wrote this story.</p>\n",
     content: {
-      html: "some sample text",
-      text: "some sample text",
+      html: "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=",
+      text: "/p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class=",
     },
     url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
     datePublished: "2021-07-21T03:00:24",
@@ -195,7 +198,7 @@ describe("formatStories", () => {
       },
       content: {
         rendered:
-          "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
+          '<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class="likebtn_container" style="">',
       },
       shouldNotBeInReturnedObj: "foo",
     };
@@ -205,11 +208,10 @@ describe("formatStories", () => {
 
     const expectedOutputStory = {
       title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
-      authorBio:
-        "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
+      authorBio: "<p>Edward Mcinnis wrote this story.</p>",
       content: {
-        html: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
-        text: "Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare. By telling perusers nothing - despite showing plenty - the disjointed narrative",
+        html: '<p>My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today."</p> <p>"Oh!" she said brightly. "Happy birthday!"</p> <hr> <p>Edward Mcinnis wrote this story.</p> <div class="likebtn_container" style="">',
+        text: 'My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today." "Oh!" she said brightly. "Happy birthday!"  Edward Mcinnis wrote this story.',
       },
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",

@@ -16,7 +16,6 @@ const extractBio = (text: string): string => {
   const endIndex = text.indexOf("<div");
   return text.slice(startIndex, endIndex);
 };
-
 const getBio = (text: string): string => {
   return checkBioExists(text)
     ? extractBio(text)
@@ -25,7 +24,7 @@ const getBio = (text: string): string => {
 
 const prune = (scrape: Scrape): Story => ({
   title: scrape.title.rendered,
-  authorBio: scrape.content.rendered,
+  authorBio: getBio(scrape.content.rendered),
   content: {
     html: scrape.content.rendered,
     text: scrape.content.rendered,
@@ -55,7 +54,7 @@ const formatScrape = (scrape: Story): Story => ({
   authorBio: formatText(scrape.authorBio),
   content: {
     html: formatText(scrape.content.html),
-    text: removeHtmlTags(formatText(scrape.content.text)),
+    text: formatText(removeHtmlTags(scrape.content.text)),
   },
   url: scrape.url,
   datePublished: scrape.datePublished,
