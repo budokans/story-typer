@@ -6,7 +6,6 @@ const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const CATEGORIES = 112; // Submissions
 const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
-const STARTING_PAGE = 1;
 const PAGE_LIMIT = 2;
 const DEFAULT_PARAMS = [
   `per_page=${PER_PAGE}`,
@@ -33,7 +32,7 @@ const getScrapeLatestUrl = (
 const getPageUrl = (
   endpoint: string,
   defaults: string[],
-  pageNum: number
+  pageNum = 1
 ): string => {
   const defaultParamsStr = getParamsString(defaults);
   return encodeURI(`${endpoint}?${defaultParamsStr}&page=${pageNum}`);
@@ -44,12 +43,11 @@ const getPosts = async (url: string): Promise<Scrape[]> => {
   return scrapes;
 };
 
-const scrapeAll = async (url: string, pageNum: number): Promise<Scrape[]> => {
+const scrapeAll = async (url: string, pageNum = 1): Promise<Scrape[]> => {
   const onePage = await getPosts(url);
-  pageNum++;
-  if (pageNum <= PAGE_LIMIT) {
-    const nextPageUrl = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum);
-    const nextPage = await scrapeAll(nextPageUrl, pageNum);
+  if (pageNum < PAGE_LIMIT) {
+    const nextPageUrl = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum + 1);
+    const nextPage = await scrapeAll(nextPageUrl, pageNum + 1);
     return nextPage ? [...nextPage, ...onePage] : onePage;
   } else {
     return onePage;
@@ -67,8 +65,8 @@ export const scrapeLatest = (): Promise<Story[] | void> => {
 };
 
 export const seed = (): Promise<Story[] | void> => {
-  const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, STARTING_PAGE);
-  return scrapeAll(url, STARTING_PAGE)
+  const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
+  return scrapeAll(url)
     .then((scrapes) => formatStories(scrapes))
     .catch((e) => console.error(e));
 };
