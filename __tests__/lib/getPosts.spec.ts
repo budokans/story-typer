@@ -1,5 +1,5 @@
 import axios from "axios";
-import { testables } from "../../lib/scraper";
+import { testables } from "../../lib/getPosts";
 const { getParamsString, getLatestPostsUrl, getPageUrl, getPosts } = testables;
 
 const DEFAULT_PARAMS = ["1", "2", "3"];

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Post, Story } from "../interfaces";
-import { formatStories } from "./formatScrapes";
+import { formatStories } from "./format";
 
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const CATEGORIES = 112; // Submissions
