@@ -1,6 +1,6 @@
 import axios from "axios";
 import { testables } from "../../lib/scraper";
-const { getParamsString, getScrapeLatestUrl, getPageUrl, getPosts } = testables;
+const { getParamsString, getLatestPostsUrl, getPageUrl, getPosts } = testables;
 
 const DEFAULT_PARAMS = ["1", "2", "3"];
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
@@ -15,10 +15,10 @@ describe("getParamsString", () => {
   });
 });
 
-describe("getScrapeLatestUrl", () => {
-  test("returns a URL in the correct format for scraping stories after a given timestamp", () => {
+describe("getLatestPostsUrl", () => {
+  test("returns a URL in the correct format to GET posts after a given timestamp", () => {
     const timestamp = "2021-07-21T03:00:24";
-    const URL = getScrapeLatestUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp);
+    const URL = getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp);
     expect(URL).toEqual(
       "http://fiftywordstories.com/wp-json/wp/v2/posts?1&2&3&after=2021-07-21T03:00:24"
     );
@@ -26,7 +26,7 @@ describe("getScrapeLatestUrl", () => {
 });
 
 describe("getPageUrl", () => {
-  test("returns a URL in the correct format for scraping a given page for stories", () => {
+  test("returns a URL in the correct format to GET a given page of posts", () => {
     const pageNum = 10;
     const URL = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum);
     expect(URL).toEqual(

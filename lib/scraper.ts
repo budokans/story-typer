@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Scrape, Story } from "../interfaces";
+import { Post, Story } from "../interfaces";
 import { formatStories } from "./formatScrapes";
 
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
@@ -20,7 +20,7 @@ const getTimestamp = async (): Promise<string> => {
   return "2021-07-21T03:00:24";
 };
 
-const getScrapeLatestUrl = (
+const getLatestPostsUrl = (
   endpoint: string,
   defaults: string[],
   timestamp: string
@@ -38,26 +38,26 @@ const getPageUrl = (
   return encodeURI(`${endpoint}?${defaultParamsStr}&page=${pageNum}`);
 };
 
-const getPosts = async (url: string): Promise<Scrape[]> => {
-  const { data: scrapes } = await axios.get(url);
-  return scrapes;
+const getPosts = async (url: string): Promise<Post[]> => {
+  const { data: posts } = await axios.get(url);
+  return posts;
 };
 
-const scrapeAll = async (url: string, pageNum = 1): Promise<Scrape[]> => {
+const getPostsRecursive = async (url: string, pageNum = 1): Promise<Post[]> => {
   const onePage = await getPosts(url);
   if (pageNum < PAGE_LIMIT) {
     const nextPageUrl = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum + 1);
-    const nextPage = await scrapeAll(nextPageUrl, pageNum + 1);
+    const nextPage = await getPostsRecursive(nextPageUrl, pageNum + 1);
     return nextPage ? [...nextPage, ...onePage] : onePage;
   } else {
     return onePage;
   }
 };
 
-export const scrapeLatest = (): Promise<Story[] | void> => {
+export const getLatestPosts = (): Promise<Story[] | void> => {
   return getTimestamp()
     .then((timestamp) =>
-      getScrapeLatestUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
+      getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
     )
     .then((url) => getPosts(url))
     .then((posts) => formatStories(posts))
@@ -66,14 +66,14 @@ export const scrapeLatest = (): Promise<Story[] | void> => {
 
 export const seed = (): Promise<Story[] | void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
-  return scrapeAll(url)
-    .then((scrapes) => formatStories(scrapes))
+  return getPostsRecursive(url)
+    .then((posts) => formatStories(posts))
     .catch((e) => console.error(e));
 };
 
 export const testables = {
   getParamsString,
-  getScrapeLatestUrl,
+  getLatestPostsUrl,
   getPageUrl,
   getPosts,
 };

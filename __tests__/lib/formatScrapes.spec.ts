@@ -11,7 +11,7 @@ const {
   removeDoubleDashes,
   removeHtmlTags,
   formatText,
-  formatScrape,
+  formatStory,
 } = testables;
 
 /**
@@ -97,7 +97,7 @@ describe("getStory", () => {
 });
 
 describe("prune", () => {
-  const scrape = {
+  const post = {
     date: "2021-07-21T03:00:24",
     link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
     title: { rendered: "some title" },
@@ -119,8 +119,8 @@ describe("prune", () => {
     datePublished: "2021-07-21T03:00:24",
   };
 
-  test("takes a scrape and produces a pruned scrape with the correct properties and values", () => {
-    const pruned = prune(scrape);
+  test("takes a post and produces an unformatted story with the correct properties and values", () => {
+    const pruned = prune(post);
     expect(pruned).toEqual(expectedOutput);
   });
 });
@@ -165,9 +165,9 @@ describe("formatText", () => {
   });
 });
 
-describe("formatScrape", () => {
-  test("takes an unformatted, pruned scrape and returns a formatted scrape", () => {
-    const prunedScrape = {
+describe("formatStory", () => {
+  test("takes an unformatted story and returns a formatted story", () => {
+    const unformattedStory = {
       title: "JOHN H. DROMEY: I Can&#8217;t Even Tell You the Title",
       authorBio:
         "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
@@ -191,14 +191,14 @@ describe("formatScrape", () => {
       datePublished: "2021-07-21T03:00:24",
     };
 
-    const result = formatScrape(prunedScrape);
+    const result = formatStory(unformattedStory);
     expect(result).toEqual(expectedOutput);
   });
 });
 
 describe("formatStories", () => {
-  test("takes raw scrapes and returns formatted stories", () => {
-    const scrape = {
+  test("takes any array of posts and returns an array of formatted stories", () => {
+    const post = {
       date: "2021-07-21T03:00:24",
       link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       title: {
@@ -211,8 +211,8 @@ describe("formatStories", () => {
       shouldNotBeInReturnedObj: "foo",
     };
 
-    const scrapesArr = Array(5);
-    scrapesArr.fill(scrape);
+    const postsArr = Array(5);
+    postsArr.fill(post);
 
     const expectedOutputStory = {
       title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
@@ -228,7 +228,7 @@ describe("formatStories", () => {
     const outputArr = Array(5);
     outputArr.fill(expectedOutputStory);
 
-    const result = formatStories(scrapesArr);
+    const result = formatStories(postsArr);
     expect(result).toEqual(outputArr);
   });
 });

@@ -5,7 +5,7 @@ export interface User {
   photoURL: string | null;
 }
 
-export interface Scrape {
+export interface Post {
   date: string;
   link: string;
   title: {
