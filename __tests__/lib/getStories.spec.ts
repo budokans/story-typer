@@ -1,6 +1,14 @@
 import axios from "axios";
 import { testables } from "../../lib/getStories";
-const { getParamsString, getLatestPostsUrl, getPageUrl, getPosts } = testables;
+const {
+  getParamsString,
+  getLatestPostsUrl,
+  getPageUrl,
+  getPosts,
+  getPostsOverPagesRecursive,
+  getPostsOverPagesFactory,
+  getPostsOverPages,
+} = testables;
 
 const DEFAULT_PARAMS = ["1", "2", "3"];
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
@@ -43,5 +51,37 @@ describe("getPosts", () => {
 
     const result = await getPosts(API_ENDPOINT);
     expect(result).toEqual(posts);
+  });
+});
+
+describe("getPostsOverPages", () => {
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
+  test("calls itself the correct number of times and with the correct URL", async () => {
+    const getPostsOverPagesRecursiveSpy = jest.fn(getPostsOverPagesRecursive);
+    const getPostsOverPages = getPostsOverPagesFactory(
+      getPostsOverPagesRecursiveSpy
+    );
+    await getPostsOverPages(
+      "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      1,
+      5
+    );
+    expect(getPostsOverPagesRecursiveSpy).toHaveBeenCalledTimes(5);
+  });
+
+  test("combines the results from fetching data across multiple pages and returns them", async () => {
+    const posts = [{ title: "Story Title" }];
+    const response = { data: posts };
+    mockedAxios.get.mockImplementation(() => Promise.resolve(response));
+
+    const result = await getPostsOverPages(
+      "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      1,
+      3
+    );
+    expect(result).toStrictEqual([...posts, ...posts, ...posts]);
   });
 });

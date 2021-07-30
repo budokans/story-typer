@@ -1,7 +1,11 @@
 import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
-  collectCoverageFrom: ["<rootDir>/hooks/**", "<rootDir>/lib/**"],
+  collectCoverageFrom: [
+    "<rootDir>/hooks/**",
+    "<rootDir>/lib/**",
+    "!**/*.types.ts",
+  ],
   coverageThreshold: {
     global: {
       branches: 90,

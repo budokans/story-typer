@@ -1,12 +1,17 @@
 import axios from "axios";
 import { Post, Story } from "../interfaces";
 import { formatStories } from "./format";
+import {
+  GetPostsOverPages,
+  GetPostsOverPagesRecursive,
+} from "./getStories.types";
 
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const CATEGORIES = 112; // Submissions
 const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
-const PAGE_LIMIT = 2;
+const STARTING_PAGE = 1;
+const PAGE_LIMIT = 3;
 const DEFAULT_PARAMS = [
   `per_page=${PER_PAGE}`,
   `categories=${CATEGORIES}`,
@@ -43,16 +48,29 @@ const getPosts = async (url: string): Promise<Post[]> => {
   return posts;
 };
 
-const getPostsRecursive = async (url: string, pageNum = 1): Promise<Post[]> => {
+const getPostsOverPagesRecursive = async (
+  self: GetPostsOverPagesRecursive,
+  url: string,
+  pageNum: number,
+  pageLimit: number
+): Promise<Post[]> => {
   const onePage = await getPosts(url);
-  if (pageNum < PAGE_LIMIT) {
+  if (pageNum < pageLimit) {
     const nextPageUrl = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum + 1);
-    const nextPage = await getPostsRecursive(nextPageUrl, pageNum + 1);
+    const nextPage = await self(self, nextPageUrl, pageNum + 1, pageLimit);
     return nextPage ? [...nextPage, ...onePage] : onePage;
   } else {
     return onePage;
   }
 };
+
+const getPostsOverPagesFactory = (
+  recursiveFn: GetPostsOverPagesRecursive
+): GetPostsOverPages => recursiveFn.bind(null, recursiveFn);
+
+const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
+  getPostsOverPagesRecursive
+);
 
 export const getLatestPosts = (): Promise<Story[] | void> => {
   return getTimestamp()
@@ -66,7 +84,7 @@ export const getLatestPosts = (): Promise<Story[] | void> => {
 
 export const seed = (): Promise<Story[] | void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
-  return getPostsRecursive(url)
+  return getPostsOverPages(url, STARTING_PAGE, PAGE_LIMIT)
     .then((posts) => formatStories(posts))
     .catch((e) => console.error(e));
 };
@@ -76,4 +94,7 @@ export const testables = {
   getLatestPostsUrl,
   getPageUrl,
   getPosts,
+  getPostsOverPagesRecursive,
+  getPostsOverPagesFactory,
+  getPostsOverPages,
 };
