@@ -15,6 +15,9 @@ const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+afterAll(() => {
+  jest.clearAllMocks();
+});
 
 describe("getParamsString", () => {
   test("joins returns a string of DEFAULT_PARAMS elements joined with &", () => {
@@ -48,17 +51,19 @@ describe("getPosts", () => {
     const posts = [{ title: "Story Title" }];
     const response = { data: posts };
     mockedAxios.get.mockImplementation(() => Promise.resolve(response));
+    await expect(getPosts(API_ENDPOINT)).resolves.toStrictEqual(posts);
+  });
 
-    const result = await getPosts(API_ENDPOINT);
-    expect(result).toEqual(posts);
+  test("should throw if Promise is rejected", async () => {
+    const errorMessage = "Network Error";
+    mockedAxios.get.mockImplementationOnce(() =>
+      Promise.reject(new Error(errorMessage))
+    );
+    await expect(getPosts(API_ENDPOINT)).rejects.toThrow(errorMessage);
   });
 });
 
 describe("getPostsOverPages", () => {
-  afterAll(() => {
-    jest.clearAllMocks();
-  });
-
   test("calls itself the correct number of times and with the correct URL", async () => {
     const getPostsOverPagesRecursiveSpy = jest.fn(getPostsOverPagesRecursive);
     const getPostsOverPages = getPostsOverPagesFactory(
@@ -74,9 +79,6 @@ describe("getPostsOverPages", () => {
 
   test("combines the results from fetching data across multiple pages and returns them", async () => {
     const posts = [{ title: "Story Title" }];
-    const response = { data: posts };
-    mockedAxios.get.mockImplementation(() => Promise.resolve(response));
-
     const result = await getPostsOverPages(
       "http://fiftywordstories.com/wp-json/wp/v2/posts",
       1,
