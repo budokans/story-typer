@@ -10,6 +10,10 @@ const {
   getPostsOverPages,
 } = testables;
 
+/**
+ * @jest-environment node
+ */
+
 const DEFAULT_PARAMS = ["1", "2", "3"];
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 
@@ -89,7 +93,7 @@ describe("getPostsOverPages", () => {
 });
 
 describe("getLatestStories", () => {
-  test("returns fully formatted stories", async () => {
+  test("returns fully formatted stories", () => {
     const post = {
       date: "2021-07-21T03:00:24",
       link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
@@ -104,7 +108,7 @@ describe("getLatestStories", () => {
     };
     const posts = Array(5).fill(post);
     const response = { data: posts };
-    mockedAxios.get.mockResolvedValue(response);
+    mockedAxios.get.mockResolvedValueOnce(response);
 
     const expectedOutputStory = {
       title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
@@ -117,6 +121,12 @@ describe("getLatestStories", () => {
       datePublished: "2021-07-21T03:00:24",
     };
     const outputArr = Array(5).fill(expectedOutputStory);
-    await expect(getLatestStories()).resolves.toStrictEqual(outputArr);
+    expect(getLatestStories()).resolves.toStrictEqual(outputArr);
+  });
+
+  test("returns with a Promise resolved to undefined if invalid data is returned from the API call", () => {
+    const response = { status: 500 };
+    mockedAxios.get.mockResolvedValueOnce(response);
+    expect(getLatestStories()).resolves.toEqual(undefined);
   });
 });
