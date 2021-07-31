@@ -49,6 +49,13 @@ describe("getPageUrl", () => {
       "http://fiftywordstories.com/wp-json/wp/v2/posts?1&2&3&page=10"
     );
   });
+
+  test("returns a URL in the correct format with no 3rd argument passed", () => {
+    const URL = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
+    expect(URL).toEqual(
+      "http://fiftywordstories.com/wp-json/wp/v2/posts?1&2&3&page=1"
+    );
+  });
 });
 
 describe("getPosts", () => {
