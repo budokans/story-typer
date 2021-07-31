@@ -58,7 +58,7 @@ const getPostsOverPagesRecursive = async (
   if (pageNum < pageLimit) {
     const nextPageUrl = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum + 1);
     const nextPage = await self(self, nextPageUrl, pageNum + 1, pageLimit);
-    return nextPage ? [...nextPage, ...onePage] : onePage;
+    return [...nextPage, ...onePage];
   } else {
     return onePage;
   }
