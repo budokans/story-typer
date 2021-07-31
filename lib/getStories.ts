@@ -20,7 +20,7 @@ const DEFAULT_PARAMS = [
 
 const getParamsString = (params: string[]): string => params.join("&");
 
-const getTimestamp = async (): Promise<string> => {
+const getLatestTimestamp = async (): Promise<string> => {
   // TO DO: db query
   return "2021-07-21T03:00:24";
 };
@@ -72,8 +72,8 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
   getPostsOverPagesRecursive
 );
 
-export const getLatestPosts = (): Promise<Story[] | void> => {
-  return getTimestamp()
+export const getLatestStories = (): Promise<Story[] | void> => {
+  return getLatestTimestamp()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
     )

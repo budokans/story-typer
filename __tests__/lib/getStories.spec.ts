@@ -1,5 +1,5 @@
 import axios from "axios";
-import { testables } from "../../lib/getStories";
+import { testables, getLatestStories } from "../../lib/getStories";
 const {
   getParamsString,
   getLatestPostsUrl,
@@ -15,6 +15,7 @@ const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+
 afterAll(() => {
   jest.clearAllMocks();
 });
@@ -50,16 +51,15 @@ describe("getPosts", () => {
   test("should fetch and return posts", async () => {
     const posts = [{ title: "Story Title" }];
     const response = { data: posts };
-    mockedAxios.get.mockImplementation(() => Promise.resolve(response));
+    mockedAxios.get.mockResolvedValue(response);
     await expect(getPosts(API_ENDPOINT)).resolves.toStrictEqual(posts);
   });
 
   test("should throw if Promise is rejected", async () => {
     const errorMessage = "Network Error";
-    mockedAxios.get.mockImplementationOnce(() =>
-      Promise.reject(new Error(errorMessage))
-    );
-    await expect(getPosts(API_ENDPOINT)).rejects.toThrow(errorMessage);
+    mockedAxios.get.mockRejectedValueOnce(errorMessage);
+
+    await expect(getPosts(API_ENDPOINT)).rejects.toEqual(errorMessage);
   });
 });
 
@@ -85,5 +85,38 @@ describe("getPostsOverPages", () => {
       3
     );
     expect(result).toStrictEqual([...posts, ...posts, ...posts]);
+  });
+});
+
+describe("getLatestStories", () => {
+  test("returns fully formatted stories", async () => {
+    const post = {
+      date: "2021-07-21T03:00:24",
+      link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      title: {
+        rendered: "JOHN H. DROMEY: I Can&#8217;t Even Tell You the Title",
+      },
+      content: {
+        rendered:
+          '<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n<hr>\n<p>Edward Mcinnis wrote this story.</p>\n<div class="likebtn_container" style="">',
+      },
+      shouldNotBeInReturnedObj: "foo",
+    };
+    const posts = Array(5).fill(post);
+    const response = { data: posts };
+    mockedAxios.get.mockResolvedValue(response);
+
+    const expectedOutputStory = {
+      title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
+      authorBio: "<p>Edward Mcinnis wrote this story.</p>",
+      content: {
+        html: '<p>My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today."</p> <p>"Oh!" she said brightly. "Happy birthday!"</p>',
+        text: 'My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today." "Oh!" she said brightly. "Happy birthday!"',
+      },
+      url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
+      datePublished: "2021-07-21T03:00:24",
+    };
+    const outputArr = Array(5).fill(expectedOutputStory);
+    await expect(getLatestStories()).resolves.toStrictEqual(outputArr);
   });
 });
