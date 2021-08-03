@@ -19,10 +19,8 @@ export interface Post {
 export interface Story {
   title: string;
   authorBio: string;
-  content: {
-    html: string;
-    text: string;
-  };
+  storyHtml: string;
+  storyText: string;
   url: string;
   datePublished: string;
 }

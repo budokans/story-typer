@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Post, Story } from "../interfaces";
+import { createStory } from "./firestore";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
@@ -11,7 +12,7 @@ const CATEGORIES = 112; // Submissions
 const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
 const STARTING_PAGE = 1;
-const PAGE_LIMIT = 3;
+const PAGE_LIMIT = 10;
 const DEFAULT_PARAMS = [
   `per_page=${PER_PAGE}`,
   `categories=${CATEGORIES}`,
@@ -82,10 +83,11 @@ export const getLatestStories = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
-export const seed = (): Promise<Story[] | void> => {
+export const seed = (): Promise<void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
   return getPostsOverPages(url, STARTING_PAGE, PAGE_LIMIT)
     .then((posts) => formatStories(posts))
+    .then((stories) => stories.forEach(createStory))
     .catch((e) => console.error(e));
 };
 

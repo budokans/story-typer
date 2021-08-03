@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { seed, getLatestStories } from "../../lib/getStories";
+import { getLatestStories, seed } from "../../lib/getStories";
 
 export default async function handler(
   _: NextApiRequest,
@@ -7,11 +7,11 @@ export default async function handler(
 ): Promise<void> {
   try {
     const data = await seed();
-    if (data) {
-      res.status(200).json(data);
-    } else {
-      res.status(500).json("Error: no data returned");
-    }
+    // if (data) {
+    //   res.status(200).json(data);
+    // } else {
+    //   res.status(500).json("Error: no data returned");
+    // }
   } catch (e) {
     console.error(e);
   }

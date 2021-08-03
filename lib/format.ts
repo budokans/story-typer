@@ -30,10 +30,8 @@ const getStory = (text: string): string => {
 const prune = (post: Post): Story => ({
   title: post.title.rendered,
   authorBio: getBio(post.content.rendered),
-  content: {
-    html: getStory(post.content.rendered),
-    text: getStory(post.content.rendered),
-  },
+  storyHtml: getStory(post.content.rendered),
+  storyText: getStory(post.content.rendered),
   url: post.link,
   datePublished: post.date,
 });
@@ -57,10 +55,8 @@ const formatText = R.pipe(
 const formatStory = (story: Story): Story => ({
   title: formatText(story.title),
   authorBio: formatText(story.authorBio),
-  content: {
-    html: formatText(story.content.html),
-    text: formatText(removeHtmlTags(story.content.text)),
-  },
+  storyHtml: formatText(story.storyHtml),
+  storyText: formatText(removeHtmlTags(story.storyText)),
   url: story.url,
   datePublished: story.datePublished,
 });
