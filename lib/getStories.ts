@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Post, Story } from "../interfaces";
-import { createStory } from "./firestore";
+import { createStory, getLatestTimestamp } from "./firestore";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
@@ -20,11 +20,6 @@ const DEFAULT_PARAMS = [
 ];
 
 const getParamsString = (params: string[]): string => params.join("&");
-
-const getLatestTimestamp = async (): Promise<string> => {
-  // TO DO: db query
-  return "2021-07-21T03:00:24";
-};
 
 const getLatestPostsUrl = (
   endpoint: string,

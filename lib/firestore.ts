@@ -16,3 +16,13 @@ export const createStory = (story: Story): void => {
       dateScraped: firebase.firestore.FieldValue.serverTimestamp(),
     });
 };
+
+export const getLatestTimestamp = async (): Promise<string> => {
+  const snapshot = await firestore
+    .collection("stories")
+    .orderBy("datePublished", "desc")
+    .limit(1)
+    .get();
+
+  return snapshot.docs[0].data().datePublished;
+};
