@@ -7,10 +7,12 @@ export const createUser = (uid: string, data: User): void => {
   firestore.collection("users").doc(uid).set({ data }, { merge: true });
 };
 
-export const createStory = (story: Story, collection: string): void => {
-  const newStoryRef = firestore.collection(collection).doc();
-  newStoryRef.set({
-    ...story,
-    dateScraped: firebase.firestore.FieldValue.serverTimestamp(),
-  });
+export const createStory = (story: Story): void => {
+  firestore
+    .collection("stories")
+    .doc()
+    .set({
+      ...story,
+      dateScraped: firebase.firestore.FieldValue.serverTimestamp(),
+    });
 };

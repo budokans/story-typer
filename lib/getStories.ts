@@ -83,7 +83,7 @@ export const getLatestStories = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
-export const seed = (): Promise<void> => {
+export const getStoriesAcrossPages = (): Promise<void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
   return getPostsOverPages(url, STARTING_PAGE, PAGE_LIMIT)
     .then((posts) => formatStories(posts))

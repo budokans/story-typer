@@ -1,18 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getLatestStories, seed } from "../../lib/getStories";
+import { getLatestStories, getStoriesAcrossPages } from "../../lib/getStories";
 
 export default async function handler(
   _: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
   try {
-    const data = await seed();
-    // if (data) {
-    //   res.status(200).json(data);
-    // } else {
-    //   res.status(500).json("Error: no data returned");
-    // }
+    await getStoriesAcrossPages();
+    res.status(200).json({ status: "Database seeding underway..." });
   } catch (e) {
+    res
+      .status(500)
+      .json({ status: `Database seeding failed: ${e.message}. See logs.` });
     console.error(e);
   }
 }
