@@ -1,6 +1,6 @@
 // import axios from "axios";
 // import { useEffect, useState } from "react";
-import { useAuth } from "../context/auth";
+import { useAuth } from "@/context/auth";
 
 const Index: React.FC = () => {
   // const [html, setHtml] = useState(null);

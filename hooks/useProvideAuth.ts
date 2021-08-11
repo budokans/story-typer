@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { firebase } from "../lib/firebase";
-import { createUser } from "../lib/firestore";
+import { firebase } from "@/lib/firebase";
+import { createUser } from "@/lib/firestore";
 import { User as FirebaseUser } from "@firebase/auth-types";
 import { ProvideAuth, User } from "../interfaces";
 

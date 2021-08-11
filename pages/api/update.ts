@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getLatestStories } from "../../lib/getStories";
+import { getLatestStories } from "@/lib/getStories";
 
 export default async function handler(
   _: NextApiRequest,
