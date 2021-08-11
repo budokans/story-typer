@@ -1,5 +1,4 @@
-// import axios from "axios";
-// import { useEffect, useState } from "react";
+import { Header } from "@/components/Header";
 import { useAuth } from "@/context/auth";
 
 const Index: React.FC = () => {
@@ -17,6 +16,10 @@ const Index: React.FC = () => {
 
   return auth ? (
     <>
+      <Header>
+        <Header.Logo />
+        Test
+      </Header>
       <div>
         <code>{auth.user ? auth.user.email : "None"}</code>
       </div>
