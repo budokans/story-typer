@@ -1,5 +1,5 @@
-import { formatStories } from "../../lib/format";
-import { testables } from "../../lib/format";
+import { formatStories } from "@/lib/format";
+import { testables } from "@/lib/format";
 const {
   checkBioExists,
   getHrElement,
