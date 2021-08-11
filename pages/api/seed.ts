@@ -1,12 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getLatestStories, getStoriesAcrossPages } from "../../lib/getStories";
+import { seed } from "../../lib/getStories";
 
 export default async function handler(
   _: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
   try {
-    await getStoriesAcrossPages();
+    await seed();
     res.status(200).json({ status: "Database seeding underway..." });
   } catch (e) {
     res
