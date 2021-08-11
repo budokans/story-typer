@@ -4,6 +4,8 @@ const config: Config.InitialOptions = {
   collectCoverageFrom: [
     "<rootDir>/hooks/**",
     "<rootDir>/lib/**",
+    "!<rootDir>/lib/firebase.ts",
+    "!<rootDir>/lib/firestore.ts",
     "!**/*.types.ts",
   ],
   coverageThreshold: {

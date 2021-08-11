@@ -7,7 +7,9 @@ export default async function handler(
 ): Promise<void> {
   try {
     await seed();
-    res.status(200).json({ status: "Database seeding underway..." });
+    res
+      .status(200)
+      .json({ status: "Stories fetched and database seeding underway..." });
   } catch (e) {
     res
       .status(500)
