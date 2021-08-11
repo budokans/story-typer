@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import * as entities from "entities";
 import unidecode from "unidecode";
-import { Scrape, Story } from "../interfaces";
+import { Post, Story } from "../interfaces";
 
 const checkBioExists = (text: string): boolean => text.includes("<hr");
 
@@ -27,19 +27,17 @@ const getStory = (text: string): string => {
     : text.slice(0, text.indexOf("<div"));
 };
 
-const prune = (scrape: Scrape): Story => ({
-  title: scrape.title.rendered,
-  authorBio: getBio(scrape.content.rendered),
-  content: {
-    html: getStory(scrape.content.rendered),
-    text: getStory(scrape.content.rendered),
-  },
-  url: scrape.link,
-  datePublished: scrape.date,
+const prune = (post: Post): Story => ({
+  title: post.title.rendered,
+  authorBio: getBio(post.content.rendered),
+  storyHtml: getStory(post.content.rendered),
+  storyText: getStory(post.content.rendered),
+  url: post.link,
+  datePublished: post.date,
 });
 
-const pruneScrapes = (scrapes: Scrape[]): Story[] => {
-  return scrapes.map(prune);
+const prunePosts = (posts: Post[]): Story[] => {
+  return posts.map(prune);
 };
 
 const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
@@ -54,19 +52,17 @@ const formatText = R.pipe(
   removeDoubleDashes
 );
 
-const formatScrape = (scrape: Story): Story => ({
-  title: formatText(scrape.title),
-  authorBio: formatText(scrape.authorBio),
-  content: {
-    html: formatText(scrape.content.html),
-    text: formatText(removeHtmlTags(scrape.content.text)),
-  },
-  url: scrape.url,
-  datePublished: scrape.datePublished,
+const formatStory = (story: Story): Story => ({
+  title: formatText(story.title),
+  authorBio: formatText(story.authorBio),
+  storyHtml: formatText(story.storyHtml),
+  storyText: formatText(removeHtmlTags(story.storyText)),
+  url: story.url,
+  datePublished: story.datePublished,
 });
 
-const formatScrapes = (stories: Story[]): Story[] => {
-  return stories.map(formatScrape);
+const formatPosts = (stories: Story[]): Story[] => {
+  return stories.map(formatStory);
 };
 
 export const testables = {
@@ -80,7 +76,7 @@ export const testables = {
   removeDoubleDashes,
   removeHtmlTags,
   formatText,
-  formatScrape,
+  formatStory,
 };
 
-export const formatStories = R.pipe(pruneScrapes, formatScrapes);
+export const formatStories = R.pipe(prunePosts, formatPosts);

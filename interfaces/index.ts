@@ -5,7 +5,7 @@ export interface User {
   photoURL: string | null;
 }
 
-export interface Scrape {
+export interface Post {
   date: string;
   link: string;
   title: {
@@ -19,10 +19,8 @@ export interface Scrape {
 export interface Story {
   title: string;
   authorBio: string;
-  content: {
-    html: string;
-    text: string;
-  };
+  storyHtml: string;
+  storyText: string;
   url: string;
   datePublished: string;
 }

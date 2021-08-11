@@ -1,5 +1,5 @@
-import { formatStories } from "../../lib/formatScrapes";
-import { testables } from "../../lib/formatScrapes";
+import { formatStories } from "../../lib/format";
+import { testables } from "../../lib/format";
 const {
   checkBioExists,
   getHrElement,
@@ -11,7 +11,7 @@ const {
   removeDoubleDashes,
   removeHtmlTags,
   formatText,
-  formatScrape,
+  formatStory,
 } = testables;
 
 /**
@@ -97,7 +97,7 @@ describe("getStory", () => {
 });
 
 describe("prune", () => {
-  const scrape = {
+  const post = {
     date: "2021-07-21T03:00:24",
     link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
     title: { rendered: "some title" },
@@ -111,16 +111,17 @@ describe("prune", () => {
   const expectedOutput = {
     title: "some title",
     authorBio: "\n<p>Edward Mcinnis wrote this story.</p>\n",
-    content: {
-      html: "<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n",
-      text: "<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n",
-    },
+    storyHtml:
+      "<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n",
+    storyText:
+      "<p>My friend, in his early 70&#8217;s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin&#8217; to get an iced tea. He said to the teenaged server, &#8220;It&#8217;s going to be 98 today.&#8221;</p>\n<p>&#8220;Oh!&#8221; she said brightly. &#8220;Happy birthday!&#8221;</p>\n",
+
     url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
     datePublished: "2021-07-21T03:00:24",
   };
 
-  test("takes a scrape and produces a pruned scrape with the correct properties and values", () => {
-    const pruned = prune(scrape);
+  test("takes a post and produces an unformatted story with the correct properties and values", () => {
+    const pruned = prune(post);
     expect(pruned).toEqual(expectedOutput);
   });
 });
@@ -165,16 +166,17 @@ describe("formatText", () => {
   });
 });
 
-describe("formatScrape", () => {
-  test("takes an unformatted, pruned scrape and returns a formatted scrape", () => {
-    const prunedScrape = {
+describe("formatStory", () => {
+  test("takes an unformatted story and returns a formatted story", () => {
+    const unformattedStory = {
       title: "JOHN H. DROMEY: I Can&#8217;t Even Tell You the Title",
       authorBio:
         "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
-      content: {
-        html: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
-        text: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
-      },
+      storyHtml:
+        "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
+      storyText:
+        "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor&#8217;s dream, but a story enthusiast&#8217;s nightmare.</p>\n<p>By telling perusers nothing—despite showing plenty—the disjointed narrative",
+
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",
     };
@@ -183,22 +185,23 @@ describe("formatScrape", () => {
       title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
       authorBio:
         "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
-      content: {
-        html: "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
-        text: "Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare. By telling perusers nothing - despite showing plenty - the disjointed narrative",
-      },
+      storyHtml:
+        "<p>Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare.</p> <p>By telling perusers nothing - despite showing plenty - the disjointed narrative",
+      storyText:
+        "Anon essayed a purely descriptive tale. The result? A formulaic editor's dream, but a story enthusiast's nightmare. By telling perusers nothing - despite showing plenty - the disjointed narrative",
+
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",
     };
 
-    const result = formatScrape(prunedScrape);
+    const result = formatStory(unformattedStory);
     expect(result).toEqual(expectedOutput);
   });
 });
 
 describe("formatStories", () => {
-  test("takes raw scrapes and returns formatted stories", () => {
-    const scrape = {
+  test("takes any array of posts and returns an array of formatted stories", () => {
+    const post = {
       date: "2021-07-21T03:00:24",
       link: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       title: {
@@ -211,16 +214,17 @@ describe("formatStories", () => {
       shouldNotBeInReturnedObj: "foo",
     };
 
-    const scrapesArr = Array(5);
-    scrapesArr.fill(scrape);
+    const postsArr = Array(5);
+    postsArr.fill(post);
 
     const expectedOutputStory = {
       title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
       authorBio: "<p>Edward Mcinnis wrote this story.</p>",
-      content: {
-        html: '<p>My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today."</p> <p>"Oh!" she said brightly. "Happy birthday!"</p>',
-        text: 'My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today." "Oh!" she said brightly. "Happy birthday!"',
-      },
+      storyHtml:
+        '<p>My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today."</p> <p>"Oh!" she said brightly. "Happy birthday!"</p>',
+      storyText:
+        'My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today." "Oh!" she said brightly. "Happy birthday!"',
+
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",
     };
@@ -228,7 +232,7 @@ describe("formatStories", () => {
     const outputArr = Array(5);
     outputArr.fill(expectedOutputStory);
 
-    const result = formatStories(scrapesArr);
+    const result = formatStories(postsArr);
     expect(result).toEqual(outputArr);
   });
 });
