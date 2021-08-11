@@ -120,10 +120,11 @@ describe("getLatestStories", () => {
     const expectedOutputStory = {
       title: "JOHN H. DROMEY: I Can't Even Tell You the Title",
       authorBio: "<p>Edward Mcinnis wrote this story.</p>",
-      content: {
-        html: '<p>My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today."</p> <p>"Oh!" she said brightly. "Happy birthday!"</p>',
-        text: 'My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today." "Oh!" she said brightly. "Happy birthday!"',
-      },
+      storyHtml:
+        '<p>My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today."</p> <p>"Oh!" she said brightly. "Happy birthday!"</p>',
+      storyText:
+        'My friend, in his early 70\'s, was out and about doing errands during the most recent brutal heat wave. Dying from the heat, he stopped at Dunkin\' to get an iced tea. He said to the teenaged server, "It\'s going to be 98 today." "Oh!" she said brightly. "Happy birthday!"',
+
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",
     };
