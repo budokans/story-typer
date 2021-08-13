@@ -31,7 +31,7 @@ export const useProvideAuth = (): ProvideAuth => {
   const signInWithGoogle = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      return await firebase
+      await firebase
         .auth()
         .signInWithPopup(provider)
         .then((response) => handleUser(response.user));
@@ -42,7 +42,7 @@ export const useProvideAuth = (): ProvideAuth => {
 
   const signOut = async () => {
     try {
-      return await firebase
+      await firebase
         .auth()
         .signOut()
         .then(() => handleUser(null));
