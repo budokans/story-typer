@@ -1,13 +1,22 @@
 import Link from "next/link";
-import { Box, Flex, Heading } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Flex,
+  Heading,
+  Menu,
+  MenuButton,
+  MenuList,
+} from "@chakra-ui/react";
+import { User } from "interfaces";
 
-// interface Compound {
-//   Logo: React.FC;
-// }
+interface Compound {
+  UserMenu: React.FC<{ user: User | null }>;
+}
 
-// type HeaderCC = React.FC & Compound;
+type HeaderCC = React.FC & Compound;
 
-export const Header: React.FC = ({ children }) => {
+export const Header: HeaderCC = ({ children }) => {
   return (
     <Container>
       <Inner>
@@ -31,8 +40,9 @@ const Inner: React.FC = ({ children }) => {
     <Flex
       as="ul"
       align="center"
+      justify="space-between"
       h={[9, 9, 14]}
-      pr={[2, 4, 0]}
+      pr={[1, 4, 0]}
       maxW="930px"
       margin="0 auto"
     >
@@ -57,6 +67,30 @@ const Logo: React.FC = () => {
           </Heading>
         </Flex>
       </Link>
+    </Box>
+  );
+};
+
+Header.UserMenu = function UserMenu({ user, children }) {
+  return (
+    <Box as="li" listStyleType="none">
+      <Menu>
+        <MenuButton
+          as={Avatar}
+          h={[7, 7, 10]}
+          w={[7, 7, 10]}
+          src={user && user.photoURL}
+          cursor="pointer"
+          border="2px solid white"
+        />
+        <MenuList
+          bg="blackAlpha.800"
+          color="white"
+          fontSize={["xs", "xs", "sm"]}
+        >
+          {children}
+        </MenuList>
+      </Menu>
     </Box>
   );
 };

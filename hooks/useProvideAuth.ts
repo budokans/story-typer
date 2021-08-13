@@ -28,7 +28,7 @@ export const useProvideAuth = (): ProvideAuth => {
     };
   };
 
-  const signInWithFacebook = async () => {
+  const signInWithGoogle = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
       return await firebase
@@ -60,7 +60,7 @@ export const useProvideAuth = (): ProvideAuth => {
 
   return {
     user,
-    signInWithFacebook,
+    signInWithGoogle,
     signOut,
   };
 };
