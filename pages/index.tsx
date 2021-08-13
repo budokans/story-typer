@@ -16,10 +16,7 @@ const Index: React.FC = () => {
 
   return auth ? (
     <>
-      <Header>
-        <Header.Logo />
-        Test
-      </Header>
+      <Header>Test</Header>
       <div>
         <code>{auth.user ? auth.user.email : "None"}</code>
       </div>

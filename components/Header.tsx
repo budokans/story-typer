@@ -1,15 +1,19 @@
-import { Box, Flex, Heading, LinkBox } from "@chakra-ui/react";
+import Link from "next/link";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 
-interface Compound {
-  Logo: React.FC;
-}
+// interface Compound {
+//   Logo: React.FC;
+// }
 
-type HeaderCC = React.FC & Compound;
+// type HeaderCC = React.FC & Compound;
 
-export const Header: HeaderCC = ({ children }) => {
+export const Header: React.FC = ({ children }) => {
   return (
     <Container>
-      <Inner>{children}</Inner>
+      <Inner>
+        <Logo />
+        {children}
+      </Inner>
     </Container>
   );
 };
@@ -37,14 +41,22 @@ const Inner: React.FC = ({ children }) => {
   );
 };
 
-Header.Logo = function HeaderLogo() {
+const Logo: React.FC = () => {
   return (
-    <LinkBox as="li" bg="white" listStyleType="none">
-      <Flex align="center" h={[9, 9, 14]} w={[12, 12, 20]} justify="center">
-        <Heading color="purple.500" fontSize={[20, 20, 32]}>
-          ST.
-        </Heading>
-      </Flex>
-    </LinkBox>
+    <Box as="li" bg="white" listStyleType="none">
+      <Link href="/" passHref>
+        <Flex
+          as="a"
+          align="center"
+          h={[9, 9, 14]}
+          w={[12, 12, 20]}
+          justify="center"
+        >
+          <Heading color="purple.500" fontSize={[20, 20, 32]}>
+            ST.
+          </Heading>
+        </Flex>
+      </Link>
+    </Box>
   );
 };
