@@ -7,11 +7,17 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  Text,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import { User } from "interfaces";
 
 interface Compound {
   UserMenu: React.FC<{ user: User | null }>;
+  StatsContainer: React.FC;
+  StatsHeader: React.FC;
+  Stat: React.FC;
+  Archive: React.FC;
 }
 
 type HeaderCC = React.FC & Compound;
@@ -53,7 +59,7 @@ const Inner: React.FC = ({ children }) => {
 
 const Logo: React.FC = () => {
   return (
-    <Box as="li" bg="white" listStyleType="none">
+    <Box as="li" bg="white" listStyleType="none" mr="auto">
       <Link href="/" passHref>
         <Flex
           as="a"
@@ -91,6 +97,53 @@ Header.UserMenu = function UserMenu({ user, children }) {
           {children}
         </MenuList>
       </Menu>
+    </Box>
+  );
+};
+
+Header.StatsContainer = function StatsContainer({ children }) {
+  return <Flex mr={[3, 3, 5]}>{children}</Flex>;
+};
+
+Header.StatsHeader = function StatsHeader({ children }) {
+  return (
+    <Text
+      as="h3"
+      color="white"
+      mr={2}
+      fontWeight="bold"
+      fontSize="clamp(0.75rem, 2vw, 1rem)"
+    >
+      {children}
+    </Text>
+  );
+};
+
+Header.Stat = function Stat({ children }) {
+  return (
+    <Text
+      color="pink.400"
+      fontWeight="bold"
+      fontSize="clamp(0.75rem, 2vw, 1rem)"
+    >
+      {children}
+    </Text>
+  );
+};
+
+Header.Archive = function Archive() {
+  return (
+    <Box as="li" listStyleType="none" mr={[3, 3, 5]}>
+      <Link href="#" passHref>
+        <ChakraLink
+          color="white"
+          fontWeight="bold"
+          fontSize="clamp(0.85rem, 2.5vw, 1.1rem)"
+          _hover={{ textDecoration: "none" }}
+        >
+          Archive
+        </ChakraLink>
+      </Link>
     </Box>
   );
 };

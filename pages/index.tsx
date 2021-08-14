@@ -15,6 +15,19 @@ const Index: React.FC = () => {
   return (
     <>
       <Header>
+        {auth?.user && (
+          <>
+            <Header.StatsContainer>
+              <Header.StatsHeader>Best:</Header.StatsHeader>
+              <Header.Stat>110</Header.Stat>
+            </Header.StatsContainer>
+            <Header.StatsContainer>
+              <Header.StatsHeader>Avg:</Header.StatsHeader>
+              <Header.Stat>105</Header.Stat>
+            </Header.StatsContainer>
+            <Header.Archive />
+          </>
+        )}
         <Header.UserMenu user={auth && auth.user}>
           {auth?.user ? (
             <>
