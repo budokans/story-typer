@@ -1,8 +1,10 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Link as ChakraLink, Text, Icon } from "@chakra-ui/react";
+import { RiGithubFill } from "react-icons/ri";
 
 interface Compound {
   Text: React.FC;
-  Name: React.FC;
+  NameLink: React.FC;
+  GitHub: React.FC;
 }
 
 type FooterCC = React.FC & Compound;
@@ -51,10 +53,29 @@ Footer.Text = function FooterText({ children }) {
   );
 };
 
-Footer.Name = function FooterName({ children }) {
+Footer.NameLink = function FooterNameLink({ children }) {
   return (
-    <Text color="white" ml={1} fontSize="clamp(0.75rem, 2vw, 1rem)">
+    <ChakraLink
+      href="https://stevenwebster.co/"
+      isExternal
+      color="white"
+      ml={1}
+      fontSize="clamp(0.75rem, 2vw, 1rem)"
+      _hover={{ textDecoration: "none" }}
+    >
       {children}
-    </Text>
+    </ChakraLink>
+  );
+};
+
+Footer.GitHub = function FooterGitHub() {
+  return (
+    <ChakraLink
+      href="https://github.com/budokans/story-typer"
+      isExternal
+      ml={2}
+    >
+      <Icon as={RiGithubFill} h={[6, 6, 8]} w={[6, 6, 8]} color="white" />
+    </ChakraLink>
   );
 };

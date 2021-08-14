@@ -133,7 +133,8 @@ const Index: React.FC = () => {
       </p>
       <Footer>
         <Footer.Text>Created by</Footer.Text>
-        <Footer.Name>Steven Webster</Footer.Name>
+        <Footer.NameLink>Steven Webster</Footer.NameLink>
+        <Footer.GitHub />
       </Footer>
     </Box>
   );

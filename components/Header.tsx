@@ -114,7 +114,7 @@ Header.StatsHeader = function StatsHeader({ children }) {
       as="h3"
       color="white"
       mr={2}
-      fontWeight="bold"
+      fontWeight="semibold"
       fontSize="clamp(0.75rem, 2vw, 1rem)"
     >
       {children}
@@ -126,7 +126,7 @@ Header.Stat = function HeaderStat({ children }) {
   return (
     <Text
       color="pink.400"
-      fontWeight="bold"
+      fontWeight="semibold"
       fontSize="clamp(0.75rem, 2vw, 1rem)"
     >
       {children}
@@ -140,7 +140,7 @@ Header.Archive = function HeaderArchive() {
       <Link href="#" passHref>
         <ChakraLink
           color="white"
-          fontWeight="bold"
+          fontWeight="semibold"
           fontSize="clamp(0.75rem, 2vw, 1rem)"
           _hover={{ textDecoration: "none" }}
         >
