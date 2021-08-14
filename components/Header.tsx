@@ -80,7 +80,7 @@ const Logo: React.FC = () => {
   );
 };
 
-Header.UserMenu = function UserMenu({ user, children }) {
+Header.UserMenu = function HeaderUserMenu({ user, children }) {
   return (
     <Box as="li" listStyleType="none">
       <Menu>
@@ -104,7 +104,7 @@ Header.UserMenu = function UserMenu({ user, children }) {
   );
 };
 
-Header.StatsContainer = function StatsContainer({ children }) {
+Header.StatsContainer = function HeaderStatsContainer({ children }) {
   return <Flex mr={[3, 3, 5]}>{children}</Flex>;
 };
 
@@ -122,7 +122,7 @@ Header.StatsHeader = function StatsHeader({ children }) {
   );
 };
 
-Header.Stat = function Stat({ children }) {
+Header.Stat = function HeaderStat({ children }) {
   return (
     <Text
       color="pink.400"
@@ -134,7 +134,7 @@ Header.Stat = function Stat({ children }) {
   );
 };
 
-Header.Archive = function Archive() {
+Header.Archive = function HeaderArchive() {
   return (
     <Box as="li" listStyleType="none" mr={[3, 3, 5]}>
       <Link href="#" passHref>
@@ -151,7 +151,7 @@ Header.Archive = function Archive() {
   );
 };
 
-Header.Favorites = function Favorites() {
+Header.Favorites = function HeaderFavorites() {
   return (
     <Box as="li" listStyleType="none" mr={[3, 3, 5]}>
       <Link href="#" passHref>
