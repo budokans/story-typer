@@ -18,6 +18,7 @@
       "@/lib/*": ["lib/*"],
       "@/hooks/*": ["hooks/*"],
       "@/components/*": ["components/*"],
+      "@/containers/*": ["containers/*"],
       "@/context/*": ["context/*"],
     }
   },

@@ -17,7 +17,7 @@ import { User } from "interfaces";
 interface Compound {
   UserMenu: React.FC<{ user: User | null }>;
   StatsContainer: React.FC;
-  StatsHeader: React.FC;
+  StatsType: React.FC;
   Stat: React.FC;
   Favorites: React.FC;
   Archive: React.FC;
@@ -108,7 +108,7 @@ Header.StatsContainer = function HeaderStatsContainer({ children }) {
   return <Flex mr={[3, 3, 5]}>{children}</Flex>;
 };
 
-Header.StatsHeader = function StatsHeader({ children }) {
+Header.StatsType = function HeaderStatsType({ children }) {
   return (
     <Text
       as="h3"
