@@ -38,7 +38,7 @@ export const Header: HeaderCC = ({ children }) => {
 
 const Container: React.FC = ({ children }) => {
   return (
-    <Box as="nav" bg="blackAlpha.800">
+    <Box as="nav" bg="white" borderTop="5px solid" borderColor="brand.500">
       {children}
     </Box>
   );
@@ -62,7 +62,7 @@ const Inner: React.FC = ({ children }) => {
 
 const Logo: React.FC = () => {
   return (
-    <Box as="li" bg="white" listStyleType="none" mr="auto">
+    <Box as="li" mr="auto">
       <Link href="/" passHref>
         <Flex
           as="a"
@@ -71,8 +71,8 @@ const Logo: React.FC = () => {
           w={[12, 12, 20]}
           justify="center"
         >
-          <Heading color="purple.500" fontSize={[20, 20, 32]}>
-            ST.
+          <Heading fontSize={[20, 20, 32]} fontWeight="black">
+            ST
           </Heading>
         </Flex>
       </Link>
@@ -82,7 +82,7 @@ const Logo: React.FC = () => {
 
 Header.UserMenu = function HeaderUserMenu({ user, children }) {
   return (
-    <Box as="li" listStyleType="none">
+    <Box as="li">
       <Menu>
         <MenuButton
           as={Avatar}
@@ -90,32 +90,28 @@ Header.UserMenu = function HeaderUserMenu({ user, children }) {
           w={[7, 7, 10]}
           src={user && user.photoURL}
           cursor="pointer"
-          border="2px solid white"
         />
-        <MenuList
-          bg="blackAlpha.800"
-          color="white"
-          fontSize={["xs", "xs", "sm"]}
-        >
-          {children}
-        </MenuList>
+        <MenuList fontSize={["xs", "xs", "sm"]}>{children}</MenuList>
       </Menu>
     </Box>
   );
 };
 
 Header.StatsContainer = function HeaderStatsContainer({ children }) {
-  return <Flex mr={[3, 3, 5]}>{children}</Flex>;
+  return (
+    <Flex as="li" mr={[3, 3, 5]}>
+      {children}
+    </Flex>
+  );
 };
 
 Header.StatsType = function HeaderStatsType({ children }) {
   return (
     <Text
       as="h3"
-      color="white"
       mr={2}
-      fontWeight="semibold"
-      fontSize="clamp(0.75rem, 2vw, 1rem)"
+      fontSize="clamp(0.75rem, 2.5vw, 1rem)"
+      fontWeight="medium"
     >
       {children}
     </Text>
@@ -124,11 +120,7 @@ Header.StatsType = function HeaderStatsType({ children }) {
 
 Header.Stat = function HeaderStat({ children }) {
   return (
-    <Text
-      color="pink.400"
-      fontWeight="semibold"
-      fontSize="clamp(0.75rem, 2vw, 1rem)"
-    >
+    <Text fontSize="clamp(0.75rem, 2.5vw, 1rem)" fontWeight="semibold">
       {children}
     </Text>
   );
@@ -136,16 +128,14 @@ Header.Stat = function HeaderStat({ children }) {
 
 Header.Archive = function HeaderArchive() {
   return (
-    <Box as="li" listStyleType="none" mr={[3, 3, 5]}>
+    <Box
+      as="li"
+      mr={[3, 3, 5]}
+      fontSize="clamp(0.75rem, 2.5vw, 1rem)"
+      fontWeight="medium"
+    >
       <Link href="#" passHref>
-        <ChakraLink
-          color="white"
-          fontWeight="semibold"
-          fontSize="clamp(0.75rem, 2vw, 1rem)"
-          _hover={{ textDecoration: "none" }}
-        >
-          Archive
-        </ChakraLink>
+        <ChakraLink>Archive</ChakraLink>
       </Link>
     </Box>
   );
@@ -153,10 +143,10 @@ Header.Archive = function HeaderArchive() {
 
 Header.Favorites = function HeaderFavorites() {
   return (
-    <Box as="li" listStyleType="none" mr={[3, 3, 5]}>
+    <Box as="li" mr={[3, 3, 5]}>
       <Link href="#" passHref>
         <a>
-          <Icon as={RiStarFill} color="#FFD700" h={[6, 6, 8]} w={[6, 6, 8]} />
+          <Icon as={RiStarFill} h={[7, 7, 8]} w={[7, 7, 8]} />
         </a>
       </Link>
     </Box>

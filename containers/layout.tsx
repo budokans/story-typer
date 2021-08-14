@@ -15,7 +15,7 @@ export const LayoutContainer: React.FC<{ auth: ProvideAuth | null }> = ({
   };
 
   return (
-    <Box position="relative" minH="100vh" pb={[9, 9, 14]}>
+    <Box position="relative" minH="100vh" pb={[9, 9, 14]} bg="gray.100">
       <Header>
         {auth?.user && (
           <>
