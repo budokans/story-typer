@@ -27,8 +27,8 @@ export interface Story {
 
 export interface ProvideAuth {
   user: User | null;
-  signInWithFacebook: () => Promise<User | null | undefined>;
-  signOut: () => Promise<User | null | undefined>;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 export type AuthContext = ProvideAuth | null;
