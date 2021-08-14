@@ -26,6 +26,7 @@ const Index: React.FC = () => {
               <Header.Stat>105</Header.Stat>
             </Header.StatsContainer>
             <Header.Archive />
+            <Header.Favorites />
           </>
         )}
         <Header.UserMenu user={auth && auth.user}>

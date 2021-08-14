@@ -9,7 +9,9 @@ import {
   MenuList,
   Text,
   Link as ChakraLink,
+  Icon,
 } from "@chakra-ui/react";
+import { RiStarFill } from "react-icons/ri";
 import { User } from "interfaces";
 
 interface Compound {
@@ -17,6 +19,7 @@ interface Compound {
   StatsContainer: React.FC;
   StatsHeader: React.FC;
   Stat: React.FC;
+  Favorites: React.FC;
   Archive: React.FC;
 }
 
@@ -138,11 +141,23 @@ Header.Archive = function Archive() {
         <ChakraLink
           color="white"
           fontWeight="bold"
-          fontSize="clamp(0.85rem, 2.5vw, 1.1rem)"
+          fontSize="clamp(0.75rem, 2vw, 1rem)"
           _hover={{ textDecoration: "none" }}
         >
           Archive
         </ChakraLink>
+      </Link>
+    </Box>
+  );
+};
+
+Header.Favorites = function Favorites() {
+  return (
+    <Box as="li" listStyleType="none" mr={[3, 3, 5]}>
+      <Link href="#" passHref>
+        <a>
+          <Icon as={RiStarFill} color="#FFD700" h={[6, 6, 8]} w={[6, 6, 8]} />
+        </a>
       </Link>
     </Box>
   );
