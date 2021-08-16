@@ -11,7 +11,7 @@ const Index: React.FC = () => {
       <Welcome>
         <Welcome.Brand />
 
-        <Welcome.HeadlinesContainer>
+        <Welcome.HeadlinesWrapper>
           <Welcome.Headline>
             The speed-typing game for lovers of short stories.
           </Welcome.Headline>
@@ -20,14 +20,23 @@ const Index: React.FC = () => {
             <FiftyWordStoriesLink>fiftywordstories.com</FiftyWordStoriesLink>.
           </Welcome.Headline>
           <Welcome.Headline>Updated daily.</Welcome.Headline>
-        </Welcome.HeadlinesContainer>
+        </Welcome.HeadlinesWrapper>
 
-        <Welcome.Benefits>
-          <Welcome.Benefit>Never play the same story twice.</Welcome.Benefit>
-          <Welcome.Benefit>Review previous games and stats</Welcome.Benefit>
-          <Welcome.Benefit>Keep tabs on your favorite stories</Welcome.Benefit>
-          <Welcome.Benefit>View your top and average speeds.</Welcome.Benefit>
-        </Welcome.Benefits>
+        {!auth?.user && (
+          <Welcome.CTAWrapper>
+            <Welcome.CTA onSignInClick={auth?.signInWithGoogle} />
+            <Welcome.Benefits>
+              <Welcome.Benefit>Never play the same story twice</Welcome.Benefit>
+              <Welcome.Benefit>Review previous games and stats</Welcome.Benefit>
+              <Welcome.Benefit>
+                Keep tabs on your favorite stories
+              </Welcome.Benefit>
+              <Welcome.Benefit>
+                View your top and average speeds
+              </Welcome.Benefit>
+            </Welcome.Benefits>
+          </Welcome.CTAWrapper>
+        )}
       </Welcome>
     </LayoutContainer>
   );

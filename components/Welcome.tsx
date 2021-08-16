@@ -6,6 +6,7 @@ import {
   List,
   ListIcon,
   ListItem,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import Image from "next/image";
@@ -14,8 +15,10 @@ import logo from "../public/story-typer-logo.png";
 
 interface Compound {
   Brand: React.FC;
-  HeadlinesContainer: React.FC;
+  HeadlinesWrapper: React.FC;
   Headline: React.FC;
+  CTAWrapper: React.FC;
+  CTA: React.FC<{ onSignInClick: (() => Promise<void>) | undefined }>;
   Benefits: React.FC;
   Benefit: React.FC;
 }
@@ -53,7 +56,7 @@ Welcome.Brand = function WelcomeBrand() {
   );
 };
 
-Welcome.HeadlinesContainer = function WelcomeHeadlinesContainer({ children }) {
+Welcome.HeadlinesWrapper = function WelcomeHeadlinesWrapper({ children }) {
   return <Box>{children}</Box>;
 };
 
@@ -73,23 +76,35 @@ Welcome.Headline = function WelcomeHeadline({ children }) {
   );
 };
 
-Welcome.Benefits = function WelcomeBenefits({ children }) {
+Welcome.CTAWrapper = function WelcomeCTAWrapper({ children }) {
   return (
     <Center bg="white" w="100vw">
       <Box py={[8, 12, 16]} px={[2, 4, 4, 0]} maxW="930px">
-        <Heading
-          as="h3"
-          fontWeight="regular"
-          fontSize="clamp(1.25rem, calc(14.40px + 2.00vw), 28px)"
-          mb={[4, 4, 6]}
-          textAlign="center"
-        >
-          <strong>Sign in</strong> to
-        </Heading>
-        <List spacing={3}>{children}</List>
+        {children}
       </Box>
     </Center>
   );
+};
+
+Welcome.CTA = function WelcomeCTA({ onSignInClick }) {
+  return (
+    <Heading
+      as="h3"
+      fontWeight="regular"
+      fontSize="clamp(1.25rem, calc(14.40px + 2.00vw), 28px)"
+      mb={[4, 4, 6]}
+      textAlign="center"
+    >
+      <Text as="strong" onClick={onSignInClick} cursor="pointer">
+        Sign in
+      </Text>{" "}
+      to
+    </Heading>
+  );
+};
+
+Welcome.Benefits = function WelcomeBenefits({ children }) {
+  return <List spacing={3}>{children}</List>;
 };
 
 Welcome.Benefit = function WelcomeBenefit({ children }) {

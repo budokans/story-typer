@@ -6,6 +6,7 @@ export const FiftyWordStoriesLink: React.FC<{ path?: string }> = ({
 }) => {
   return (
     <ChakraLink
+      color="blackAlpha.800"
       href={`https://fiftywordstories.com/${path ? path : ""}`}
       isExternal
     >
