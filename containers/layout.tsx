@@ -55,7 +55,9 @@ export const LayoutContainer: React.FC<{ auth: ProvideAuth | null }> = ({
         </Header.UserMenu>
       </Header>
 
-      <Box as="main">{children}</Box>
+      <Box as="main" maxW="930px" margin="0 auto" py={2} px={[1, 4, 4, 0]}>
+        {children}
+      </Box>
 
       <Footer>
         <Footer.Text>Created by</Footer.Text>

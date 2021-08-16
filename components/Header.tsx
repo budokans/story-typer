@@ -38,7 +38,14 @@ export const Header: HeaderCC = ({ children }) => {
 
 const Container: React.FC = ({ children }) => {
   return (
-    <Box as="nav" bg="white" borderTop="5px solid" borderColor="brand.500">
+    <Box
+      as="nav"
+      position="relative"
+      zIndex="2"
+      bg="white"
+      borderTop="5px solid"
+      borderColor="brand.500"
+    >
       {children}
     </Box>
   );
@@ -51,7 +58,7 @@ const Inner: React.FC = ({ children }) => {
       align="center"
       justify="space-between"
       h={[9, 9, 14]}
-      pr={[1, 4, 0]}
+      pr={[2, 4, 4, 0]}
       maxW="930px"
       margin="0 auto"
     >
