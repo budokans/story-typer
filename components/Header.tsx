@@ -1,9 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
+import logo from "../public/story-typer-logo.png";
 import {
   Avatar,
   Box,
   Flex,
-  Heading,
   Menu,
   MenuButton,
   MenuList,
@@ -58,7 +59,7 @@ const Inner: React.FC = ({ children }) => {
       align="center"
       justify="space-between"
       h={[9, 9, 14]}
-      pr={[2, 4, 4, 0]}
+      px={[2, 4, 4, 0]}
       maxW="930px"
       margin="0 auto"
     >
@@ -69,19 +70,15 @@ const Inner: React.FC = ({ children }) => {
 
 const Logo: React.FC = () => {
   return (
-    <Box as="li" mr="auto">
+    <Box
+      as="li"
+      mr="auto"
+      h={["1.85rem", "1.85rem", "3rem"]}
+      w={["1.85rem", "1.85rem", "3rem"]}
+      alignSelf="flex-start"
+    >
       <Link href="/" passHref>
-        <Flex
-          as="a"
-          align="center"
-          h={[9, 9, 14]}
-          w={[12, 12, 20]}
-          justify="center"
-        >
-          <Heading fontSize={[20, 20, 32]} fontWeight="black">
-            ST
-          </Heading>
-        </Flex>
+        <Image src={logo} alt="Story Typer Logo" priority />
       </Link>
     </Box>
   );

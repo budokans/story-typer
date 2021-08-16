@@ -20,17 +20,17 @@ const Container: React.FC = ({ children }) => {
   );
 };
 
-Welcome.Brand = function WelcomeBrand({ children }) {
+Welcome.Brand = function WelcomeBrand() {
   return (
-    <Flex direction="column" align="center" mt={[-2, -4]}>
+    <Flex direction="column" align="center" mt={[-3, -4]}>
       <Box w="clamp(8rem, 30vw, 16rem)" h="clamp(8rem, 30vw, 16rem)">
         <Image src={logo} alt="Story Typer Logo" priority />
       </Box>
       <Heading
         as="h1"
-        mb={2}
+        my={2}
         fontSize="clamp(2.5rem, calc(6vw + 14px), 6rem)"
-        fontWeight="light"
+        fontWeight="hairline"
         color="brand.700"
       >
         STORY TYPER
