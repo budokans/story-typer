@@ -77,8 +77,10 @@ const Logo: React.FC = () => {
       w={["1.85rem", "1.85rem", "3rem"]}
       alignSelf="flex-start"
     >
-      <Link href="/" passHref>
-        <Image src={logo} alt="Story Typer Logo" priority />
+      <Link href="/">
+        <a>
+          <Image src={logo} alt="Story Typer Logo" priority />
+        </a>
       </Link>
     </Box>
   );
@@ -138,9 +140,9 @@ Header.Archive = function HeaderArchive() {
       fontSize="clamp(0.75rem, 2.5vw, 1rem)"
       fontWeight="medium"
     >
-      <Link href="#" passHref>
-        <ChakraLink>Archive</ChakraLink>
-      </Link>
+      <ChakraLink as={Link} href="#" passHref>
+        Archive
+      </ChakraLink>
     </Box>
   );
 };
