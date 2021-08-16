@@ -19,13 +19,7 @@ export const Footer: FooterCC = ({ children }) => {
 
 const Container: React.FC = ({ children }) => {
   return (
-    <Box
-      as="footer"
-      bg="blackAlpha.800"
-      w="full"
-      position="absolute"
-      bottom={0}
-    >
+    <Box as="footer" bg="white" w="full" position="absolute" bottom={0}>
       {children}
     </Box>
   );
@@ -39,6 +33,7 @@ const Inner: React.FC = ({ children }) => {
       margin="0 auto"
       align="center"
       justify={["center", "center", "flex-end"]}
+      pr={[0, 0, 4, 0]}
     >
       {children}
     </Flex>
@@ -47,7 +42,7 @@ const Inner: React.FC = ({ children }) => {
 
 Footer.Text = function FooterText({ children }) {
   return (
-    <Text color="white" fontWeight="light" fontSize="clamp(0.75rem, 2vw, 1rem)">
+    <Text color="blackAlpha.800" fontSize="clamp(0.75rem, 2vw, 1rem)">
       {children}
     </Text>
   );
@@ -58,10 +53,10 @@ Footer.NameLink = function FooterNameLink({ children }) {
     <ChakraLink
       href="https://stevenwebster.co/"
       isExternal
-      color="white"
+      color="blackAlpha.800"
       ml={1}
       fontSize="clamp(0.75rem, 2vw, 1rem)"
-      _hover={{ textDecoration: "none" }}
+      fontWeight="semibold"
     >
       {children}
     </ChakraLink>
@@ -75,7 +70,12 @@ Footer.GitHub = function FooterGitHub() {
       isExternal
       ml={2}
     >
-      <Icon as={RiGithubFill} h={[6, 6, 8]} w={[6, 6, 8]} color="white" />
+      <Icon
+        as={RiGithubFill}
+        h={[6, 6, 8]}
+        w={[6, 6, 8]}
+        color="blackAlpha.800"
+      />
     </ChakraLink>
   );
 };
