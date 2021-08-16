@@ -1,7 +1,7 @@
-import { Link as ChakraLink } from "@chakra-ui/react";
 import { Welcome } from "@/components/Welcome";
 import { LayoutContainer } from "@/containers/layout";
 import { useAuth } from "@/context/auth";
+import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 
 const Index: React.FC = () => {
   const auth = useAuth();
@@ -15,7 +15,7 @@ const Index: React.FC = () => {
         </Welcome.Headline>
         <Welcome.Headline>
           Over 2000 stories sourced from{" "}
-          <ChakraLink>fiftywordstories.com</ChakraLink>.
+          <FiftyWordStoriesLink>fiftywordstories.com</FiftyWordStoriesLink>.
         </Welcome.Headline>
         <Welcome.Headline>Updated daily.</Welcome.Headline>
         <p>
