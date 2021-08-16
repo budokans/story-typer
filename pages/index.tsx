@@ -10,68 +10,24 @@ const Index: React.FC = () => {
     <LayoutContainer auth={auth}>
       <Welcome>
         <Welcome.Brand />
-        <Welcome.Headline>
-          The speed-typing game for lovers of short stories.
-        </Welcome.Headline>
-        <Welcome.Headline>
-          Over 2000 stories sourced from{" "}
-          <FiftyWordStoriesLink>fiftywordstories.com</FiftyWordStoriesLink>.
-        </Welcome.Headline>
-        <Welcome.Headline>Updated daily.</Welcome.Headline>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
-          laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos
-          cum, delectus illo eius necessitatibus vitae quasi ad assumenda
-          dolorem laudantium? Sequi, consectetur esse?
-        </p>
+
+        <Welcome.HeadlinesContainer>
+          <Welcome.Headline>
+            The speed-typing game for lovers of short stories.
+          </Welcome.Headline>
+          <Welcome.Headline>
+            Over 2000 stories sourced from{" "}
+            <FiftyWordStoriesLink>fiftywordstories.com</FiftyWordStoriesLink>.
+          </Welcome.Headline>
+          <Welcome.Headline>Updated daily.</Welcome.Headline>
+        </Welcome.HeadlinesContainer>
+
+        <Welcome.Benefits>
+          <Welcome.Benefit>Never play the same story twice.</Welcome.Benefit>
+          <Welcome.Benefit>Review previous games and stats</Welcome.Benefit>
+          <Welcome.Benefit>Keep tabs on your favorite stories</Welcome.Benefit>
+          <Welcome.Benefit>View your top and average speeds.</Welcome.Benefit>
+        </Welcome.Benefits>
       </Welcome>
     </LayoutContainer>
   );
