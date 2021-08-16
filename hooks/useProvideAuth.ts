@@ -6,15 +6,18 @@ import { ProvideAuth, User } from "../interfaces";
 
 export const useProvideAuth = (): ProvideAuth => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const handleUser = useCallback((rawUser: FirebaseUser | null) => {
     if (rawUser) {
       const user = formatUser(rawUser);
       createUser(user.uid, user);
       setUser(user);
+      setLoading(false);
       return user;
     } else {
       setUser(null);
+      setLoading(false);
       return null;
     }
   }, []);
@@ -60,6 +63,7 @@ export const useProvideAuth = (): ProvideAuth => {
 
   return {
     user,
+    loading,
     signInWithGoogle,
     signOut,
   };
