@@ -1,3 +1,4 @@
+import { Link as ChakraLink } from "@chakra-ui/react";
 import { Welcome } from "@/components/Welcome";
 import { LayoutContainer } from "@/containers/layout";
 import { useAuth } from "@/context/auth";
@@ -9,6 +10,14 @@ const Index: React.FC = () => {
     <LayoutContainer auth={auth}>
       <Welcome>
         <Welcome.Brand />
+        <Welcome.Headline>
+          The speed-typing game for lovers of short stories.
+        </Welcome.Headline>
+        <Welcome.Headline>
+          Over 2000 stories sourced from{" "}
+          <ChakraLink>fiftywordstories.com</ChakraLink>.
+        </Welcome.Headline>
+        <Welcome.Headline>Updated daily.</Welcome.Headline>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus,
           laboriosam! Doloremque consequatur fuga maiores, corporis dignissimos

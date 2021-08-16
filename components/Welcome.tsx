@@ -4,6 +4,7 @@ import logo from "../public/story-typer-logo.png";
 
 interface Compound {
   Brand: React.FC;
+  Headline: React.FC;
 }
 
 type WelcomeCC = React.FC & Compound;
@@ -14,7 +15,7 @@ export const Welcome: WelcomeCC = ({ children }) => {
 
 const Container: React.FC = ({ children }) => {
   return (
-    <VStack direction="column" spacing={6} align="center">
+    <VStack direction="column" spacing={3} align="center">
       {children}
     </VStack>
   );
@@ -30,11 +31,26 @@ Welcome.Brand = function WelcomeBrand() {
         as="h1"
         my={2}
         fontSize="clamp(2.5rem, calc(6vw + 14px), 6rem)"
-        fontWeight="hairline"
+        fontWeight={["light", "light", "hairline"]}
         color="brand.700"
       >
         STORY TYPER
       </Heading>
     </Flex>
+  );
+};
+
+Welcome.Headline = function WelcomeHeadline({ children }) {
+  return (
+    <Heading
+      as="h2"
+      color="black"
+      fontSize="clamp(1.25rem, calc(14.40px + 2.00vw), 32px)"
+      fontWeight="light"
+      lineHeight="sm"
+      textAlign="center"
+    >
+      {children}
+    </Heading>
   );
 };
