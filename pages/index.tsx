@@ -1,9 +1,9 @@
-import { CountUp } from "use-count-up";
 import { Welcome } from "@/components/Welcome";
 import { LayoutContainer } from "@/containers/layout";
 import { useAuth } from "@/context/auth";
 import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
-import { Button, Skeleton, Text } from "@chakra-ui/react";
+import { Button, Skeleton } from "@chakra-ui/react";
+import { CountUp } from "@/components/CountUp";
 
 const Index: React.FC = () => {
   const auth = useAuth();
@@ -18,15 +18,8 @@ const Index: React.FC = () => {
             The speed-typing game for lovers of short stories.
           </Welcome.Headline>
           <Welcome.Headline>
-            Over{" "}
-            <Text
-              display="inline"
-              fontWeight="400"
-              sx={{ fontVariantNumeric: "tabular-nums" }}
-            >
-              <CountUp isCounting start={1843} end={2032} duration={2.75} />
-            </Text>{" "}
-            stories sourced from{" "}
+            Over <CountUp start={1850} end={2032} duration={2.75} /> stories
+            sourced from{" "}
             <FiftyWordStoriesLink hoverColor="blackAlpha.700">
               fiftywordstories.com
             </FiftyWordStoriesLink>
