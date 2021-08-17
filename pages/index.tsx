@@ -19,11 +19,18 @@ const Index: React.FC = () => {
           </Welcome.Headline>
           <Welcome.Headline>
             Over{" "}
-            <Text display="inline" sx={{ fontVariantNumeric: "tabular-nums" }}>
+            <Text
+              display="inline"
+              fontWeight="400"
+              sx={{ fontVariantNumeric: "tabular-nums" }}
+            >
               <CountUp isCounting start={1843} end={2032} duration={2.75} />
             </Text>{" "}
             stories sourced from{" "}
-            <FiftyWordStoriesLink>fiftywordstories.com</FiftyWordStoriesLink>.
+            <FiftyWordStoriesLink hoverColor="blackAlpha.700">
+              fiftywordstories.com
+            </FiftyWordStoriesLink>
+            .
           </Welcome.Headline>
           <Welcome.Headline>Updated daily.</Welcome.Headline>
         </Welcome.HeadlinesWrapper>
