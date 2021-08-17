@@ -28,7 +28,7 @@ const Index: React.FC = () => {
           <Welcome.Headline>Updated daily.</Welcome.Headline>
         </Welcome.HeadlinesWrapper>
 
-        <Skeleton isLoaded={!auth?.loading} h="300px">
+        <Skeleton isLoaded={!auth?.isLoading} h="300px">
           {!auth?.user ? (
             <Welcome.CTAWrapper>
               <Welcome.CTA onSignInClick={auth?.signInWithGoogle} />

@@ -6,19 +6,17 @@ import { ProvideAuth, User } from "../interfaces";
 
 export const useProvideAuth = (): ProvideAuth => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleUser = useCallback((rawUser: FirebaseUser | null) => {
     if (rawUser) {
       const user = formatUser(rawUser);
       createUser(user.uid, user);
       setUser(user);
-      setLoading(false);
-      return user;
+      setIsLoading(false);
     } else {
       setUser(null);
-      setLoading(false);
-      return null;
+      setIsLoading(false);
     }
   }, []);
 
@@ -56,6 +54,7 @@ export const useProvideAuth = (): ProvideAuth => {
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      setIsLoading(true);
       handleUser(user);
     });
     return () => unsubscribe();
@@ -63,7 +62,7 @@ export const useProvideAuth = (): ProvideAuth => {
 
   return {
     user,
-    loading,
+    isLoading,
     signInWithGoogle,
     signOut,
   };
