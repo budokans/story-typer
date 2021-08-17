@@ -2,7 +2,7 @@ import { Welcome } from "@/components/Welcome";
 import { LayoutContainer } from "@/containers/layout";
 import { useAuth } from "@/context/auth";
 import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
-import { Button, Skeleton } from "@chakra-ui/react";
+import { Skeleton } from "@chakra-ui/react";
 import { CountUp } from "@/components/CountUp";
 
 const Index: React.FC = () => {
@@ -28,28 +28,32 @@ const Index: React.FC = () => {
           <Welcome.Headline>Updated daily.</Welcome.Headline>
         </Welcome.HeadlinesWrapper>
 
-        <Skeleton isLoaded={!auth?.isLoading} h="300px">
-          {!auth?.user ? (
-            <Welcome.CTAWrapper>
-              <Welcome.CTA onSignInClick={auth?.signInWithGoogle} />
-              <Welcome.Benefits>
-                <Welcome.Benefit>
-                  Never play the same story twice
-                </Welcome.Benefit>
-                <Welcome.Benefit>
-                  Review previous games and stats
-                </Welcome.Benefit>
-                <Welcome.Benefit>
-                  Keep tabs on your favorite stories
-                </Welcome.Benefit>
-                <Welcome.Benefit>
-                  View your top and average speeds
-                </Welcome.Benefit>
-              </Welcome.Benefits>
-            </Welcome.CTAWrapper>
-          ) : (
-            <Button>Play Now</Button>
-          )}
+        <Skeleton isLoaded={!auth?.isLoading}>
+          <Welcome.CTAWrapper>
+            {!auth?.user ? (
+              <>
+                <Welcome.CTA onSignInClick={auth?.signInWithGoogle} />
+                <Welcome.Benefits>
+                  <Welcome.Benefit>
+                    Never play the same story twice
+                  </Welcome.Benefit>
+                  <Welcome.Benefit>
+                    Review previous games and stats
+                  </Welcome.Benefit>
+                  <Welcome.Benefit>
+                    Keep tabs on your favorite stories
+                  </Welcome.Benefit>
+                  <Welcome.Benefit>
+                    View your top and average speeds
+                  </Welcome.Benefit>
+                </Welcome.Benefits>
+                <Welcome.SignInBtn>Sign In</Welcome.SignInBtn>
+                <Welcome.PlayBtn>Play Now</Welcome.PlayBtn>
+              </>
+            ) : (
+              <Welcome.PlayBtn>Play Now</Welcome.PlayBtn>
+            )}
+          </Welcome.CTAWrapper>
         </Skeleton>
       </Welcome>
     </LayoutContainer>

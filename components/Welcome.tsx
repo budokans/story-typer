@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Center,
   Flex,
   Heading,
@@ -21,6 +22,8 @@ interface Compound {
   CTA: React.FC<{ onSignInClick: (() => Promise<void>) | undefined }>;
   Benefits: React.FC;
   Benefit: React.FC;
+  PlayBtn: React.FC;
+  SignInBtn: React.FC;
 }
 
 type WelcomeCC = React.FC & Compound;
@@ -79,9 +82,15 @@ Welcome.Headline = function WelcomeHeadline({ children }) {
 Welcome.CTAWrapper = function WelcomeCTAWrapper({ children }) {
   return (
     <Center bg="white" w="100vw">
-      <Box py={[8, 12, 16]} px={[2, 4, 4, 0]} maxW="930px">
+      <Flex
+        direction="column"
+        align="center"
+        py={[8, 12, 16]}
+        px={[2, 4, 4, 0]}
+        maxW="930px"
+      >
         {children}
-      </Box>
+      </Flex>
     </Center>
   );
 };
@@ -95,7 +104,12 @@ Welcome.CTA = function WelcomeCTA({ onSignInClick }) {
       mb={[4, 4, 6]}
       textAlign="center"
     >
-      <Text as="strong" onClick={onSignInClick} cursor="pointer">
+      <Text
+        as="strong"
+        onClick={onSignInClick}
+        cursor="pointer"
+        _hover={{ textDecoration: "underline" }}
+      >
         Sign in
       </Text>{" "}
       to
@@ -104,7 +118,11 @@ Welcome.CTA = function WelcomeCTA({ onSignInClick }) {
 };
 
 Welcome.Benefits = function WelcomeBenefits({ children }) {
-  return <List spacing={3}>{children}</List>;
+  return (
+    <List spacing={3} mb={12}>
+      {children}
+    </List>
+  );
 };
 
 Welcome.Benefit = function WelcomeBenefit({ children }) {
@@ -113,5 +131,34 @@ Welcome.Benefit = function WelcomeBenefit({ children }) {
       <ListIcon as={RiThumbUpFill} />
       {children}
     </ListItem>
+  );
+};
+
+Welcome.SignInBtn = function WelcomeSignInBtn({ children }) {
+  return (
+    <Button
+      mb={4}
+      w={64}
+      _hover={{ bg: "brand.500", color: "white" }}
+      variant="outline"
+      size="lg"
+    >
+      {children}
+    </Button>
+  );
+};
+
+Welcome.PlayBtn = function WelcomePlayBtn({ children }) {
+  return (
+    <Button
+      mb={4}
+      w={64}
+      bg="black"
+      color="brand.500"
+      _hover={{ bg: "blackAlpha.800" }}
+      size="lg"
+    >
+      {children}
+    </Button>
   );
 };
