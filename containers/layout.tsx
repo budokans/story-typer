@@ -2,12 +2,10 @@ import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { ProvideAuth } from "interfaces";
+import { useAuth } from "@/context/auth";
 
-export const LayoutContainer: React.FC<{ auth: ProvideAuth | null }> = ({
-  auth,
-  children,
-}) => {
+export const LayoutContainer: React.FC = ({ children }) => {
+  const auth = useAuth();
   const userMenuItemStateStyles = {
     _hover: { bg: "blackAlpha.600" },
     _active: { bg: "blackAlpha.300" },

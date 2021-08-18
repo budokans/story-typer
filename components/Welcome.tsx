@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/auth";
 import {
   Box,
   Button,
@@ -20,11 +21,11 @@ interface Compound {
   HeadlinesWrapper: React.FC;
   Headline: React.FC;
   CTAWrapper: React.FC;
-  CTA: React.FC<{ onSignInClick: (() => Promise<void>) | undefined }>;
+  CTA: React.FC;
   Benefits: React.FC;
   Benefit: React.FC;
   PlayBtn: React.FC;
-  SignInBtn: React.FC<{ onSignInClick: (() => Promise<void>) | undefined }>;
+  SignInBtn: React.FC;
 }
 
 type WelcomeCC = React.FC & Compound;
@@ -96,7 +97,9 @@ Welcome.CTAWrapper = function WelcomeCTAWrapper({ children }) {
   );
 };
 
-Welcome.CTA = function WelcomeCTA({ onSignInClick }) {
+Welcome.CTA = function WelcomeCTA() {
+  const auth = useAuth();
+
   return (
     <Heading
       as="h3"
@@ -107,7 +110,7 @@ Welcome.CTA = function WelcomeCTA({ onSignInClick }) {
     >
       <Text
         as="strong"
-        onClick={onSignInClick}
+        onClick={() => auth?.signInWithGoogle()}
         cursor="pointer"
         _hover={{ textDecoration: "underline" }}
       >
@@ -135,7 +138,9 @@ Welcome.Benefit = function WelcomeBenefit({ children }) {
   );
 };
 
-Welcome.SignInBtn = function WelcomeSignInBtn({ onSignInClick, children }) {
+Welcome.SignInBtn = function WelcomeSignInBtn() {
+  const auth = useAuth();
+
   return (
     <Button
       mb={4}
@@ -143,9 +148,9 @@ Welcome.SignInBtn = function WelcomeSignInBtn({ onSignInClick, children }) {
       h={12}
       _hover={{ bg: "brand.500", color: "white" }}
       variant="outline"
-      onClick={onSignInClick}
+      onClick={() => auth?.signInWithGoogle()}
     >
-      {children}
+      Sign In
     </Button>
   );
 };

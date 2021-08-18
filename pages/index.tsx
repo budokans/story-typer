@@ -1,15 +1,15 @@
-import { Welcome } from "@/components/Welcome";
-import { LayoutContainer } from "@/containers/layout";
-import { useAuth } from "@/context/auth";
-import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 import { Skeleton } from "@chakra-ui/react";
+import { useAuth } from "@/context/auth";
+import { LayoutContainer } from "@/containers/layout";
+import { Welcome } from "@/components/Welcome";
+import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 import { CountUp } from "@/components/CountUp";
 
 const Index: React.FC = () => {
   const auth = useAuth();
 
   return (
-    <LayoutContainer auth={auth}>
+    <LayoutContainer>
       <Welcome>
         <Welcome.Brand />
 
@@ -32,7 +32,7 @@ const Index: React.FC = () => {
           <Welcome.CTAWrapper>
             {!auth?.user ? (
               <>
-                <Welcome.CTA onSignInClick={auth?.signInWithGoogle} />
+                <Welcome.CTA />
                 <Welcome.Benefits>
                   <Welcome.Benefit>
                     Never play the same story twice
@@ -48,9 +48,7 @@ const Index: React.FC = () => {
                   </Welcome.Benefit>
                 </Welcome.Benefits>
 
-                <Welcome.SignInBtn onSignInClick={auth?.signInWithGoogle}>
-                  Sign In
-                </Welcome.SignInBtn>
+                <Welcome.SignInBtn />
                 <Welcome.PlayBtn>Play Now</Welcome.PlayBtn>
               </>
             ) : (
