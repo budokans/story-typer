@@ -10,6 +10,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { useRouter } from "next/dist/client/router";
 import Image from "next/image";
 import { RiThumbUpFill } from "react-icons/ri";
 import logo from "../public/story-typer-logo.png";
@@ -23,7 +24,7 @@ interface Compound {
   Benefits: React.FC;
   Benefit: React.FC;
   PlayBtn: React.FC;
-  SignInBtn: React.FC;
+  SignInBtn: React.FC<{ onSignInClick: (() => Promise<void>) | undefined }>;
 }
 
 type WelcomeCC = React.FC & Compound;
@@ -134,14 +135,15 @@ Welcome.Benefit = function WelcomeBenefit({ children }) {
   );
 };
 
-Welcome.SignInBtn = function WelcomeSignInBtn({ children }) {
+Welcome.SignInBtn = function WelcomeSignInBtn({ onSignInClick, children }) {
   return (
     <Button
       mb={4}
       w={64}
+      h={12}
       _hover={{ bg: "brand.500", color: "white" }}
       variant="outline"
-      size="lg"
+      onClick={onSignInClick}
     >
       {children}
     </Button>
@@ -149,14 +151,16 @@ Welcome.SignInBtn = function WelcomeSignInBtn({ children }) {
 };
 
 Welcome.PlayBtn = function WelcomePlayBtn({ children }) {
+  const router = useRouter();
+
   return (
     <Button
-      mb={4}
       w={64}
+      h={12}
       bg="black"
       color="brand.500"
       _hover={{ bg: "blackAlpha.800" }}
-      size="lg"
+      onClick={() => router.push("/game")}
     >
       {children}
     </Button>

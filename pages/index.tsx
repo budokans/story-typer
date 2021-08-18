@@ -47,7 +47,10 @@ const Index: React.FC = () => {
                     View your top and average speeds
                   </Welcome.Benefit>
                 </Welcome.Benefits>
-                <Welcome.SignInBtn>Sign In</Welcome.SignInBtn>
+
+                <Welcome.SignInBtn onSignInClick={auth?.signInWithGoogle}>
+                  Sign In
+                </Welcome.SignInBtn>
                 <Welcome.PlayBtn>Play Now</Welcome.PlayBtn>
               </>
             ) : (
