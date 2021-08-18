@@ -5,25 +5,14 @@ import { User as FirebaseUser } from "@firebase/auth-types";
 import { ProvideAuth, User } from "../interfaces";
 
 interface UseAuthState {
-  error: Error | null;
   status: "idle" | "pending" | "resolved" | "rejected";
   user: User | null;
 }
 
-type AuthAction =
-  | { type: "error"; error: Error }
-  | { type: "success"; user: User | null }
-  | { type: "started" };
+type AuthAction = { type: "success"; user: User | null } | { type: "started" };
 
 const AuthReducer = (state: UseAuthState, action: AuthAction): UseAuthState => {
   switch (action.type) {
-    case "error": {
-      return {
-        ...state,
-        status: "rejected",
-        error: action.error,
-      };
-    }
     case "success": {
       return {
         ...state,
@@ -45,7 +34,6 @@ const AuthReducer = (state: UseAuthState, action: AuthAction): UseAuthState => {
 
 export const useProvideAuth = (): ProvideAuth => {
   const [state, dispatch] = useReducer(AuthReducer, {
-    error: null,
     status: "idle",
     user: null,
   });
@@ -75,7 +63,7 @@ export const useProvideAuth = (): ProvideAuth => {
       const { user } = await firebase.auth().signInWithPopup(provider);
       handleUser(user);
     } catch (error) {
-      dispatch({ type: "error", error });
+      console.error(error);
     }
   };
 
@@ -84,7 +72,7 @@ export const useProvideAuth = (): ProvideAuth => {
       await firebase.auth().signOut();
       handleUser(null);
     } catch (error) {
-      dispatch({ type: "error", error });
+      console.error(error);
     }
   };
 
@@ -97,7 +85,6 @@ export const useProvideAuth = (): ProvideAuth => {
   }, [handleUser]);
 
   return {
-    error: state.error,
     isLoading: state.status === "idle" || state.status === "pending",
     user: state.user,
     signInWithGoogle,

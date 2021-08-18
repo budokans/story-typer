@@ -26,7 +26,6 @@ export interface Story {
 }
 
 export interface ProvideAuth {
-  error: Error | null;
   user: User | null;
   isLoading: boolean;
   signInWithGoogle: () => Promise<void>;
