@@ -23,23 +23,16 @@ export const createStory = async (story: Story): Promise<void> => {
     });
 };
 
-export const incrementDbCount = async (
-  collection: string,
-  docId: string,
-  fieldName: string,
+const incrementByVal = (val: number) =>
+  firebase.firestore.FieldValue.increment(val);
+
+export const incrementStoriesCount = async (
   changeVal: number
 ): Promise<void> => {
-  const docRef = firestore.collection(collection).doc(docId);
-  try {
-    await firestore.runTransaction(async (transaction) => {
-      const doc = await transaction.get(docRef);
-      const newCount = doc.data()?.[fieldName] + changeVal;
-      transaction.update(docRef, { [fieldName]: newCount });
-      console.log(`Success: ${fieldName} incremented by ${changeVal}`);
-    });
-  } catch (error) {
-    console.error(error);
-  }
+  const metadataRef = firestore.collection("metadata").doc("data");
+  await metadataRef.update({
+    storiesCount: incrementByVal(changeVal),
+  });
 };
 
 export const getLatestTimestamp = async (): Promise<string> => {

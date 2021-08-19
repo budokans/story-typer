@@ -1,6 +1,10 @@
 import axios from "axios";
 import { Post, Story } from "../interfaces";
-import { createStory, getLatestTimestamp, incrementDbCount } from "./firestore";
+import {
+  createStory,
+  getLatestTimestamp,
+  incrementStoriesCount,
+} from "./firestore";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
@@ -12,7 +16,7 @@ const CATEGORIES = 112; // Submissions
 const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
 const STARTING_PAGE = 1;
-const PAGE_LIMIT = 10;
+const PAGE_LIMIT = 2;
 const DEFAULT_PARAMS = [
   `per_page=${PER_PAGE}`,
   `categories=${CATEGORIES}`,
@@ -84,12 +88,7 @@ export const seed = (): Promise<void> => {
     .then((posts) => formatStories(posts))
     .then((stories) => {
       stories.forEach(createStory);
-      incrementDbCount(
-        "metadata",
-        "data",
-        "storiesCount",
-        PAGE_LIMIT * PER_PAGE
-      );
+      incrementStoriesCount(PAGE_LIMIT * PER_PAGE);
     })
     .catch((e) => console.error(e));
 };
