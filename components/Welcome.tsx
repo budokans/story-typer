@@ -98,7 +98,7 @@ Welcome.CTAWrapper = function WelcomeCTAWrapper({ children }) {
 };
 
 Welcome.CTA = function WelcomeCTA() {
-  const auth = useAuth();
+  const { signInWithGoogle } = useAuth();
 
   return (
     <Heading
@@ -110,7 +110,7 @@ Welcome.CTA = function WelcomeCTA() {
     >
       <Text
         as="strong"
-        onClick={() => auth?.signInWithGoogle()}
+        onClick={() => signInWithGoogle()}
         cursor="pointer"
         _hover={{ textDecoration: "underline" }}
       >
@@ -139,7 +139,7 @@ Welcome.Benefit = function WelcomeBenefit({ children }) {
 };
 
 Welcome.SignInBtn = function WelcomeSignInBtn() {
-  const auth = useAuth();
+  const { signInWithGoogle } = useAuth();
 
   return (
     <Button
@@ -148,7 +148,7 @@ Welcome.SignInBtn = function WelcomeSignInBtn() {
       h={12}
       _hover={{ bg: "brand.500", color: "white" }}
       variant="outline"
-      onClick={() => auth?.signInWithGoogle()}
+      onClick={() => signInWithGoogle()}
     >
       Sign In
     </Button>

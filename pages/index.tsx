@@ -6,7 +6,7 @@ import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 import { CountUp } from "@/components/CountUp";
 
 const Index: React.FC = () => {
-  const auth = useAuth();
+  const { user, isLoading } = useAuth();
 
   return (
     <LayoutContainer>
@@ -28,9 +28,9 @@ const Index: React.FC = () => {
           <Welcome.Headline>Updated daily.</Welcome.Headline>
         </Welcome.HeadlinesWrapper>
 
-        <Skeleton isLoaded={!auth?.isLoading}>
+        <Skeleton isLoaded={!isLoading}>
           <Welcome.CTAWrapper>
-            {!auth?.user ? (
+            {!user ? (
               <>
                 <Welcome.CTA />
                 <Welcome.Benefits>

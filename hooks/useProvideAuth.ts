@@ -4,6 +4,8 @@ import { createUser } from "@/lib/firestore";
 import { User as FirebaseUser } from "@firebase/auth-types";
 import { ProvideAuth, User } from "../interfaces";
 
+// This hook is called in @context/auth. Its value is then passed to the authProvider and thereby accessible via the useAuth() hook.
+
 interface UseAuthState {
   status: "idle" | "pending" | "resolved" | "rejected";
   user: User | null;

@@ -13,10 +13,10 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
-import { User } from "interfaces";
+import { useAuth } from "@/context/auth";
 
 interface Compound {
-  UserMenu: React.FC<{ user: User | null }>;
+  UserMenu: React.FC;
   StatsContainer: React.FC;
   StatsType: React.FC;
   Stat: React.FC;
@@ -86,7 +86,9 @@ const Logo: React.FC = () => {
   );
 };
 
-Header.UserMenu = function HeaderUserMenu({ user, children }) {
+Header.UserMenu = function HeaderUserMenu({ children }) {
+  const { user } = useAuth();
+
   return (
     <Box as="li">
       <Menu>
@@ -94,7 +96,7 @@ Header.UserMenu = function HeaderUserMenu({ user, children }) {
           as={Avatar}
           h={[7, 7, 10]}
           w={[7, 7, 10]}
-          src={user && user.photoURL}
+          src={user?.photoURL}
           cursor="pointer"
         />
         <MenuList fontSize={["xs", "xs", "sm"]}>{children}</MenuList>
