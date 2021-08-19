@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer } from "react";
 import { firebase } from "@/lib/firebase";
-import { createUser } from "@/lib/firestore";
+import { createUser, queryUser } from "@/lib/firestore";
 import { User as FirebaseUser } from "@firebase/auth-types";
 import { ProvideAuth, User } from "../interfaces";
 
@@ -40,23 +40,38 @@ export const useProvideAuth = (): ProvideAuth => {
     user: null,
   });
 
-  const handleUser = useCallback((rawUser: FirebaseUser | null) => {
+  const handleUser = useCallback(async (rawUser: FirebaseUser | null) => {
     if (rawUser) {
-      const user = formatUser(rawUser);
-      createUser(user.uid, user);
+      const user = await formatUser(rawUser);
+      await createUser(user.uid, user);
       dispatch({ type: "success", user });
     } else {
       dispatch({ type: "success", user: null });
     }
   }, []);
 
-  const formatUser = (user: FirebaseUser): User => {
-    return {
+  // If the user already exists, merge the auth data returned from signInWithGoogle() with the stored non-auth user data, otherwise return a new user object with those non-auth data fields initialised.
+  const formatUser = async (user: FirebaseUser): Promise<User> => {
+    const storedUserData = await queryUser(user.uid);
+    const userInitFields = {
+      registeredDate: firebase.firestore.FieldValue.serverTimestamp(),
+      personalBest: null,
+      averageSpeed: null,
+      gamesPlayed: 0,
+      uniqueStoriesPlayed: 0,
+      newestPlayedStoryAddedDate: null,
+      oldestPlayedStoryAddedDate: null,
+    };
+    const userAuthData = {
       uid: user.uid,
       name: user.displayName,
       email: user.email,
       photoURL: user.photoURL,
     };
+
+    return storedUserData
+      ? { ...storedUserData, ...userAuthData }
+      : { ...userInitFields, ...userAuthData };
   };
 
   const signInWithGoogle = async () => {

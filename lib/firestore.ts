@@ -3,12 +3,18 @@ import { firebase } from "./firebase";
 
 const firestore = firebase.firestore();
 
-export const createUser = (uid: string, data: User): void => {
-  firestore.collection("users").doc(uid).set({ data }, { merge: true });
+export const queryUser = async (uid: string): Promise<User | undefined> => {
+  const userRef = firestore.collection("users").doc(uid);
+  const doc = await userRef.get();
+  return doc.exists ? (doc.data() as User) : undefined;
 };
 
-export const createStory = (story: Story): void => {
-  firestore
+export const createUser = async (uid: string, user: User): Promise<void> => {
+  firestore.collection("users").doc(uid).set(user, { merge: true });
+};
+
+export const createStory = async (story: Story): Promise<void> => {
+  await firestore
     .collection("stories")
     .doc()
     .set({
