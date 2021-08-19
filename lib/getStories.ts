@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Post, Story } from "../interfaces";
-import { createStory, getLatestTimestamp } from "./firestore";
+import { createStory, getLatestTimestamp, incrementDbCount } from "./firestore";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
@@ -82,7 +82,15 @@ export const seed = (): Promise<void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
   return getPostsOverPages(url, STARTING_PAGE, PAGE_LIMIT)
     .then((posts) => formatStories(posts))
-    .then((stories) => stories.forEach(createStory))
+    .then((stories) => {
+      stories.forEach(createStory);
+      incrementDbCount(
+        "metadata",
+        "data",
+        "storiesCount",
+        PAGE_LIMIT * PER_PAGE
+      );
+    })
     .catch((e) => console.error(e));
 };
 
