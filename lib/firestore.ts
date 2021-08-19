@@ -1,20 +1,20 @@
 import { Story, User } from "../interfaces";
 import { firebase } from "./firebase";
 
-const firestore = firebase.firestore();
+const db = firebase.firestore();
 
 export const queryUser = async (uid: string): Promise<User | undefined> => {
-  const userRef = firestore.collection("users").doc(uid);
+  const userRef = db.collection("users").doc(uid);
   const doc = await userRef.get();
   return doc.exists ? (doc.data() as User) : undefined;
 };
 
 export const createUser = async (uid: string, user: User): Promise<void> => {
-  firestore.collection("users").doc(uid).set(user, { merge: true });
+  db.collection("users").doc(uid).set(user, { merge: true });
 };
 
 export const createStory = async (story: Story): Promise<void> => {
-  await firestore
+  await db
     .collection("stories")
     .doc()
     .set({
@@ -29,14 +29,14 @@ const incrementByVal = (val: number) =>
 export const incrementStoriesCount = async (
   changeVal: number
 ): Promise<void> => {
-  const metadataRef = firestore.collection("metadata").doc("data");
+  const metadataRef = db.collection("metadata").doc("data");
   await metadataRef.update({
     storiesCount: incrementByVal(changeVal),
   });
 };
 
 export const getLatestTimestamp = async (): Promise<string> => {
-  const snapshot = await firestore
+  const snapshot = await db
     .collection("stories")
     .orderBy("datePublished", "desc")
     .limit(1)

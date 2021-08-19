@@ -1,15 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getLatestStories } from "@/lib/getStories";
+import { addLatestStories } from "@/lib/getStories";
 
 export default async function handler(
   _: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
   try {
-    const newStories = await getLatestStories();
+    const storiesCount = await addLatestStories();
     res.status(200).json({
-      message: newStories
-        ? `Successfully scraped ${newStories.length} stories`
+      message: storiesCount
+        ? `Successfully scraped ${storiesCount} stories`
         : "No new stories scraped",
     });
   } catch (e) {

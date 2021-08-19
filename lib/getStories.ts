@@ -72,7 +72,7 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
   getPostsOverPagesRecursive
 );
 
-export const getLatestStories = (): Promise<Story[] | void> => {
+const getLatestStories = (): Promise<Story[] | void> => {
   return getLatestTimestamp()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
@@ -82,13 +82,26 @@ export const getLatestStories = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
+export const addLatestStories = (): Promise<number | void> => {
+  return getLatestStories()
+    .then((stories) => {
+      if (stories) {
+        stories.forEach(createStory);
+        const storiesCount = stories.length;
+        incrementStoriesCount(storiesCount);
+        return storiesCount;
+      }
+    })
+    .catch((e) => console.error(e));
+};
+
 export const seed = (): Promise<void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
   return getPostsOverPages(url, STARTING_PAGE, PAGE_LIMIT)
     .then((posts) => formatStories(posts))
     .then((stories) => {
       stories.forEach(createStory);
-      incrementStoriesCount(PAGE_LIMIT * PER_PAGE);
+      incrementStoriesCount(stories.length);
     })
     .catch((e) => console.error(e));
 };
@@ -101,4 +114,5 @@ export const testables = {
   getPostsOverPagesRecursive,
   getPostsOverPagesFactory,
   getPostsOverPages,
+  getLatestStories,
 };
