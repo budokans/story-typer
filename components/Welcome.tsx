@@ -5,7 +5,6 @@ import {
   Center,
   Flex,
   Heading,
-  Icon,
   List,
   ListIcon,
   ListItem,
@@ -15,7 +14,6 @@ import {
 import { useRouter } from "next/dist/client/router";
 import Image from "next/image";
 import { RiThumbUpFill } from "react-icons/ri";
-import { FcGoogle } from "react-icons/fc";
 import logo from "../public/story-typer-logo.png";
 
 interface Compound {
@@ -140,7 +138,7 @@ Welcome.Benefit = function WelcomeBenefit({ children }) {
   );
 };
 
-Welcome.SignInBtn = function WelcomeSignInBtn() {
+Welcome.SignInBtn = function WelcomeSignInBtn({ children }) {
   const { signInWithGoogle } = useAuth();
 
   return (
@@ -152,7 +150,7 @@ Welcome.SignInBtn = function WelcomeSignInBtn() {
       variant="outline"
       onClick={() => signInWithGoogle()}
     >
-      <Icon as={FcGoogle} mr={1} /> Sign In with Google
+      {children}
     </Button>
   );
 };
