@@ -1,11 +1,21 @@
+import { GetStaticProps } from "next";
 import { Skeleton } from "@chakra-ui/react";
+import { getStoriesCount } from "@/lib/db-admin";
 import { useAuth } from "@/context/auth";
 import { LayoutContainer } from "@/containers/layout";
 import { Welcome } from "@/components/Welcome";
 import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 import { CountUp } from "@/components/CountUp";
 
-const Index: React.FC = () => {
+export const getStaticProps: GetStaticProps = async () => {
+  const storiesCount = await getStoriesCount();
+  return {
+    props: { storiesCount },
+    revalidate: 86400,
+  };
+};
+
+const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
   const { user, isLoading } = useAuth();
 
   return (
@@ -18,8 +28,13 @@ const Index: React.FC = () => {
             The speed-typing game for lovers of short stories.
           </Welcome.Headline>
           <Welcome.Headline>
-            Over <CountUp start={1850} end={2032} duration={2.75} /> stories
-            sourced from{" "}
+            Over{" "}
+            <CountUp
+              start={storiesCount - 150}
+              end={storiesCount}
+              duration={2.75}
+            />{" "}
+            stories sourced from{" "}
             <FiftyWordStoriesLink hoverColor="blackAlpha.700">
               fiftywordstories.com
             </FiftyWordStoriesLink>

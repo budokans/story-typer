@@ -1,10 +1,6 @@
 import axios from "axios";
 import { Post, Story } from "../interfaces";
-import {
-  createStory,
-  getLatestTimestamp,
-  incrementStoriesCount,
-} from "./firestore";
+import { createStory, getLatestTimestamp, incrementStoriesCount } from "./db";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
