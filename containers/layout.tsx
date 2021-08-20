@@ -2,12 +2,10 @@ import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { ProvideAuth } from "interfaces";
+import { useAuth } from "@/context/auth";
 
-export const LayoutContainer: React.FC<{ auth: ProvideAuth | null }> = ({
-  auth,
-  children,
-}) => {
+export const LayoutContainer: React.FC = ({ children }) => {
+  const { user, signOut, signInWithGoogle } = useAuth();
   const userMenuItemStateStyles = {
     _hover: { bg: "blackAlpha.600" },
     _active: { bg: "blackAlpha.300" },
@@ -17,7 +15,7 @@ export const LayoutContainer: React.FC<{ auth: ProvideAuth | null }> = ({
   return (
     <Box position="relative" minH="100vh" pb={[9, 9, 14]} bg="gray.100">
       <Header>
-        {auth?.user && (
+        {user && (
           <>
             <Header.StatsContainer>
               <Header.StatsType>Best:</Header.StatsType>
@@ -31,23 +29,20 @@ export const LayoutContainer: React.FC<{ auth: ProvideAuth | null }> = ({
             <Header.Favorites />
           </>
         )}
-        <Header.UserMenu user={auth && auth.user}>
-          {auth?.user ? (
+        <Header.UserMenu>
+          {user ? (
             <>
               <Link href="#" passHref>
                 <MenuItem sx={userMenuItemStateStyles}>My Account</MenuItem>
               </Link>
-              <MenuItem
-                sx={userMenuItemStateStyles}
-                onClick={() => auth.signOut()}
-              >
+              <MenuItem sx={userMenuItemStateStyles} onClick={() => signOut()}>
                 Sign out
               </MenuItem>
             </>
           ) : (
             <MenuItem
               sx={userMenuItemStateStyles}
-              onClick={() => auth?.signInWithGoogle()}
+              onClick={() => signInWithGoogle()}
             >
               Sign in
             </MenuItem>

@@ -1,29 +1,20 @@
 import { useCallback, useEffect, useReducer } from "react";
 import { firebase } from "@/lib/firebase";
-import { createUser } from "@/lib/firestore";
+import { createUser, queryUser } from "@/lib/db";
 import { User as FirebaseUser } from "@firebase/auth-types";
 import { ProvideAuth, User } from "../interfaces";
 
+// This hook is called in @context/auth. Its value is then passed to the authProvider and thereby accessible via the useAuth() hook.
+
 interface UseAuthState {
-  error: Error | null;
   status: "idle" | "pending" | "resolved" | "rejected";
   user: User | null;
 }
 
-type AuthAction =
-  | { type: "error"; error: Error }
-  | { type: "success"; user: User | null }
-  | { type: "started" };
+type AuthAction = { type: "success"; user: User | null } | { type: "started" };
 
 const AuthReducer = (state: UseAuthState, action: AuthAction): UseAuthState => {
   switch (action.type) {
-    case "error": {
-      return {
-        ...state,
-        status: "rejected",
-        error: action.error,
-      };
-    }
     case "success": {
       return {
         ...state,
@@ -45,28 +36,42 @@ const AuthReducer = (state: UseAuthState, action: AuthAction): UseAuthState => {
 
 export const useProvideAuth = (): ProvideAuth => {
   const [state, dispatch] = useReducer(AuthReducer, {
-    error: null,
     status: "idle",
     user: null,
   });
 
-  const handleUser = useCallback((rawUser: FirebaseUser | null) => {
+  const handleUser = useCallback(async (rawUser: FirebaseUser | null) => {
     if (rawUser) {
-      const user = formatUser(rawUser);
-      createUser(user.uid, user);
+      const user = await formatUser(rawUser);
+      await createUser(user.uid, user);
       dispatch({ type: "success", user });
     } else {
       dispatch({ type: "success", user: null });
     }
   }, []);
 
-  const formatUser = (user: FirebaseUser): User => {
-    return {
+  // If the user already exists, merge the auth data returned from signInWithGoogle() with the stored non-auth user data, otherwise return a new user object with those non-auth data fields initialised.
+  const formatUser = async (user: FirebaseUser): Promise<User> => {
+    const storedUserData = await queryUser(user.uid);
+    const userInitFields = {
+      registeredDate: firebase.firestore.FieldValue.serverTimestamp(),
+      personalBest: null,
+      averageSpeed: null,
+      gamesPlayed: 0,
+      uniqueStoriesPlayed: 0,
+      newestPlayedStoryAddedDate: null,
+      oldestPlayedStoryAddedDate: null,
+    };
+    const userAuthData = {
       uid: user.uid,
       name: user.displayName,
       email: user.email,
       photoURL: user.photoURL,
     };
+
+    return storedUserData
+      ? { ...storedUserData, ...userAuthData }
+      : { ...userInitFields, ...userAuthData };
   };
 
   const signInWithGoogle = async () => {
@@ -75,7 +80,7 @@ export const useProvideAuth = (): ProvideAuth => {
       const { user } = await firebase.auth().signInWithPopup(provider);
       handleUser(user);
     } catch (error) {
-      dispatch({ type: "error", error });
+      console.error(error);
     }
   };
 
@@ -84,7 +89,7 @@ export const useProvideAuth = (): ProvideAuth => {
       await firebase.auth().signOut();
       handleUser(null);
     } catch (error) {
-      dispatch({ type: "error", error });
+      console.error(error);
     }
   };
 
@@ -97,7 +102,6 @@ export const useProvideAuth = (): ProvideAuth => {
   }, [handleUser]);
 
   return {
-    error: state.error,
     isLoading: state.status === "idle" || state.status === "pending",
     user: state.user,
     signInWithGoogle,

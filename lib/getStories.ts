@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Post, Story } from "../interfaces";
-import { createStory, getLatestTimestamp } from "./firestore";
+import { createStory, getLatestTimestamp, incrementStoriesCount } from "./db";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
@@ -12,7 +12,7 @@ const CATEGORIES = 112; // Submissions
 const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
 const STARTING_PAGE = 1;
-const PAGE_LIMIT = 10;
+const PAGE_LIMIT = 2;
 const DEFAULT_PARAMS = [
   `per_page=${PER_PAGE}`,
   `categories=${CATEGORIES}`,
@@ -68,7 +68,7 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
   getPostsOverPagesRecursive
 );
 
-export const getLatestStories = (): Promise<Story[] | void> => {
+const getLatestStories = (): Promise<Story[] | void> => {
   return getLatestTimestamp()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
@@ -78,11 +78,27 @@ export const getLatestStories = (): Promise<Story[] | void> => {
     .catch((e) => console.error(e));
 };
 
+export const addLatestStories = (): Promise<number | void> => {
+  return getLatestStories()
+    .then((stories) => {
+      if (stories) {
+        stories.forEach(createStory);
+        const storiesCount = stories.length;
+        incrementStoriesCount(storiesCount);
+        return storiesCount;
+      }
+    })
+    .catch((e) => console.error(e));
+};
+
 export const seed = (): Promise<void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
   return getPostsOverPages(url, STARTING_PAGE, PAGE_LIMIT)
     .then((posts) => formatStories(posts))
-    .then((stories) => stories.forEach(createStory))
+    .then((stories) => {
+      stories.forEach(createStory);
+      incrementStoriesCount(stories.length);
+    })
     .catch((e) => console.error(e));
 };
 
@@ -94,4 +110,5 @@ export const testables = {
   getPostsOverPagesRecursive,
   getPostsOverPagesFactory,
   getPostsOverPages,
+  getLatestStories,
 };

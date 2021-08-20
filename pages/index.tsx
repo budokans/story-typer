@@ -1,15 +1,25 @@
-import { Welcome } from "@/components/Welcome";
-import { LayoutContainer } from "@/containers/layout";
-import { useAuth } from "@/context/auth";
-import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
+import { GetStaticProps } from "next";
 import { Skeleton } from "@chakra-ui/react";
+import { getStoriesCount } from "@/lib/db-admin";
+import { useAuth } from "@/context/auth";
+import { LayoutContainer } from "@/containers/layout";
+import { Welcome } from "@/components/Welcome";
+import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 import { CountUp } from "@/components/CountUp";
 
-const Index: React.FC = () => {
-  const auth = useAuth();
+export const getStaticProps: GetStaticProps = async () => {
+  const storiesCount = await getStoriesCount();
+  return {
+    props: { storiesCount },
+    revalidate: 86400,
+  };
+};
+
+const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
+  const { user, isLoading } = useAuth();
 
   return (
-    <LayoutContainer auth={auth}>
+    <LayoutContainer>
       <Welcome>
         <Welcome.Brand />
 
@@ -18,8 +28,13 @@ const Index: React.FC = () => {
             The speed-typing game for lovers of short stories.
           </Welcome.Headline>
           <Welcome.Headline>
-            Over <CountUp start={1850} end={2032} duration={2.75} /> stories
-            sourced from{" "}
+            Over{" "}
+            <CountUp
+              start={storiesCount - 150}
+              end={storiesCount}
+              duration={2.75}
+            />{" "}
+            stories sourced from{" "}
             <FiftyWordStoriesLink hoverColor="blackAlpha.700">
               fiftywordstories.com
             </FiftyWordStoriesLink>
@@ -28,11 +43,11 @@ const Index: React.FC = () => {
           <Welcome.Headline>Updated daily.</Welcome.Headline>
         </Welcome.HeadlinesWrapper>
 
-        <Skeleton isLoaded={!auth?.isLoading}>
+        <Skeleton isLoaded={!isLoading}>
           <Welcome.CTAWrapper>
-            {!auth?.user ? (
+            {!user ? (
               <>
-                <Welcome.CTA onSignInClick={auth?.signInWithGoogle} />
+                <Welcome.CTA />
                 <Welcome.Benefits>
                   <Welcome.Benefit>
                     Never play the same story twice
@@ -48,9 +63,7 @@ const Index: React.FC = () => {
                   </Welcome.Benefit>
                 </Welcome.Benefits>
 
-                <Welcome.SignInBtn onSignInClick={auth?.signInWithGoogle}>
-                  Sign In
-                </Welcome.SignInBtn>
+                <Welcome.SignInBtn />
                 <Welcome.PlayBtn>Play Now</Welcome.PlayBtn>
               </>
             ) : (

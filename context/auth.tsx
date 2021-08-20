@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { Context, createContext, useContext } from "react";
 import { useProvideAuth } from "@/hooks/useProvideAuth";
 import { ProvideAuth } from "../interfaces";
 
@@ -9,6 +9,6 @@ export const AuthProvider: React.FC = ({ children }) => {
   return <authContext.Provider value={auth}>{children}</authContext.Provider>;
 };
 
-export const useAuth = (): ProvideAuth | null => {
-  return useContext(authContext);
+export const useAuth = (): ProvideAuth => {
+  return useContext(authContext as Context<ProvideAuth>);
 };

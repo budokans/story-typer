@@ -1,8 +1,20 @@
-export interface User {
+import { FieldValue } from "@firebase/firestore-types";
+
+export interface UserAuth {
   uid: string;
   name: string | null;
   email: string | null;
   photoURL: string | null;
+}
+
+export interface User extends UserAuth {
+  registeredDate: FieldValue;
+  personalBest: number | null;
+  averageSpeed: number | null;
+  gamesPlayed: number;
+  uniqueStoriesPlayed: number;
+  newestPlayedStoryAddedDate: string | null;
+  oldestPlayedStoryAddedDate: string | null;
 }
 
 export interface Post {
@@ -26,8 +38,7 @@ export interface Story {
 }
 
 export interface ProvideAuth {
-  error: Error | null;
-  user: User | null;
+  user: UserAuth | null;
   isLoading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
