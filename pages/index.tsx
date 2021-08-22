@@ -6,6 +6,7 @@ import { LayoutContainer } from "@/containers/layout";
 import { Welcome } from "@/components/Welcome";
 import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 import { CountUp } from "@/components/CountUp";
+import { GoogleIcon } from "@/components/GoogleIcon";
 
 export const getStaticProps: GetStaticProps = async () => {
   const storiesCount = await getStoriesCount();
@@ -63,7 +64,10 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
                   </Welcome.Benefit>
                 </Welcome.Benefits>
 
-                <Welcome.SignInBtn />
+                <Welcome.SignInBtn>
+                  <GoogleIcon />
+                  Sign in with Google
+                </Welcome.SignInBtn>
                 <Welcome.PlayBtn>Play Now</Welcome.PlayBtn>
               </>
             ) : (

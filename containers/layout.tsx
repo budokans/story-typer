@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
+import { useAuth } from "@/context/auth";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { useAuth } from "@/context/auth";
+import { GoogleIcon } from "@/components/GoogleIcon";
 
 export const LayoutContainer: React.FC = ({ children }) => {
   const { user, signOut, signInWithGoogle } = useAuth();
@@ -44,7 +45,7 @@ export const LayoutContainer: React.FC = ({ children }) => {
               sx={userMenuItemStateStyles}
               onClick={() => signInWithGoogle()}
             >
-              Sign in
+              <GoogleIcon /> Sign in with Google
             </MenuItem>
           )}
         </Header.UserMenu>

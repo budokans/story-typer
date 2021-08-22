@@ -99,7 +99,7 @@ Header.UserMenu = function HeaderUserMenu({ children }) {
           src={user?.photoURL}
           cursor="pointer"
         />
-        <MenuList fontSize={["xs", "xs", "sm"]}>{children}</MenuList>
+        <MenuList fontSize={["sm", "sm", "md"]}>{children}</MenuList>
       </Menu>
     </Box>
   );
