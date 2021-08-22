@@ -132,7 +132,7 @@ Welcome.Benefits = function WelcomeBenefits({ children }) {
 Welcome.Benefit = function WelcomeBenefit({ children }) {
   return (
     <ListItem fontSize={["1rem", "1rem", "1.25rem"]}>
-      <ListIcon as={RiThumbUpFill} />
+      <ListIcon as={RiThumbUpFill} mb="3px" />
       {children}
     </ListItem>
   );
@@ -165,7 +165,7 @@ Welcome.PlayBtn = function WelcomePlayBtn({ children }) {
       bg="black"
       color="brand.500"
       _hover={{ bg: "blackAlpha.800" }}
-      onClick={() => router.push("/game")}
+      onClick={() => router.push("/play")}
     >
       {children}
     </Button>
