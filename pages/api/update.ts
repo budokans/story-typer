@@ -13,6 +13,8 @@ export default async function handler(
           ? `Successfully scraped ${storiesCount} stories`
           : "No new stories scraped",
       });
+    } else {
+      res.status(403).json({ message: "Access denied" });
     }
   } catch (e) {
     res.status(500).json({
