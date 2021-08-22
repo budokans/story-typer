@@ -29,6 +29,7 @@ const Play: React.FC = () => {
 
         <Game.Pad>
           <Game.Input />
+          {isLargeViewport && <Game.ErrorAlert />}
           <Game.BtnSm type="restart" />
           <Game.BtnSm type="new" />
         </Game.Pad>

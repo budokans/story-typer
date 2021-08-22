@@ -1,4 +1,6 @@
+import { WarningIcon } from "@chakra-ui/icons";
 import {
+  Center,
   Container as ChakraContainer,
   Flex,
   Heading,
@@ -7,17 +9,14 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import {
-  RiRestartFill,
-  RiSkipForwardFill,
-  RiSkipForwardMiniFill,
-} from "react-icons/ri";
+import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 
 interface Compound {
   StoryHeader: React.FC;
   StoryText: React.FC;
   Pad: React.FC;
   Input: React.FC;
+  ErrorAlert: React.FC;
   BtnSm: React.FC<{ type: "restart" | "new" }>;
 }
 
@@ -29,9 +28,12 @@ export const Game: GameCC = ({ children }) => {
 
 const Container: React.FC = ({ children }) => {
   return (
-    <ChakraContainer px={[2, 6]}>
-      <VStack spacing={[4, 6, 8]}>{children}</VStack>
-    </ChakraContainer>
+    // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
+    <Center h={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
+      <ChakraContainer px={[2, 6]}>
+        <VStack spacing={[4, 6, 8]}>{children}</VStack>
+      </ChakraContainer>
+    </Center>
   );
 };
 
@@ -47,6 +49,7 @@ Game.Pad = function GamePad({ children }) {
   return (
     <Flex
       justify="space-between"
+      align="center"
       bg="blackAlpha.800"
       w={["100vw", "100%"]}
       borderRadius={["none", "xl"]}
@@ -65,6 +68,19 @@ Game.Input = function GameInput() {
       bg="white"
       w="clamp(12rem, 50vw, 20rem)"
       mr="auto"
+    />
+  );
+};
+
+Game.ErrorAlert = function ErrorAlert() {
+  return (
+    <WarningIcon
+      w={10}
+      h={10}
+      color="red.300"
+      border="2px solid white"
+      borderRadius="100%"
+      bg="white"
     />
   );
 };
