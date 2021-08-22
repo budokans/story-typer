@@ -9,4 +9,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: cURL request
-        run: curl -X POST -d {command: "new stories please"} https://story-typer-i2mhu21yp-budokans.vercel.app
+        run: curl -X POST -d {command: "new stories please"} https://story-typer.vercel.app
