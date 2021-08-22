@@ -44,13 +44,13 @@ const Container: React.FC = ({ children }) => {
 
 Welcome.Brand = function WelcomeBrand() {
   return (
-    <Flex direction="column" align="center" mt={[-3, -4]}>
+    <Flex direction="column" align="center" mt={[-5, -10]}>
       <Box w="clamp(8rem, 30vw, 16rem)" h="clamp(8rem, 30vw, 16rem)">
         <Image src={logo} alt="Story Typer Logo" priority />
       </Box>
       <Heading
         as="h1"
-        my={2}
+        mt={[4, 4, 8]}
         fontSize="clamp(2.5rem, calc(6vw + 14px), 6rem)"
         fontWeight={["light", "light", "hairline"]}
         color="brand.700"

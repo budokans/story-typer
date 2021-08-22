@@ -51,7 +51,7 @@ export const LayoutContainer: React.FC = ({ children }) => {
         </Header.UserMenu>
       </Header>
 
-      <Box as="main" maxW="930px" margin="0 auto" py={2} px={[1, 4, 4, 0]}>
+      <Box as="main" maxW="930px" margin="0 auto" py={[4, 8]} px={[1, 4, 4, 0]}>
         {children}
       </Box>
 
