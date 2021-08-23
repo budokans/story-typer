@@ -2,16 +2,24 @@ import { useEffect, useState } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { LayoutContainer } from "@/containers/layout";
 import { Game } from "@/components/Game";
+import { useGame } from "@/hooks/useGame";
 
 const Play: React.FC = () => {
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);
+  const { onInitCountdown, countdown } = useGame();
 
   useEffect(() => {
     viewportIsWiderThan768
       ? setIsLargeViewport(true)
       : setIsLargeViewport(false);
   }, [viewportIsWiderThan768]);
+
+  enum CountDown {
+    "Go!",
+    "Set",
+    "Ready",
+  }
 
   return (
     <LayoutContainer>
@@ -28,11 +36,12 @@ const Play: React.FC = () => {
         </Game.StoryText>
 
         <Game.Pad>
-          <Game.Input />
+          <Game.Input onInputClick={onInitCountdown} />
           {isLargeViewport && <Game.ErrorAlert />}
           <Game.BtnSm type="restart" />
           <Game.BtnSm type="new" />
-          <Game.Countdown />
+
+          <Game.Countdown>{CountDown[countdown] || ""}</Game.Countdown>
           <Game.StopWatch />
         </Game.Pad>
       </Game>

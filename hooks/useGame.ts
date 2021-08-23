@@ -74,11 +74,13 @@ export const useGame = () => {
   });
 
   useEffect(() => {
-    const countdownTimeout = setTimeout(() => {
-      dispatch({ type: "countdownTick" });
-    }, 1000);
-    return () => clearTimeout(countdownTimeout);
-  }, []);
+    if (state.status === "countdown" && state.countdown > 0) {
+      const countdownTimeout = setTimeout(() => {
+        dispatch({ type: "countdownTick" });
+      }, 1000);
+      return () => clearTimeout(countdownTimeout);
+    }
+  }, [state.status, state.countdown]);
 
   useEffect(() => {
     if (state.countdown === 0) {

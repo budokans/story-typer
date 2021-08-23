@@ -15,7 +15,7 @@ interface Compound {
   StoryHeader: React.FC;
   StoryText: React.FC;
   Pad: React.FC;
-  Input: React.FC;
+  Input: React.FC<{ onInputClick: () => void }>;
   ErrorAlert: React.FC;
   BtnSm: React.FC<{ type: "restart" | "new" }>;
   Countdown: React.FC;
@@ -64,13 +64,14 @@ Game.Pad = function GamePad({ children }) {
   );
 };
 
-Game.Input = function GameInput() {
+Game.Input = function GameInput({ onInputClick }) {
   return (
     <Input
       placeholder="Click here to begin"
       bg="white"
       w="clamp(12rem, 50vw, 20rem)"
       mr="auto"
+      onClick={onInputClick}
     />
   );
 };
@@ -103,17 +104,17 @@ Game.BtnSm = function GameBtnSm({ type }) {
   );
 };
 
-Game.Countdown = function GameCountdown() {
+Game.Countdown = function GameCountdown({ children }) {
   return (
     <Heading as="h3" color="brand.500" pt={3}>
-      Ready
+      {children}
     </Heading>
   );
 };
 
 Game.StopWatch = function GameStopWatch() {
   return (
-    <Heading as="h4" color="white" pt={3}>
+    <Heading as="h4" color="white" pt={3} ml="auto">
       0:34
     </Heading>
   );
