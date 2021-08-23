@@ -8,10 +8,7 @@ export default async function handler(
   if (req.method === "POST") {
     try {
       const { authorization } = req.headers;
-      if (
-        authorization ===
-        `Authorization: Bearer ${process.env.API_ACCESS_TOKEN}`
-      ) {
+      if (authorization === `Bearer ${process.env.API_ACCESS_TOKEN}`) {
         const storiesCount = await addLatestStories();
         res.status(200).json({
           message: storiesCount
