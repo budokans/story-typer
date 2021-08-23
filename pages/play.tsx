@@ -32,6 +32,8 @@ const Play: React.FC = () => {
           {isLargeViewport && <Game.ErrorAlert />}
           <Game.BtnSm type="restart" />
           <Game.BtnSm type="new" />
+          <Game.Countdown />
+          <Game.StopWatch />
         </Game.Pad>
       </Game>
     </LayoutContainer>

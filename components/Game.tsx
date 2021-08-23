@@ -18,6 +18,8 @@ interface Compound {
   Input: React.FC;
   ErrorAlert: React.FC;
   BtnSm: React.FC<{ type: "restart" | "new" }>;
+  Countdown: React.FC;
+  StopWatch: React.FC;
 }
 
 type GameCC = Compound & React.FC;
@@ -49,12 +51,13 @@ Game.Pad = function GamePad({ children }) {
   return (
     <Flex
       justify="space-between"
-      align="center"
+      wrap="wrap"
       bg="blackAlpha.800"
       w={["100vw", "100%"]}
       borderRadius={["none", "xl"]}
       px={[3, 6]}
       py={[4, 6]}
+      boxShadow="4px 4px 6px grey"
     >
       {children}
     </Flex>
@@ -97,5 +100,21 @@ Game.BtnSm = function GameBtnSm({ type }) {
       bg={type === "restart" ? "gold" : "lime"}
       color="blackAlpha.800"
     />
+  );
+};
+
+Game.Countdown = function GameCountdown() {
+  return (
+    <Heading as="h3" color="brand.500" pt={3}>
+      Ready
+    </Heading>
+  );
+};
+
+Game.StopWatch = function GameStopWatch() {
+  return (
+    <Heading as="h4" color="white" pt={3}>
+      0:34
+    </Heading>
   );
 };
