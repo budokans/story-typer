@@ -1,12 +1,13 @@
-name: Trigger addLatestStories() on a CRON Schedule
-
+name: cron-new-stories
 on:
   schedule:
     - cron: '* 16 * * *'
 jobs:
-  build:
-    name: Trigger addLatestStories()
+  cron:
     runs-on: ubuntu-latest
     steps:
       - name: cURL request
-        run: curl -X POST -d {command: "new stories please"} https://story-typer.vercel.app
+        run: |
+        curl --request POST \
+        --url 'https://story-typer.vercel.app/api/update' \
+        --header 'Authorization: Bearer ${{process.env.API_ACCESS_TOKEN}}'
