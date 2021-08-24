@@ -7,7 +7,7 @@ import { useGame } from "@/hooks/useGame";
 const Play: React.FC = () => {
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);
-  const { onInitCountdown, countdown } = useGame();
+  const { onInitCountdown, countdown, status } = useGame();
 
   useEffect(() => {
     viewportIsWiderThan768
@@ -36,13 +36,16 @@ const Play: React.FC = () => {
         </Game.StoryText>
 
         <Game.Pad>
-          <Game.Input onInputClick={onInitCountdown} />
+          <Game.Input onInputClick={onInitCountdown} gameStatus={status} />
           {isLargeViewport && <Game.ErrorAlert />}
           <Game.BtnSm type="restart" />
           <Game.BtnSm type="new" />
 
-          <Game.Countdown>{CountDown[countdown] || ""}</Game.Countdown>
-          <Game.StopWatch />
+          {status === "countdown" ? (
+            <Game.Countdown>{CountDown[countdown]}</Game.Countdown>
+          ) : (
+            <Game.StopWatch idle={status === "idle"} />
+          )}
         </Game.Pad>
       </Game>
     </LayoutContainer>

@@ -63,7 +63,7 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, {
     status: "idle",
-    countdown: 3,
+    countdown: 2,
     userError: false,
     userInput: "",
     story: {
@@ -101,7 +101,8 @@ export const useGame = () => {
     return totalUserInput !== sourceTilUserInputEnds;
   };
 
-  const initCountdown = () => dispatch({ type: "startCountdown" });
+  const initCountdown = () =>
+    state.status === "idle" && dispatch({ type: "startCountdown" });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const currentUserInput = e.target.value;

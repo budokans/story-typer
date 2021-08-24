@@ -1,4 +1,4 @@
-import { WarningIcon } from "@chakra-ui/icons";
+import { MutableRefObject, useEffect, useRef } from "react";
 import {
   Center,
   Container as ChakraContainer,
@@ -9,17 +9,21 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { WarningIcon } from "@chakra-ui/icons";
 import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 
 interface Compound {
   StoryHeader: React.FC;
   StoryText: React.FC;
   Pad: React.FC;
-  Input: React.FC<{ onInputClick: () => void }>;
+  Input: React.FC<{
+    onInputClick: () => void;
+    gameStatus: "idle" | "countdown" | "inGame" | "complete";
+  }>;
   ErrorAlert: React.FC;
   BtnSm: React.FC<{ type: "restart" | "new" }>;
   Countdown: React.FC;
-  StopWatch: React.FC;
+  StopWatch: React.FC<{ idle: boolean }>;
 }
 
 type GameCC = Compound & React.FC;
@@ -64,7 +68,14 @@ Game.Pad = function GamePad({ children }) {
   );
 };
 
-Game.Input = function GameInput({ onInputClick }) {
+Game.Input = function GameInput({ onInputClick, gameStatus }) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const input = inputRef as MutableRefObject<HTMLInputElement>;
+    gameStatus === "inGame" && input.current.focus();
+  }, [gameStatus]);
+
   return (
     <Input
       placeholder="Click here to begin"
@@ -72,6 +83,8 @@ Game.Input = function GameInput({ onInputClick }) {
       w="clamp(12rem, 50vw, 20rem)"
       mr="auto"
       onClick={onInputClick}
+      disabled={gameStatus === "countdown"}
+      ref={inputRef}
     />
   );
 };
@@ -112,9 +125,9 @@ Game.Countdown = function GameCountdown({ children }) {
   );
 };
 
-Game.StopWatch = function GameStopWatch() {
+Game.StopWatch = function GameStopWatch({ idle }) {
   return (
-    <Heading as="h4" color="white" pt={3} ml="auto">
+    <Heading as="h4" color={idle ? "gray.400" : "white"} pt={3}>
       0:34
     </Heading>
   );
