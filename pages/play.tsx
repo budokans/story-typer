@@ -40,13 +40,12 @@ const Play: React.FC = () => {
           {isLargeViewport && <Game.ErrorAlert />}
           <Game.BtnSm type="restart" />
           <Game.BtnSm type="new" />
-
-          {status === "countdown" ? (
-            <Game.Countdown>{CountDown[countdown]}</Game.Countdown>
-          ) : (
-            <Game.StopWatch idle={status === "idle"} />
-          )}
         </Game.Pad>
+        {status === "countdown" ? (
+          <Game.Countdown>{CountDown[countdown]}</Game.Countdown>
+        ) : (
+          <Game.StopWatch idle={status === "idle"} />
+        )}
       </Game>
     </LayoutContainer>
   );

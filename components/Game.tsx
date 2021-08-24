@@ -55,9 +55,8 @@ Game.Pad = function GamePad({ children }) {
   return (
     <Flex
       justify="space-between"
-      wrap="wrap"
-      bg="blackAlpha.800"
       w={["100vw", "100%"]}
+      bg="blackAlpha.800"
       borderRadius={["none", "xl"]}
       px={[3, 6]}
       py={[4, 6]}
@@ -119,7 +118,7 @@ Game.BtnSm = function GameBtnSm({ type }) {
 
 Game.Countdown = function GameCountdown({ children }) {
   return (
-    <Heading as="h3" color="brand.500" pt={3}>
+    <Heading as="h3" color="brand.500">
       {children}
     </Heading>
   );
@@ -127,7 +126,7 @@ Game.Countdown = function GameCountdown({ children }) {
 
 Game.StopWatch = function GameStopWatch({ idle }) {
   return (
-    <Heading as="h4" color={idle ? "gray.400" : "white"} pt={3}>
+    <Heading as="h4" color={idle ? "gray.500" : "blackAlpha.800"}>
       0:34
     </Heading>
   );
