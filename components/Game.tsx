@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef } from "react";
+import { ChangeEvent, MutableRefObject, useEffect, useRef } from "react";
 import {
   Center,
   Container as ChakraContainer,
@@ -18,6 +18,9 @@ interface Compound {
   Pad: React.FC;
   Input: React.FC<{
     onInputClick: () => void;
+    onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    value: string;
+    error: boolean;
     gameStatus: "idle" | "countdown" | "inGame" | "complete";
   }>;
   ErrorAlert: React.FC;
@@ -67,7 +70,13 @@ Game.Pad = function GamePad({ children }) {
   );
 };
 
-Game.Input = function GameInput({ onInputClick, gameStatus }) {
+Game.Input = function GameInput({
+  onInputClick,
+  onInputChange,
+  value,
+  gameStatus,
+  error,
+}) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -77,11 +86,13 @@ Game.Input = function GameInput({ onInputClick, gameStatus }) {
 
   return (
     <Input
-      placeholder="Click here to begin"
-      bg="white"
+      placeholder={gameStatus === "idle" ? "Click here to begin" : ""}
+      bg={error ? "red.300" : "white"}
       w="clamp(12rem, 50vw, 20rem)"
       mr="auto"
       onClick={onInputClick}
+      onChange={onInputChange}
+      value={value}
       disabled={gameStatus === "countdown"}
       ref={inputRef}
     />
