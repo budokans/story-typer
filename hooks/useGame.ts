@@ -66,6 +66,7 @@ export const useGame = () => {
     },
   });
   const count = useCountdown(state.status);
+  const totalUserInput = state.userStoredInput.concat(state.userCurrentInput);
 
   // Listen for countdown complete and update game status to "inGame"
   useEffect(() => {
@@ -108,13 +109,12 @@ export const useGame = () => {
 
     const lastInputCharIsSpace =
       state.userCurrentInput.charAt(state.userCurrentInput.length - 1) === " ";
-    const inputCharIsFinalStoryChar =
-      state.userStoredInput.length + state.userCurrentInput.length ===
-      state.story.storyText.length;
-    if (
-      (!state.userError && lastInputCharIsSpace) ||
-      (!state.userError && inputCharIsFinalStoryChar)
-    ) {
+
+    const isFinalChar =
+      totalUserInput.length === state.story.storyText.length &&
+      !state.userError;
+
+    if ((!state.userError && lastInputCharIsSpace) || isFinalChar) {
       dispatch({ type: "wordCompleted" });
     }
   }, [
@@ -122,6 +122,7 @@ export const useGame = () => {
     state.userStoredInput,
     state.story.storyText,
     state.userError,
+    totalUserInput,
   ]);
 
   // Listen for game completion
