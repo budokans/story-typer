@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
+import { useCountdown } from "./useCountdown";
 import { GameAction, GameState } from "./useGame.types";
 
 const GameReducer = (state: GameState, action: GameAction): GameState => {
@@ -7,12 +8,6 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...state,
         status: "countdown",
-      };
-    }
-    case "countdownTick": {
-      return {
-        ...state,
-        countdown: state.countdown - 1,
       };
     }
     case "countdownComplete": {
@@ -61,7 +56,6 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, {
     status: "idle",
-    countdown: 2,
     userError: false,
     userStoredInput: "",
     userCurrentInput: "",
@@ -71,23 +65,14 @@ export const useGame = () => {
       title: "EDDIE D MOORE: You Have Arrived",
     },
   });
-
-  // Listen for countdown state and initiate countdown
-  useEffect(() => {
-    if (state.status === "countdown" && state.countdown > 0) {
-      const countdownTimeout = setTimeout(() => {
-        dispatch({ type: "countdownTick" });
-      }, 1000);
-      return () => clearTimeout(countdownTimeout);
-    }
-  }, [state.status, state.countdown]);
+  const count = useCountdown(state.status);
 
   // Listen for countdown complete and update game status to "inGame"
   useEffect(() => {
-    if (state.countdown === 0) {
+    if (count === 0) {
       dispatch({ type: "countdownComplete" });
     }
-  }, [state.countdown]);
+  }, [count]);
 
   const initCountdown = () =>
     state.status === "idle" && dispatch({ type: "startCountdown" });
@@ -148,10 +133,10 @@ export const useGame = () => {
 
   return {
     status: state.status,
-    countdown: state.countdown,
     inputValue: state.userCurrentInput,
     userError: state.userError,
     onInputChange: handleInputChange,
     onInitCountdown: initCountdown,
+    countdown: count,
   };
 };

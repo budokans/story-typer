@@ -1,5 +1,5 @@
-import { useGame } from "@/hooks/useGame";
 import { Game } from "@/components/Game";
+import { useGame } from "@/hooks/useGame";
 
 export const GameContainer: React.FC = () => {
   const {

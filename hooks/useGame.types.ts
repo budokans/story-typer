@@ -1,6 +1,5 @@
 export interface GameState {
   status: "idle" | "countdown" | "inGame" | "complete";
-  countdown: number;
   userError: boolean;
   userStoredInput: string;
   userCurrentInput: string;
