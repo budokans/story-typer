@@ -1,23 +1,5 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
-
-interface GameState {
-  status: "idle" | "countdown" | "inGame" | "complete";
-  countdown: number;
-  userError: boolean;
-  userStoredInput: string;
-  userCurrentInput: string;
-  story: { storyText: string; title: string };
-}
-
-type GameAction =
-  | { type: "startCountdown" }
-  | { type: "countdownTick" }
-  | { type: "countdownComplete" }
-  | { type: "inputValueChange"; inputValue: string }
-  | { type: "errorFree" }
-  | { type: "userTypingError" }
-  | { type: "wordCompleted" }
-  | { type: "win" };
+import { GameAction, GameState } from "./useGame.types";
 
 const GameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
