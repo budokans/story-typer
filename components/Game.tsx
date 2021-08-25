@@ -1,4 +1,10 @@
-import { ChangeEvent, MutableRefObject, useEffect, useRef } from "react";
+import {
+  ChangeEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Center,
   Container as ChakraContainer,
@@ -7,6 +13,7 @@ import {
   IconButton,
   Input,
   Text,
+  useMediaQuery,
   VStack,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
@@ -47,7 +54,18 @@ const Container: React.FC = ({ children }) => {
 };
 
 Game.StoryHeader = function GameStoryHeader({ children }) {
-  return <Heading fontSize="clamp(1.25rem, 6vw, 4rem)">{children}</Heading>;
+  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
+  const [isLargeViewport, setIsLargeViewport] = useState(false);
+
+  useEffect(() => {
+    viewportIsWiderThan768
+      ? setIsLargeViewport(true)
+      : setIsLargeViewport(false);
+  }, [viewportIsWiderThan768]);
+
+  return isLargeViewport ? (
+    <Heading fontSize="clamp(1.25rem, 6vw, 4rem)">{children}</Heading>
+  ) : null;
 };
 
 Game.StoryText = function GameStoryText({ children }) {

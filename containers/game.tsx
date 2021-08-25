@@ -1,11 +1,7 @@
-import { useEffect, useState } from "react";
-import { useMediaQuery } from "@chakra-ui/react";
 import { useGame } from "@/hooks/useGame";
 import { Game } from "@/components/Game";
 
-export const GameContainer = () => {
-  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
-  const [isLargeViewport, setIsLargeViewport] = useState(false);
+export const GameContainer: React.FC = () => {
   const {
     onInitCountdown,
     countdown,
@@ -15,22 +11,15 @@ export const GameContainer = () => {
     userError,
   } = useGame();
 
-  useEffect(() => {
-    viewportIsWiderThan768
-      ? setIsLargeViewport(true)
-      : setIsLargeViewport(false);
-  }, [viewportIsWiderThan768]);
-
   enum CountDown {
     "Go!",
     "Set",
     "Ready",
   }
+
   return (
     <Game>
-      {isLargeViewport && (
-        <Game.StoryHeader>EDDIE D MOORE: You Have Arrived</Game.StoryHeader>
-      )}
+      <Game.StoryHeader>EDDIE D MOORE: You Have Arrived</Game.StoryHeader>
 
       <Game.StoryText>
         When the GPS said that I had arrived at my destination, I found myself
