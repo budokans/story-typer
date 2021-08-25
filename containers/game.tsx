@@ -47,7 +47,7 @@ export const GameContainer = () => {
           gameStatus={status}
           error={userError}
         />
-        {isLargeViewport && <Game.ErrorAlert />}
+        {userError && <Game.ErrorAlert />}
         <Game.BtnSm type="restart" />
         <Game.BtnSm type="new" />
       </Game.Pad>
