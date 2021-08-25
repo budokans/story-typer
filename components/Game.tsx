@@ -33,7 +33,9 @@ interface Compound {
   ErrorAlert: React.FC;
   BtnSm: React.FC<{ type: "restart" | "new" }>;
   Countdown: React.FC;
-  StopWatch: React.FC<{ idle: boolean }>;
+  StopWatch: React.FC<{
+    gameStatus: "idle" | "countdown" | "inGame" | "complete";
+  }>;
 }
 
 type GameCC = Compound & React.FC;
@@ -153,10 +155,17 @@ Game.Countdown = function GameCountdown({ children }) {
   );
 };
 
-Game.StopWatch = function GameStopWatch({ idle }) {
+Game.StopWatch = function GameStopWatch({ gameStatus, children }) {
   return (
-    <Heading as="h4" color={idle ? "gray.500" : "blackAlpha.800"}>
-      0:34
+    <Heading
+      as="h4"
+      color={
+        gameStatus === "idle" || gameStatus === "complete"
+          ? "gray.500"
+          : "blackAlpha.800"
+      }
+    >
+      {children}
     </Heading>
   );
 };

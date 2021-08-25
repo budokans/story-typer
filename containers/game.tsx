@@ -5,6 +5,7 @@ export const GameContainer: React.FC = () => {
   const {
     onInitCountdown,
     countdown,
+    timer,
     status,
     inputValue,
     onInputChange,
@@ -43,7 +44,10 @@ export const GameContainer: React.FC = () => {
       {status === "countdown" ? (
         <Game.Countdown>{CountDown[countdown]}</Game.Countdown>
       ) : (
-        <Game.StopWatch idle={status === "idle"} />
+        <Game.StopWatch gameStatus={status}>
+          {timer.minutes}:
+          {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
+        </Game.StopWatch>
       )}
     </Game>
   );

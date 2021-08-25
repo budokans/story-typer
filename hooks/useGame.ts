@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
 import { useCountdown } from "./useCountdown";
+import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
 
 const GameReducer = (state: GameState, action: GameAction): GameState => {
@@ -66,6 +67,7 @@ export const useGame = () => {
     },
   });
   const count = useCountdown(state.status);
+  const timer = useTimer(state.status);
   const totalUserInput = state.userStoredInput.concat(state.userCurrentInput);
 
   // Listen for countdown complete and update game status to "inGame"
@@ -139,5 +141,6 @@ export const useGame = () => {
     onInputChange: handleInputChange,
     onInitCountdown: initCountdown,
     countdown: count,
+    timer: timer,
   };
 };
