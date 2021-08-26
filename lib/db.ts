@@ -44,3 +44,15 @@ export const getLatestTimestamp = async (): Promise<string> => {
 
   return snapshot.docs[0].data().datePublished;
 };
+
+export const queryStories = async (): Promise<Story[]> => {
+  const snapshot = await db
+    .collection("stories")
+    .orderBy("datePublished", "desc")
+    .limit(10)
+    .get();
+
+  // return the last document snapshot to pass to the next query cursor clause as well as the documents.
+  const stories = snapshot.docs.map((doc) => doc.data()) as Story[];
+  return stories;
+};

@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useReducer } from "react";
 import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
+import { useProvideStories } from "./useProvideStories";
 
 const GameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
@@ -69,6 +70,8 @@ export const useGame = () => {
   const count = useCountdown(state.status);
   const timer = useTimer(state.status);
   const totalUserInput = state.userStoredInput.concat(state.userCurrentInput);
+  const stories = useProvideStories();
+  console.log(stories);
 
   // Listen for countdown complete and update game status to "inGame"
   useEffect(() => {

@@ -9,7 +9,6 @@ interface Timer {
 export const useTimer = (status: GameState["status"]): Timer => {
   const [count, setCount] = useState(0);
 
-  // Listen for countdown state and initiate countdown
   useEffect(() => {
     if (status === "inGame" && count < 120) {
       const timerInterval = setInterval(() => {
