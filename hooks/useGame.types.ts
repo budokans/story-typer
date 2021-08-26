@@ -1,12 +1,16 @@
+import { Story } from "interfaces";
+
 export interface GameState {
-  status: "idle" | "countdown" | "inGame" | "complete";
+  status: "loading" | "idle" | "countdown" | "inGame" | "complete";
   userError: boolean;
   userStoredInput: string;
   userCurrentInput: string;
-  story: { storyText: string; title: string };
+  gameCount: number;
+  stories: Story[];
 }
 
 export type GameAction =
+  | { type: "storiesLoaded"; stories: Story[] }
   | { type: "startCountdown" }
   | { type: "countdownTick" }
   | { type: "countdownComplete" }

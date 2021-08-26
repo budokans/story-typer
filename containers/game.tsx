@@ -3,6 +3,7 @@ import { useGame } from "@/hooks/useGame";
 
 export const GameContainer: React.FC = () => {
   const {
+    currentStory,
     onInitCountdown,
     countdown,
     timer,
@@ -20,13 +21,12 @@ export const GameContainer: React.FC = () => {
 
   return (
     <Game>
-      <Game.StoryHeader>EDDIE D MOORE: You Have Arrived</Game.StoryHeader>
+      <Game.StoryHeader>
+        {status !== "loading" ? currentStory.title : ""}
+      </Game.StoryHeader>
 
       <Game.StoryText>
-        When the GPS said that I had arrived at my destination, I found myself
-        parked in front of an abandoned country church on a dead end, gravel
-        road. Most of the paint had long peeled away, and the graveyard beside
-        it was full. I wondered who buried the last member.
+        {status !== "loading" ? currentStory.storyText : ""}
       </Game.StoryText>
 
       <Game.Pad>

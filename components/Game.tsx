@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
+import { GameState } from "@/hooks/useGame.types";
 
 interface Compound {
   StoryHeader: React.FC;
@@ -28,13 +29,13 @@ interface Compound {
     onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
     value: string;
     error: boolean;
-    gameStatus: "idle" | "countdown" | "inGame" | "complete";
+    gameStatus: GameState["status"];
   }>;
   ErrorAlert: React.FC;
   BtnSm: React.FC<{ type: "restart" | "new" }>;
   Countdown: React.FC;
   StopWatch: React.FC<{
-    gameStatus: "idle" | "countdown" | "inGame" | "complete";
+    gameStatus: GameState["status"];
   }>;
 }
 

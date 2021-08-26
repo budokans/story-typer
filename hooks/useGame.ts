@@ -1,11 +1,18 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
+import { useStories } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
-import { useProvideStories } from "./useProvideStories";
 
 const GameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
+    case "storiesLoaded": {
+      return {
+        ...state,
+        stories: action.stories,
+        status: "idle",
+      };
+    }
     case "startCountdown": {
       return {
         ...state,
@@ -57,21 +64,24 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, {
-    status: "idle",
+    status: "loading",
     userError: false,
     userStoredInput: "",
     userCurrentInput: "",
-    story: {
-      storyText:
-        "When the GPS said that I had arrived at my destination, I found myself parked in front of an abandoned country church on a dead end, gravel road. Most of the paint had long peeled away, and the graveyard beside it was full. I wondered who buried the last member.",
-      title: "EDDIE D MOORE: You Have Arrived",
-    },
+    stories: [],
+    gameCount: 7,
   });
+  const { stories, isLoading: storiesAreLoading } = useStories();
   const count = useCountdown(state.status);
   const timer = useTimer(state.status);
   const totalUserInput = state.userStoredInput.concat(state.userCurrentInput);
-  const stories = useProvideStories();
-  console.log(stories);
+  const currentStory = state.stories[state.gameCount];
+
+  useEffect(() => {
+    if (!storiesAreLoading) {
+      dispatch({ type: "storiesLoaded", stories });
+    }
+  }, [storiesAreLoading, stories]);
 
   // Listen for countdown complete and update game status to "inGame"
   useEffect(() => {
@@ -100,44 +110,50 @@ export const useGame = () => {
 
   // Listen for user errors and finished words.
   useEffect(() => {
-    const errorPresent = checkForUserError(
-      state.userCurrentInput,
-      state.userStoredInput,
-      state.story.storyText
-    );
+    if (currentStory) {
+      const errorPresent = checkForUserError(
+        state.userCurrentInput,
+        state.userStoredInput,
+        currentStory.storyText
+      );
 
-    if (errorPresent) {
-      return dispatch({ type: "userTypingError" });
-    } else {
-      dispatch({ type: "errorFree" });
-    }
+      if (errorPresent) {
+        return dispatch({ type: "userTypingError" });
+      } else {
+        dispatch({ type: "errorFree" });
+      }
 
-    const lastInputCharIsSpace =
-      state.userCurrentInput.charAt(state.userCurrentInput.length - 1) === " ";
+      const lastInputCharIsSpace =
+        state.userCurrentInput.charAt(state.userCurrentInput.length - 1) ===
+        " ";
 
-    const isFinalChar =
-      totalUserInput.length === state.story.storyText.length &&
-      !state.userError;
+      const isFinalChar =
+        totalUserInput.length === currentStory.storyText.length &&
+        !state.userError;
 
-    if ((!state.userError && lastInputCharIsSpace) || isFinalChar) {
-      dispatch({ type: "wordCompleted" });
+      if ((!state.userError && lastInputCharIsSpace) || isFinalChar) {
+        dispatch({ type: "wordCompleted" });
+      }
     }
   }, [
     state.userCurrentInput,
     state.userStoredInput,
-    state.story.storyText,
+    currentStory,
     state.userError,
     totalUserInput,
   ]);
 
   // Listen for game completion
   useEffect(() => {
-    if (state.userStoredInput === state.story.storyText) {
-      dispatch({ type: "win" });
+    if (currentStory) {
+      if (state.userStoredInput === currentStory.storyText) {
+        dispatch({ type: "win" });
+      }
     }
-  }, [state.userStoredInput, state.story.storyText]);
+  }, [state.userStoredInput, currentStory]);
 
   return {
+    currentStory,
     status: state.status,
     inputValue: state.userCurrentInput,
     userError: state.userError,
