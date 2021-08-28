@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useMediaQuery } from "@chakra-ui/react";
 import { Game } from "@/components/Game";
 import { useGame } from "@/hooks/useGame";
 
@@ -14,6 +16,15 @@ export const GameContainer: React.FC = () => {
     onResetClick,
   } = useGame();
 
+  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
+  const [isLargeViewport, setIsLargeViewport] = useState(false);
+
+  useEffect(() => {
+    viewportIsWiderThan768
+      ? setIsLargeViewport(true)
+      : setIsLargeViewport(false);
+  }, [viewportIsWiderThan768]);
+
   enum CountDown {
     "Go!",
     "Set",
@@ -23,10 +34,12 @@ export const GameContainer: React.FC = () => {
   return (
     <Game>
       {status === "pending" ? (
-        <Game.Skeleton />
+        <Game.Skeleton isLargeViewport={isLargeViewport} />
       ) : (
         <>
-          <Game.StoryHeader>{currentStory.title}</Game.StoryHeader>
+          <Game.StoryHeader isLargeViewport={isLargeViewport}>
+            {currentStory.title}
+          </Game.StoryHeader>
           <Game.StoryText>{currentStory.storyText}</Game.StoryText>
           <Game.Pad>
             <Game.Input

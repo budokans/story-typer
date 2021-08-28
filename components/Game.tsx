@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, MutableRefObject, useEffect, useRef } from "react";
 import {
   Center,
   Container as ChakraContainer,
@@ -15,7 +9,6 @@ import {
   Skeleton,
   SkeletonCircle,
   Text,
-  useMediaQuery,
   VStack,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
@@ -23,8 +16,8 @@ import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 import { GameState } from "@/hooks/useGame.types";
 
 interface Compound {
-  Skeleton: React.FC;
-  StoryHeader: React.FC;
+  Skeleton: React.FC<{ isLargeViewport: boolean }>;
+  StoryHeader: React.FC<{ isLargeViewport: boolean }>;
   StoryText: React.FC;
   Pad: React.FC;
   Input: React.FC<{
@@ -59,16 +52,7 @@ const Container: React.FC = ({ children }) => {
   );
 };
 
-Game.Skeleton = function GameSkeleton() {
-  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
-  const [isLargeViewport, setIsLargeViewport] = useState(false);
-
-  useEffect(() => {
-    viewportIsWiderThan768
-      ? setIsLargeViewport(true)
-      : setIsLargeViewport(false);
-  }, [viewportIsWiderThan768]);
-
+Game.Skeleton = function GameSkeleton({ isLargeViewport }) {
   return (
     <>
       {/* <Game.StoryHeader> */}
@@ -102,16 +86,7 @@ Game.Skeleton = function GameSkeleton() {
   );
 };
 
-Game.StoryHeader = function GameStoryHeader({ children }) {
-  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
-  const [isLargeViewport, setIsLargeViewport] = useState(false);
-
-  useEffect(() => {
-    viewportIsWiderThan768
-      ? setIsLargeViewport(true)
-      : setIsLargeViewport(false);
-  }, [viewportIsWiderThan768]);
-
+Game.StoryHeader = function GameStoryHeader({ isLargeViewport, children }) {
   return isLargeViewport ? (
     <Heading fontSize="clamp(1.25rem, 6vw, 4rem)">{children}</Heading>
   ) : null;
