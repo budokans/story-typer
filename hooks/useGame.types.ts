@@ -1,7 +1,7 @@
 import { Story } from "interfaces";
 
 export interface GameState {
-  status: "loading" | "idle" | "countdown" | "inGame" | "complete";
+  status: "pending" | "idle" | "countdown" | "inGame" | "complete";
   userError: boolean;
   userStoredInput: string;
   userCurrentInput: string;

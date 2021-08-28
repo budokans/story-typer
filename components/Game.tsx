@@ -12,6 +12,8 @@ import {
   Heading,
   IconButton,
   Input,
+  Skeleton,
+  SkeletonCircle,
   Text,
   useMediaQuery,
   VStack,
@@ -21,6 +23,7 @@ import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 import { GameState } from "@/hooks/useGame.types";
 
 interface Compound {
+  Skeleton: React.FC;
   StoryHeader: React.FC;
   StoryText: React.FC;
   Pad: React.FC;
@@ -56,6 +59,49 @@ const Container: React.FC = ({ children }) => {
   );
 };
 
+Game.Skeleton = function GameSkeleton() {
+  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
+  const [isLargeViewport, setIsLargeViewport] = useState(false);
+
+  useEffect(() => {
+    viewportIsWiderThan768
+      ? setIsLargeViewport(true)
+      : setIsLargeViewport(false);
+  }, [viewportIsWiderThan768]);
+
+  return (
+    <>
+      {/* <Game.StoryHeader> */}
+      {isLargeViewport && (
+        <>
+          <Skeleton height="35px" w="50%" alignSelf="flex-start" />
+          <Skeleton height="35px" w="90%" alignSelf="flex-start" />
+          <Skeleton height="35px" w="75%" alignSelf="flex-start" />
+        </>
+      )}
+
+      {/* <Game.StoryText> */}
+      <Skeleton height="15px" w="80%" alignSelf="flex-start" />
+      <Skeleton height="15px" w="90%" alignSelf="flex-start" />
+      <Skeleton height="15px" w="80%" alignSelf="flex-start" />
+      <Skeleton height="15px" w="95%" alignSelf="flex-start" />
+      <Skeleton height="15px" w="65%" alignSelf="flex-start" />
+
+      <Game.Pad>
+        <Skeleton
+          height="40px"
+          w={["20ch", "20ch", "30ch"]}
+          my={4}
+          mr="auto"
+          borderRadius="md"
+        />
+        <SkeletonCircle size="10" ml={3} />
+        <SkeletonCircle size="10" ml={3} />
+      </Game.Pad>
+    </>
+  );
+};
+
 Game.StoryHeader = function GameStoryHeader({ children }) {
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);
@@ -79,6 +125,7 @@ Game.Pad = function GamePad({ children }) {
   return (
     <Flex
       justify="space-between"
+      align="center"
       w={["100vw", "100%"]}
       bg="blackAlpha.800"
       borderRadius={["none", "xl"]}

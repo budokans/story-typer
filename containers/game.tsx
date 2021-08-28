@@ -22,33 +22,33 @@ export const GameContainer: React.FC = () => {
 
   return (
     <Game>
-      <Game.StoryHeader>
-        {status !== "loading" ? currentStory.title : ""}
-      </Game.StoryHeader>
-
-      <Game.StoryText>
-        {status !== "loading" ? currentStory.storyText : ""}
-      </Game.StoryText>
-
-      <Game.Pad>
-        <Game.Input
-          onInputClick={onInitCountdown}
-          onInputChange={onInputChange}
-          value={inputValue}
-          gameStatus={status}
-          error={userError}
-        />
-        {userError && <Game.ErrorAlert />}
-        <Game.BtnSm type="restart" onClick={onResetClick} />
-        <Game.BtnSm type="new" onClick={onResetClick} />
-      </Game.Pad>
-      {status === "countdown" ? (
-        <Game.Countdown>{CountDown[countdown]}</Game.Countdown>
+      {status === "pending" ? (
+        <Game.Skeleton />
       ) : (
-        <Game.StopWatch gameStatus={status}>
-          {timer.minutes}:
-          {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
-        </Game.StopWatch>
+        <>
+          <Game.StoryHeader>{currentStory.title}</Game.StoryHeader>
+          <Game.StoryText>{currentStory.storyText}</Game.StoryText>
+          <Game.Pad>
+            <Game.Input
+              onInputClick={onInitCountdown}
+              onInputChange={onInputChange}
+              value={inputValue}
+              gameStatus={status}
+              error={userError}
+            />
+            {userError && <Game.ErrorAlert />}
+            <Game.BtnSm type="restart" onClick={onResetClick} />
+            <Game.BtnSm type="new" onClick={onResetClick} />
+          </Game.Pad>
+          {status === "countdown" ? (
+            <Game.Countdown>{CountDown[countdown]}</Game.Countdown>
+          ) : (
+            <Game.StopWatch gameStatus={status}>
+              {timer.minutes}:
+              {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
+            </Game.StopWatch>
+          )}
+        </>
       )}
     </Game>
   );

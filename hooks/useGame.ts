@@ -5,7 +5,7 @@ import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
 
 const initialState: GameState = {
-  status: "loading",
+  status: "pending",
   userError: false,
   userStoredInput: "",
   userCurrentInput: "",
