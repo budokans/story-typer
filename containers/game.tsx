@@ -11,6 +11,7 @@ export const GameContainer: React.FC = () => {
     inputValue,
     onInputChange,
     userError,
+    onResetClick,
   } = useGame();
 
   enum CountDown {
@@ -38,8 +39,8 @@ export const GameContainer: React.FC = () => {
           error={userError}
         />
         {userError && <Game.ErrorAlert />}
-        <Game.BtnSm type="restart" />
-        <Game.BtnSm type="new" />
+        <Game.BtnSm type="restart" onClick={onResetClick} />
+        <Game.BtnSm type="new" onClick={onResetClick} />
       </Game.Pad>
       {status === "countdown" ? (
         <Game.Countdown>{CountDown[countdown]}</Game.Countdown>

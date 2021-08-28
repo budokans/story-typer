@@ -18,4 +18,5 @@ export type GameAction =
   | { type: "errorFree" }
   | { type: "userTypingError" }
   | { type: "wordCompleted" }
-  | { type: "win" };
+  | { type: "win" }
+  | { type: "reset" };

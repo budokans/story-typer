@@ -4,6 +4,15 @@ import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
 
+const initialState: GameState = {
+  status: "loading",
+  userError: false,
+  userStoredInput: "",
+  userCurrentInput: "",
+  stories: [],
+  gameCount: 0,
+};
+
 const GameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
     case "storiesLoaded": {
@@ -56,6 +65,15 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
         status: "complete",
       };
     }
+    case "reset": {
+      return {
+        ...state,
+        userError: false,
+        userStoredInput: "",
+        userCurrentInput: "",
+        status: "idle",
+      };
+    }
     default: {
       throw new Error(`Action of type ${action} not recognized.`);
     }
@@ -63,14 +81,7 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 };
 
 export const useGame = () => {
-  const [state, dispatch] = useReducer(GameReducer, {
-    status: "loading",
-    userError: false,
-    userStoredInput: "",
-    userCurrentInput: "",
-    stories: [],
-    gameCount: 7,
-  });
+  const [state, dispatch] = useReducer(GameReducer, initialState);
   const { stories, isLoading: storiesAreLoading } = useStories();
   const count = useCountdown(state.status);
   const timer = useTimer(state.status);
@@ -96,6 +107,10 @@ export const useGame = () => {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     dispatch({ type: "inputValueChange", inputValue });
+  };
+
+  const handleResetClick = () => {
+    dispatch({ type: "reset" });
   };
 
   const checkForUserError = (
@@ -161,5 +176,6 @@ export const useGame = () => {
     onInitCountdown: initCountdown,
     countdown: count,
     timer: timer,
+    onResetClick: handleResetClick,
   };
 };

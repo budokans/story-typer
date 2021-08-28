@@ -32,7 +32,7 @@ interface Compound {
     gameStatus: GameState["status"];
   }>;
   ErrorAlert: React.FC;
-  BtnSm: React.FC<{ type: "restart" | "new" }>;
+  BtnSm: React.FC<{ type: "restart" | "new"; onClick: () => void }>;
   Countdown: React.FC;
   StopWatch: React.FC<{
     gameStatus: GameState["status"];
@@ -133,7 +133,7 @@ Game.ErrorAlert = function ErrorAlert() {
   );
 };
 
-Game.BtnSm = function GameBtnSm({ type }) {
+Game.BtnSm = function GameBtnSm({ type, onClick }) {
   return (
     <IconButton
       icon={type === "restart" ? <RiRestartFill /> : <RiSkipForwardFill />}
@@ -144,6 +144,7 @@ Game.BtnSm = function GameBtnSm({ type }) {
       fontSize="1.75rem"
       bg={type === "restart" ? "gold" : "lime"}
       color="blackAlpha.800"
+      onClick={onClick}
     />
   );
 };
