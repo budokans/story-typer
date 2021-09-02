@@ -11,6 +11,7 @@ const initialState: GameState = {
   userCurrentInput: "",
   stories: [],
   gameCount: 0,
+  wpm: 0,
 };
 
 const GameReducer = (state: GameState, action: GameAction): GameState => {
@@ -60,9 +61,12 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
       };
     }
     case "win": {
+      const getWpm = (time: number) => Math.round(50 * (60 / time));
+
       return {
         ...state,
         status: "complete",
+        wpm: getWpm(action.time),
       };
     }
     case "reset": {
@@ -162,10 +166,10 @@ export const useGame = () => {
   useEffect(() => {
     if (currentStory) {
       if (state.userStoredInput === currentStory.storyText) {
-        dispatch({ type: "win" });
+        dispatch({ type: "win", time: timer.totalSeconds });
       }
     }
-  }, [state.userStoredInput, currentStory]);
+  }, [state.userStoredInput, currentStory, timer.totalSeconds]);
 
   return {
     currentStory,
@@ -177,5 +181,6 @@ export const useGame = () => {
     countdown: count,
     timer: timer,
     onResetClick: handleResetClick,
+    wpm: state.wpm,
   };
 };

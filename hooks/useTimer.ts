@@ -4,6 +4,7 @@ import { GameState } from "./useGame.types";
 interface Timer {
   minutes: number;
   seconds: number;
+  totalSeconds: number;
 }
 
 export const useTimer = (status: GameState["status"]): Timer => {
@@ -24,6 +25,7 @@ export const useTimer = (status: GameState["status"]): Timer => {
     return {
       minutes: count >= 60 ? Math.floor(count / 60) : 0,
       seconds: count >= 60 ? count % 60 : count,
+      totalSeconds: count,
     };
   };
 

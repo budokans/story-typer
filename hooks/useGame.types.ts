@@ -7,6 +7,7 @@ export interface GameState {
   userCurrentInput: string;
   gameCount: number;
   stories: Story[];
+  wpm: number;
 }
 
 export type GameAction =
@@ -18,5 +19,5 @@ export type GameAction =
   | { type: "errorFree" }
   | { type: "userTypingError" }
   | { type: "wordCompleted" }
-  | { type: "win" }
+  | { type: "win"; time: number }
   | { type: "reset" };
