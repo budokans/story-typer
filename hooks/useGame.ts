@@ -68,6 +68,7 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
         ...state,
         status: "complete",
         wpm: action.wpm,
+        gameCount: state.gameCount + 1,
       };
     }
     case "reset": {

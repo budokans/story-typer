@@ -44,7 +44,7 @@ export const Game: GameCC = ({ children }) => {
 const Container: React.FC = ({ children }) => {
   return (
     // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
-    <Center h={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
+    <Center minH={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
       <ChakraContainer px={[2, 6]}>
         <VStack spacing={[4, 6, 8]}>{children}</VStack>
       </ChakraContainer>

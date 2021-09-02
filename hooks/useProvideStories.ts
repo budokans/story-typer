@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { queryStories } from "@/lib/db";
 import { useAuth } from "@/context/auth";
-import { Story } from "interfaces";
+import { StoryWithId } from "interfaces";
 
 export const useProvideStories = () => {
   const { user, isLoading: authIsLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [stories, setStories] = useState<Story[]>([]);
+  const [stories, setStories] = useState<StoryWithId[]>([]);
   // First, let's fetch 10 stories from the top of the db and return them,
   // Then they can be passed to a context provider and read from useGame();
   // Then add the functionality in useGame() to create "games" in the database.
