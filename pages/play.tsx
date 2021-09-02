@@ -1,11 +1,11 @@
-import { LayoutContainer } from "@/containers/layout";
+import { Page } from "@/components/Page";
 import { GameContainer } from "@/containers/game";
 
 const Play: React.FC = () => {
   return (
-    <LayoutContainer>
+    <Page>
       <GameContainer />
-    </LayoutContainer>
+    </Page>
   );
 };
 

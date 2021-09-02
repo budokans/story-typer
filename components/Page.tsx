@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GoogleIcon } from "@/components/GoogleIcon";
 
-export const LayoutContainer: React.FC = ({ children }) => {
+export const Page: React.FC = ({ children }) => {
   const { user, signOut, signInWithGoogle } = useAuth();
   const userMenuItemStateStyles = {
     _hover: { bg: "blackAlpha.600" },
