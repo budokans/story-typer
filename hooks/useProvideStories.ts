@@ -12,7 +12,7 @@ export const useProvideStories = () => {
   // Then add the functionality in useGame() to create "games" in the database.
   // After which, we can write the functionality here where first a user is checked for, and then either we return stories new to them, or just the ten newest stories in the database.
 
-  const getStuff = async () => {
+  const loadStories = async () => {
     const batch = await queryStories();
     setStories(batch);
     setIsLoading(false);
@@ -20,7 +20,7 @@ export const useProvideStories = () => {
 
   useEffect(() => {
     if (!authIsLoading) {
-      getStuff();
+      loadStories();
     }
   }, [authIsLoading]);
 
