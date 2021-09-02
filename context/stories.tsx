@@ -1,9 +1,9 @@
 import { Context, createContext, useContext } from "react";
 import { useProvideStories } from "@/hooks/useProvideStories";
-import { Story } from "interfaces";
+import { StoryWithId } from "interfaces";
 
 interface StoryContext {
-  stories: Story[];
+  stories: StoryWithId[];
   isLoading: boolean;
 }
 

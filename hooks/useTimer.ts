@@ -21,13 +21,12 @@ export const useTimer = (status: GameState["status"]): Timer => {
     }
   }, [status, count]);
 
-  const getMinutesAndSeconds = (count: number): Timer => {
+  const getMinutesAndSeconds = (count: number) => {
     return {
       minutes: count >= 60 ? Math.floor(count / 60) : 0,
       seconds: count >= 60 ? count % 60 : count,
-      totalSeconds: count,
     };
   };
 
-  return getMinutesAndSeconds(count);
+  return { ...getMinutesAndSeconds(count), totalSeconds: count };
 };

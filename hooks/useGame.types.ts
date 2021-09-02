@@ -1,4 +1,4 @@
-import { Story } from "interfaces";
+import { StoryWithId } from "interfaces";
 
 export interface GameState {
   status: "pending" | "idle" | "countdown" | "inGame" | "complete";
@@ -6,12 +6,12 @@ export interface GameState {
   userStoredInput: string;
   userCurrentInput: string;
   gameCount: number;
-  stories: Story[];
+  stories: StoryWithId[];
   wpm: number;
 }
 
 export type GameAction =
-  | { type: "storiesLoaded"; stories: Story[] }
+  | { type: "storiesLoaded"; stories: StoryWithId[] }
   | { type: "startCountdown" }
   | { type: "countdownTick" }
   | { type: "countdownComplete" }
@@ -19,5 +19,5 @@ export type GameAction =
   | { type: "errorFree" }
   | { type: "userTypingError" }
   | { type: "wordCompleted" }
-  | { type: "win"; time: number }
+  | { type: "win"; wpm: number }
   | { type: "reset" };

@@ -1,8 +1,11 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
+import { useAuth } from "@/context/auth";
 import { useStories } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
+import { PrevGame, StoryWithId } from "interfaces";
+import { createPrevGame } from "@/lib/db";
 
 const initialState: GameState = {
   status: "pending",
@@ -61,12 +64,10 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
       };
     }
     case "win": {
-      const getWpm = (time: number) => Math.round(50 * (60 / time));
-
       return {
         ...state,
         status: "complete",
-        wpm: getWpm(action.time),
+        wpm: action.wpm,
       };
     }
     case "reset": {
@@ -76,6 +77,7 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
         userStoredInput: "",
         userCurrentInput: "",
         status: "idle",
+        wpm: 0,
       };
     }
     default: {
@@ -86,12 +88,14 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
+  const { user } = useAuth();
   const { stories, isLoading: storiesAreLoading } = useStories();
   const count = useCountdown(state.status);
   const timer = useTimer(state.status);
   const totalUserInput = state.userStoredInput.concat(state.userCurrentInput);
   const currentStory = state.stories[state.gameCount];
 
+  // Listen for when stories have been loaded into game state and initialise idle state.
   useEffect(() => {
     if (!storiesAreLoading) {
       dispatch({ type: "storiesLoaded", stories });
@@ -126,6 +130,20 @@ export const useGame = () => {
     const sourceTilUserInputEnds = source.slice(0, totalUserInput.length);
     return totalUserInput !== sourceTilUserInputEnds;
   };
+
+  const getWpm = (time: number) => Math.round(50 * (60 / time));
+
+  const constructGame = (
+    userId: string,
+    story: StoryWithId,
+    wpm: number
+  ): PrevGame => ({
+    userId: userId,
+    storyId: story.uid,
+    storyText: story.storyText,
+    datePlayed: new Date().toISOString(),
+    score: wpm,
+  });
 
   // Listen for user errors and finished words.
   useEffect(() => {
@@ -164,12 +182,15 @@ export const useGame = () => {
 
   // Listen for game completion
   useEffect(() => {
-    if (currentStory) {
-      if (state.userStoredInput === currentStory.storyText) {
-        dispatch({ type: "win", time: timer.totalSeconds });
+    if (state.userStoredInput === currentStory?.storyText) {
+      const wpm = getWpm(timer.totalSeconds);
+      if (user) {
+        const game = constructGame(user?.uid, currentStory, wpm);
+        createPrevGame(game);
       }
+      dispatch({ type: "win", wpm: wpm });
     }
-  }, [state.userStoredInput, currentStory, timer.totalSeconds]);
+  }, [state.userStoredInput, currentStory]);
 
   return {
     currentStory,
