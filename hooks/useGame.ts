@@ -9,6 +9,7 @@ import { createPrevGame } from "@/lib/db";
 
 const initialState: GameState = {
   status: "pending",
+  firstPlay: true,
   userError: false,
   userStoredInput: "",
   userCurrentInput: "",
