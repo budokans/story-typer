@@ -2,6 +2,7 @@ import { StoryWithId } from "interfaces";
 
 export interface GameState {
   status: "pending" | "idle" | "countdown" | "inGame" | "complete";
+  firstPlay: boolean;
   userError: boolean;
   userStoredInput: string;
   userCurrentInput: string;
@@ -20,4 +21,5 @@ export type GameAction =
   | { type: "userTypingError" }
   | { type: "wordCompleted" }
   | { type: "win"; wpm: number }
-  | { type: "reset" };
+  | { type: "reset" }
+  | { type: "next" };

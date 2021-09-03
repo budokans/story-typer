@@ -82,6 +82,14 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
         wpm: 0,
       };
     }
+    case "next": {
+      return {
+        ...initialState,
+        status: "idle",
+        stories: state.stories,
+        gameCount: state.gameCount + 1,
+      };
+    }
     default: {
       throw new Error(`Action of type ${action} not recognized.`);
     }
@@ -121,6 +129,14 @@ export const useGame = () => {
 
   const handleResetClick = () => {
     dispatch({ type: "reset" });
+  };
+
+  const handleSkipClick = () => {
+    if (user) {
+      const game = constructGame(user?.uid, currentStory, 0);
+      createPrevGame(game);
+    }
+    dispatch({ type: "next" });
   };
 
   const checkForUserError = (
@@ -203,7 +219,8 @@ export const useGame = () => {
     onInitCountdown: initCountdown,
     countdown: count,
     timer: timer,
-    onResetClick: handleResetClick,
     wpm: state.wpm,
+    onResetClick: handleResetClick,
+    onSkipClick: handleSkipClick,
   };
 };

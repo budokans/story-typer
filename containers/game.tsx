@@ -14,6 +14,7 @@ export const GameContainer: React.FC = () => {
     onInputChange,
     userError,
     onResetClick,
+    onSkipClick,
     wpm,
   } = useGame();
 
@@ -52,7 +53,7 @@ export const GameContainer: React.FC = () => {
             />
             {userError && <Game.ErrorAlert />}
             <Game.BtnSm type="restart" onClick={onResetClick} />
-            <Game.BtnSm type="new" onClick={onResetClick} />
+            <Game.BtnSm type="new" onClick={onSkipClick} />
           </Game.Pad>
           {status === "countdown" ? (
             <Game.Countdown>{CountDown[countdown]}</Game.Countdown>
