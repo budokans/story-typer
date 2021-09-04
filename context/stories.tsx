@@ -1,18 +1,31 @@
-import { Context, createContext, useContext } from "react";
+import {
+  Context,
+  createContext,
+  useContext,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { useProvideStories } from "@/hooks/useProvideStories";
 import { StoryWithId } from "interfaces";
 
 interface StoryContext {
   stories: StoryWithId[];
   isLoading: boolean;
+  gameCount: number;
+  setGameCount: Dispatch<SetStateAction<number>>;
 }
 
 const storiesContext = createContext<StoryContext | null>(null);
 
 export const StoriesProvider: React.FC = ({ children }) => {
-  const { stories, isLoading } = useProvideStories();
+  const [gameCount, setGameCount] = useState(1);
+  const { stories, isLoading } = useProvideStories(gameCount);
+
   return (
-    <storiesContext.Provider value={{ stories, isLoading }}>
+    <storiesContext.Provider
+      value={{ stories, isLoading, gameCount, setGameCount }}
+    >
       {children}
     </storiesContext.Provider>
   );

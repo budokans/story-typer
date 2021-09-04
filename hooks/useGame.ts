@@ -13,8 +13,6 @@ const initialState: GameState = {
   userError: false,
   userStoredInput: "",
   userCurrentInput: "",
-  stories: [],
-  gameCount: 0,
   wpm: 0,
 };
 
@@ -23,7 +21,6 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
     case "storiesLoaded": {
       return {
         ...state,
-        stories: action.stories,
         status: "idle",
       };
     }
@@ -69,7 +66,6 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
         ...state,
         status: "complete",
         wpm: action.wpm,
-        gameCount: state.gameCount + 1,
       };
     }
     case "reset": {
@@ -86,8 +82,6 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...initialState,
         status: "idle",
-        stories: state.stories,
-        gameCount: state.gameCount + 1,
       };
     }
     default: {
@@ -99,16 +93,21 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
   const { user } = useAuth();
-  const { stories, isLoading: storiesAreLoading } = useStories();
+  const {
+    stories,
+    isLoading: storiesAreLoading,
+    gameCount,
+    setGameCount,
+  } = useStories();
   const count = useCountdown(state.status);
   const timer = useTimer(state.status);
   const totalUserInput = state.userStoredInput.concat(state.userCurrentInput);
-  const currentStory = state.stories[state.gameCount];
+  const currentStory = stories[gameCount - 1];
 
   // Listen for when stories have been loaded into game state and initialise idle state.
   useEffect(() => {
     if (!storiesAreLoading) {
-      dispatch({ type: "storiesLoaded", stories });
+      dispatch({ type: "storiesLoaded" });
     }
   }, [storiesAreLoading, stories]);
 
@@ -136,6 +135,7 @@ export const useGame = () => {
       const game = constructGame(user?.uid, currentStory, 0);
       createPrevGame(game);
     }
+    setGameCount(gameCount + 1);
     dispatch({ type: "next" });
   };
 
@@ -206,6 +206,7 @@ export const useGame = () => {
         const game = constructGame(user?.uid, currentStory, wpm);
         createPrevGame(game);
       }
+      setGameCount(gameCount + 1);
       dispatch({ type: "win", wpm: wpm });
     }
   }, [state.userStoredInput, currentStory]);

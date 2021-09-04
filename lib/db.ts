@@ -1,5 +1,10 @@
-import { PrevGame, Story, StoryWithId, User } from "../interfaces";
 import { firebase } from "./firebase";
+import {
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+  DocumentData,
+} from "@firebase/firestore-types";
+import { PrevGame, Story, StoryWithId, User } from "../interfaces";
 
 const db = firebase.firestore();
 
@@ -45,15 +50,32 @@ export const getLatestTimestamp = async (): Promise<string> => {
   return snapshot.docs[0].data().datePublished;
 };
 
-export const queryStories = async (): Promise<StoryWithId[]> => {
-  const snapshot = await db
-    .collection("stories")
-    .orderBy("datePublished", "desc")
-    .limit(10)
-    .get();
+export const queryStories = async (
+  startAfter: QueryDocumentSnapshot<DocumentData> | null
+): Promise<{
+  batch: StoryWithId[];
+  last: QueryDocumentSnapshot<DocumentData>;
+}> => {
+  let snapshot: QuerySnapshot<DocumentData>;
 
-  // TO DO: return the last document snapshot to pass to the next query cursor clause as well as the documents.
-  const stories = snapshot.docs.map((doc) => {
+  if (startAfter) {
+    snapshot = await db
+      .collection("stories")
+      .orderBy("datePublished", "desc")
+      .startAfter(startAfter.data().datePublished)
+      .limit(10)
+      .get();
+  } else {
+    snapshot = await db
+      .collection("stories")
+      .orderBy("datePublished", "desc")
+      .limit(10)
+      .get();
+  }
+
+  const last = snapshot.docs[snapshot.docs.length - 1];
+
+  const batch = snapshot.docs.map((doc) => {
     const story = doc.data() as Story;
     return {
       uid: doc.id,
@@ -61,7 +83,7 @@ export const queryStories = async (): Promise<StoryWithId[]> => {
     } as StoryWithId;
   });
 
-  return stories;
+  return { batch, last };
 };
 
 export const createPrevGame = async (game: PrevGame): Promise<void> => {
