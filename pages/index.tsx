@@ -1,4 +1,5 @@
 import { GetStaticProps } from "next";
+import { useRouter } from "next/router";
 import { Skeleton } from "@chakra-ui/react";
 import { getStoriesCount } from "@/lib/db-admin";
 import { useAuth } from "@/context/auth";
@@ -17,7 +18,8 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, signInWithGoogle } = useAuth();
+  const router = useRouter();
 
   return (
     <Page>
@@ -58,14 +60,15 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
                   <Home.Benefit>View your top and average speeds</Home.Benefit>
                 </Home.Benefits>
 
-                <Home.SignInBtn>
+                <Home.PlayBtn onClick={() => signInWithGoogle()}>
                   <GoogleIcon />
-                  Sign in with Google
-                </Home.SignInBtn>
-                <Home.PlayBtn>Play Now</Home.PlayBtn>
+                  Continue with Google
+                </Home.PlayBtn>
               </>
             ) : (
-              <Home.PlayBtn>Play Now</Home.PlayBtn>
+              <Home.PlayBtn onClick={() => router.push("/play")}>
+                Play Now
+              </Home.PlayBtn>
             )}
           </Home.CTAWrapper>
         </Skeleton>

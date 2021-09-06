@@ -11,7 +11,6 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/dist/client/router";
 import Image from "next/image";
 import { RiThumbUpFill } from "react-icons/ri";
 import logo from "../public/story-typer-logo.png";
@@ -24,8 +23,7 @@ interface Compound {
   CTA: React.FC;
   Benefits: React.FC;
   Benefit: React.FC;
-  PlayBtn: React.FC;
-  SignInBtn: React.FC;
+  PlayBtn: React.FC<{ onClick: () => void }>;
 }
 
 type HomeCC = React.FC & Compound;
@@ -138,26 +136,7 @@ Home.Benefit = function HomeBenefit({ children }) {
   );
 };
 
-Home.SignInBtn = function HomeSignInBtn({ children }) {
-  const { signInWithGoogle } = useAuth();
-
-  return (
-    <Button
-      mb={4}
-      w={64}
-      h={12}
-      _hover={{ bg: "brand.500", color: "white" }}
-      variant="outline"
-      onClick={() => signInWithGoogle()}
-    >
-      {children}
-    </Button>
-  );
-};
-
-Home.PlayBtn = function HomePlayBtn({ children }) {
-  const router = useRouter();
-
+Home.PlayBtn = function HomePlayBtn({ onClick, children }) {
   return (
     <Button
       w={64}
@@ -165,7 +144,7 @@ Home.PlayBtn = function HomePlayBtn({ children }) {
       bg="black"
       color="brand.500"
       _hover={{ bg: "blackAlpha.800" }}
-      onClick={() => router.push("/play")}
+      onClick={onClick}
     >
       {children}
     </Button>
