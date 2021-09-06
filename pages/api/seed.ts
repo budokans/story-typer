@@ -10,7 +10,7 @@ export default async function handler(
     res
       .status(200)
       .json({ status: "Stories fetched and database seeding underway..." });
-  } catch (e) {
+  } catch (e: any) {
     res
       .status(500)
       .json({ status: `Database seeding failed: ${e.message}. See logs.` });
