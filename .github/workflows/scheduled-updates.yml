@@ -10,4 +10,4 @@ jobs:
         run: |
         curl --request POST \
         --url 'https://story-typer.vercel.app/api/update' \
-        --header 'Authorization: Bearer ${{process.env.API_ACCESS_TOKEN}}'
+        --header 'Authorization: Bearer ${{ process.env.API_ACCESS_TOKEN }}'

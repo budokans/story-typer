@@ -37,6 +37,10 @@ export interface Story {
   datePublished: string;
 }
 
+export interface StoryWithId extends Story {
+  uid: string;
+}
+
 export interface ProvideAuth {
   user: UserAuth | null;
   isLoading: boolean;
@@ -45,3 +49,11 @@ export interface ProvideAuth {
 }
 
 export type AuthContext = ProvideAuth | null;
+
+export interface PrevGame {
+  userId: string;
+  storyId: string;
+  storyText: string;
+  datePlayed: string;
+  score: number;
+}

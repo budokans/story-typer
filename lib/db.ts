@@ -1,5 +1,10 @@
-import { Story, User } from "../interfaces";
 import { firebase } from "./firebase";
+import {
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+  DocumentData,
+} from "@firebase/firestore-types";
+import { PrevGame, Story, StoryWithId, User } from "../interfaces";
 
 const db = firebase.firestore();
 
@@ -43,4 +48,44 @@ export const getLatestTimestamp = async (): Promise<string> => {
     .get();
 
   return snapshot.docs[0].data().datePublished;
+};
+
+export const queryStories = async (
+  startAfter: QueryDocumentSnapshot<DocumentData> | null
+): Promise<{
+  batch: StoryWithId[];
+  last: QueryDocumentSnapshot<DocumentData>;
+}> => {
+  let snapshot: QuerySnapshot<DocumentData>;
+
+  if (startAfter) {
+    snapshot = await db
+      .collection("stories")
+      .orderBy("datePublished", "desc")
+      .startAfter(startAfter.data().datePublished)
+      .limit(10)
+      .get();
+  } else {
+    snapshot = await db
+      .collection("stories")
+      .orderBy("datePublished", "desc")
+      .limit(10)
+      .get();
+  }
+
+  const last = snapshot.docs[snapshot.docs.length - 1];
+
+  const batch = snapshot.docs.map((doc) => {
+    const story = doc.data() as Story;
+    return {
+      uid: doc.id,
+      ...story,
+    } as StoryWithId;
+  });
+
+  return { batch, last };
+};
+
+export const createPrevGame = async (game: PrevGame): Promise<void> => {
+  await db.collection("prevGames").add(game);
 };

@@ -1,4 +1,4 @@
-import { WarningIcon } from "@chakra-ui/icons";
+import { ChangeEvent, MutableRefObject, useEffect, useRef } from "react";
 import {
   Center,
   Container as ChakraContainer,
@@ -6,20 +6,33 @@ import {
   Heading,
   IconButton,
   Input,
+  Skeleton,
+  SkeletonCircle,
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { WarningIcon } from "@chakra-ui/icons";
 import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
+import { GameState } from "@/hooks/useGame.types";
 
 interface Compound {
-  StoryHeader: React.FC;
+  Skeleton: React.FC<{ isLargeViewport: boolean }>;
+  StoryHeader: React.FC<{ isLargeViewport: boolean }>;
   StoryText: React.FC;
   Pad: React.FC;
-  Input: React.FC;
+  Input: React.FC<{
+    onInputClick: () => void;
+    onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    value: string;
+    error: boolean;
+    gameStatus: GameState["status"];
+  }>;
   ErrorAlert: React.FC;
-  BtnSm: React.FC<{ type: "restart" | "new" }>;
+  BtnSm: React.FC<{ type: "restart" | "new"; onClick: () => void }>;
   Countdown: React.FC;
-  StopWatch: React.FC;
+  StopWatch: React.FC<{
+    gameStatus: GameState["status"];
+  }>;
 }
 
 type GameCC = Compound & React.FC;
@@ -31,7 +44,7 @@ export const Game: GameCC = ({ children }) => {
 const Container: React.FC = ({ children }) => {
   return (
     // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
-    <Center h={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
+    <Center minH={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
       <ChakraContainer px={[2, 6]}>
         <VStack spacing={[4, 6, 8]}>{children}</VStack>
       </ChakraContainer>
@@ -39,8 +52,44 @@ const Container: React.FC = ({ children }) => {
   );
 };
 
-Game.StoryHeader = function GameStoryHeader({ children }) {
-  return <Heading fontSize="clamp(1.25rem, 6vw, 4rem)">{children}</Heading>;
+Game.Skeleton = function GameSkeleton({ isLargeViewport }) {
+  return (
+    <>
+      {/* <Game.StoryHeader> */}
+      {isLargeViewport && (
+        <>
+          <Skeleton height="35px" w="50%" alignSelf="flex-start" />
+          <Skeleton height="35px" w="90%" alignSelf="flex-start" />
+          <Skeleton height="35px" w="75%" alignSelf="flex-start" />
+        </>
+      )}
+
+      {/* <Game.StoryText> */}
+      <Skeleton height="15px" w="80%" alignSelf="flex-start" />
+      <Skeleton height="15px" w="90%" alignSelf="flex-start" />
+      <Skeleton height="15px" w="80%" alignSelf="flex-start" />
+      <Skeleton height="15px" w="95%" alignSelf="flex-start" />
+      <Skeleton height="15px" w="65%" alignSelf="flex-start" />
+
+      <Game.Pad>
+        <Skeleton
+          height="40px"
+          w={["20ch", "20ch", "30ch"]}
+          my={4}
+          mr="auto"
+          borderRadius="md"
+        />
+        <SkeletonCircle size="10" ml={3} />
+        <SkeletonCircle size="10" ml={3} />
+      </Game.Pad>
+    </>
+  );
+};
+
+Game.StoryHeader = function GameStoryHeader({ isLargeViewport, children }) {
+  return isLargeViewport ? (
+    <Heading fontSize="clamp(1.25rem, 6vw, 4rem)">{children}</Heading>
+  ) : null;
 };
 
 Game.StoryText = function GameStoryText({ children }) {
@@ -51,9 +100,9 @@ Game.Pad = function GamePad({ children }) {
   return (
     <Flex
       justify="space-between"
-      wrap="wrap"
-      bg="blackAlpha.800"
+      align="center"
       w={["100vw", "100%"]}
+      bg="blackAlpha.800"
       borderRadius={["none", "xl"]}
       px={[3, 6]}
       py={[4, 6]}
@@ -64,13 +113,31 @@ Game.Pad = function GamePad({ children }) {
   );
 };
 
-Game.Input = function GameInput() {
+Game.Input = function GameInput({
+  onInputClick,
+  onInputChange,
+  value,
+  gameStatus,
+  error,
+}) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const input = inputRef as MutableRefObject<HTMLInputElement>;
+    gameStatus === "inGame" && input.current.focus();
+  }, [gameStatus]);
+
   return (
     <Input
-      placeholder="Click here to begin"
-      bg="white"
+      placeholder={gameStatus === "idle" ? "Click here to begin" : ""}
+      bg={error ? "red.300" : "white"}
       w="clamp(12rem, 50vw, 20rem)"
       mr="auto"
+      onClick={onInputClick}
+      onChange={onInputChange}
+      value={value}
+      disabled={gameStatus === "countdown"}
+      ref={inputRef}
     />
   );
 };
@@ -88,7 +155,7 @@ Game.ErrorAlert = function ErrorAlert() {
   );
 };
 
-Game.BtnSm = function GameBtnSm({ type }) {
+Game.BtnSm = function GameBtnSm({ type, onClick }) {
   return (
     <IconButton
       icon={type === "restart" ? <RiRestartFill /> : <RiSkipForwardFill />}
@@ -99,22 +166,30 @@ Game.BtnSm = function GameBtnSm({ type }) {
       fontSize="1.75rem"
       bg={type === "restart" ? "gold" : "lime"}
       color="blackAlpha.800"
+      onClick={onClick}
     />
   );
 };
 
-Game.Countdown = function GameCountdown() {
+Game.Countdown = function GameCountdown({ children }) {
   return (
-    <Heading as="h3" color="brand.500" pt={3}>
-      Ready
+    <Heading as="h3" color="brand.500">
+      {children}
     </Heading>
   );
 };
 
-Game.StopWatch = function GameStopWatch() {
+Game.StopWatch = function GameStopWatch({ gameStatus, children }) {
   return (
-    <Heading as="h4" color="white" pt={3}>
-      0:34
+    <Heading
+      as="h4"
+      color={
+        gameStatus === "idle" || gameStatus === "complete"
+          ? "gray.500"
+          : "blackAlpha.800"
+      }
+    >
+      {children}
     </Heading>
   );
 };

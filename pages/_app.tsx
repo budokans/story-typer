@@ -7,12 +7,15 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/700.css";
 import { theme } from "../theme";
 import { AuthProvider } from "@/context/auth";
+import { StoriesProvider } from "@/context/stories";
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <ChakraProvider theme={theme}>
       <AuthProvider>
-        <Component {...pageProps} />
+        <StoriesProvider>
+          <Component {...pageProps} />
+        </StoriesProvider>
       </AuthProvider>
     </ChakraProvider>
   );

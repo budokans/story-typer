@@ -2,7 +2,7 @@ import { GetStaticProps } from "next";
 import { Skeleton } from "@chakra-ui/react";
 import { getStoriesCount } from "@/lib/db-admin";
 import { useAuth } from "@/context/auth";
-import { LayoutContainer } from "@/containers/layout";
+import { Page } from "@/components/Page";
 import { Welcome } from "@/components/Welcome";
 import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 import { CountUp } from "@/components/CountUp";
@@ -20,7 +20,7 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
   const { user, isLoading } = useAuth();
 
   return (
-    <LayoutContainer>
+    <Page>
       <Welcome>
         <Welcome.Brand />
 
@@ -76,7 +76,7 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
           </Welcome.CTAWrapper>
         </Skeleton>
       </Welcome>
-    </LayoutContainer>
+    </Page>
   );
 };
 
