@@ -28,9 +28,9 @@ interface Compound {
   SignInBtn: React.FC;
 }
 
-type WelcomeCC = React.FC & Compound;
+type HomeCC = React.FC & Compound;
 
-export const Welcome: WelcomeCC = ({ children }) => {
+export const Home: HomeCC = ({ children }) => {
   return <Container>{children}</Container>;
 };
 
@@ -42,7 +42,7 @@ const Container: React.FC = ({ children }) => {
   );
 };
 
-Welcome.Brand = function WelcomeBrand() {
+Home.Brand = function HomeBrand() {
   return (
     <Flex direction="column" align="center" mt={[-5, -10]}>
       <Box w="clamp(8rem, 30vw, 16rem)" h="clamp(8rem, 30vw, 16rem)">
@@ -61,11 +61,11 @@ Welcome.Brand = function WelcomeBrand() {
   );
 };
 
-Welcome.HeadlinesWrapper = function WelcomeHeadlinesWrapper({ children }) {
+Home.HeadlinesWrapper = function HomeHeadlinesWrapper({ children }) {
   return <Box>{children}</Box>;
 };
 
-Welcome.Headline = function WelcomeHeadline({ children }) {
+Home.Headline = function HomeHeadline({ children }) {
   return (
     <Heading
       as="h2"
@@ -81,7 +81,7 @@ Welcome.Headline = function WelcomeHeadline({ children }) {
   );
 };
 
-Welcome.CTAWrapper = function WelcomeCTAWrapper({ children }) {
+Home.CTAWrapper = function HomeCTAWrapper({ children }) {
   return (
     <Center bg="white" w="100vw">
       <Flex
@@ -97,7 +97,7 @@ Welcome.CTAWrapper = function WelcomeCTAWrapper({ children }) {
   );
 };
 
-Welcome.CTA = function WelcomeCTA() {
+Home.CTA = function HomeCTA() {
   const { signInWithGoogle } = useAuth();
 
   return (
@@ -121,7 +121,7 @@ Welcome.CTA = function WelcomeCTA() {
   );
 };
 
-Welcome.Benefits = function WelcomeBenefits({ children }) {
+Home.Benefits = function HomeBenefits({ children }) {
   return (
     <List spacing={3} mb={12}>
       {children}
@@ -129,7 +129,7 @@ Welcome.Benefits = function WelcomeBenefits({ children }) {
   );
 };
 
-Welcome.Benefit = function WelcomeBenefit({ children }) {
+Home.Benefit = function HomeBenefit({ children }) {
   return (
     <ListItem fontSize={["1rem", "1rem", "1.25rem"]}>
       <ListIcon as={RiThumbUpFill} mb="3px" />
@@ -138,7 +138,7 @@ Welcome.Benefit = function WelcomeBenefit({ children }) {
   );
 };
 
-Welcome.SignInBtn = function WelcomeSignInBtn({ children }) {
+Home.SignInBtn = function HomeSignInBtn({ children }) {
   const { signInWithGoogle } = useAuth();
 
   return (
@@ -155,7 +155,7 @@ Welcome.SignInBtn = function WelcomeSignInBtn({ children }) {
   );
 };
 
-Welcome.PlayBtn = function WelcomePlayBtn({ children }) {
+Home.PlayBtn = function HomePlayBtn({ children }) {
   const router = useRouter();
 
   return (
