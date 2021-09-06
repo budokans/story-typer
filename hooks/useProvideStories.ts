@@ -10,14 +10,14 @@ export const useProvideStories = (
   const { user, isLoading: authIsLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<StoryWithId[]>([]);
-  const [lastStorySnapshot, setLastStorySnapshot] =
+  const [cursor, setCursor] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
 
   const loadStories = async (
     snapshot: QueryDocumentSnapshot<DocumentData> | null
   ) => {
     const { batch, last } = await queryStories(snapshot);
-    setLastStorySnapshot(last);
+    setCursor(last);
     setStories((prevStories) => {
       return [...prevStories, ...batch];
     });
@@ -32,7 +32,7 @@ export const useProvideStories = (
 
   useEffect(() => {
     if (!authIsLoading && gameCount === stories.length) {
-      loadStories(lastStorySnapshot);
+      loadStories(cursor);
     }
   }, [gameCount]);
 
