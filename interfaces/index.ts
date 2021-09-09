@@ -42,7 +42,7 @@ export interface StoryWithId extends Story {
 }
 
 export interface ProvideAuth {
-  user: UserAuth | null;
+  user: User | null;
   isLoading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;

@@ -11,7 +11,6 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/dist/client/router";
 import Image from "next/image";
 import { RiThumbUpFill } from "react-icons/ri";
 import logo from "../public/story-typer-logo.png";
@@ -24,13 +23,12 @@ interface Compound {
   CTA: React.FC;
   Benefits: React.FC;
   Benefit: React.FC;
-  PlayBtn: React.FC;
-  SignInBtn: React.FC;
+  PlayBtn: React.FC<{ onClick: () => void }>;
 }
 
-type WelcomeCC = React.FC & Compound;
+type HomeCC = React.FC & Compound;
 
-export const Welcome: WelcomeCC = ({ children }) => {
+export const Home: HomeCC = ({ children }) => {
   return <Container>{children}</Container>;
 };
 
@@ -42,7 +40,7 @@ const Container: React.FC = ({ children }) => {
   );
 };
 
-Welcome.Brand = function WelcomeBrand() {
+Home.Brand = function HomeBrand() {
   return (
     <Flex direction="column" align="center" mt={[-5, -10]}>
       <Box w="clamp(8rem, 30vw, 16rem)" h="clamp(8rem, 30vw, 16rem)">
@@ -61,11 +59,11 @@ Welcome.Brand = function WelcomeBrand() {
   );
 };
 
-Welcome.HeadlinesWrapper = function WelcomeHeadlinesWrapper({ children }) {
+Home.HeadlinesWrapper = function HomeHeadlinesWrapper({ children }) {
   return <Box>{children}</Box>;
 };
 
-Welcome.Headline = function WelcomeHeadline({ children }) {
+Home.Headline = function HomeHeadline({ children }) {
   return (
     <Heading
       as="h2"
@@ -81,7 +79,7 @@ Welcome.Headline = function WelcomeHeadline({ children }) {
   );
 };
 
-Welcome.CTAWrapper = function WelcomeCTAWrapper({ children }) {
+Home.CTAWrapper = function HomeCTAWrapper({ children }) {
   return (
     <Center bg="white" w="100vw">
       <Flex
@@ -97,7 +95,7 @@ Welcome.CTAWrapper = function WelcomeCTAWrapper({ children }) {
   );
 };
 
-Welcome.CTA = function WelcomeCTA() {
+Home.CTA = function HomeCTA() {
   const { signInWithGoogle } = useAuth();
 
   return (
@@ -121,7 +119,7 @@ Welcome.CTA = function WelcomeCTA() {
   );
 };
 
-Welcome.Benefits = function WelcomeBenefits({ children }) {
+Home.Benefits = function HomeBenefits({ children }) {
   return (
     <List spacing={3} mb={12}>
       {children}
@@ -129,7 +127,7 @@ Welcome.Benefits = function WelcomeBenefits({ children }) {
   );
 };
 
-Welcome.Benefit = function WelcomeBenefit({ children }) {
+Home.Benefit = function HomeBenefit({ children }) {
   return (
     <ListItem fontSize={["1rem", "1rem", "1.25rem"]}>
       <ListIcon as={RiThumbUpFill} mb="3px" />
@@ -138,26 +136,7 @@ Welcome.Benefit = function WelcomeBenefit({ children }) {
   );
 };
 
-Welcome.SignInBtn = function WelcomeSignInBtn({ children }) {
-  const { signInWithGoogle } = useAuth();
-
-  return (
-    <Button
-      mb={4}
-      w={64}
-      h={12}
-      _hover={{ bg: "brand.500", color: "white" }}
-      variant="outline"
-      onClick={() => signInWithGoogle()}
-    >
-      {children}
-    </Button>
-  );
-};
-
-Welcome.PlayBtn = function WelcomePlayBtn({ children }) {
-  const router = useRouter();
-
+Home.PlayBtn = function HomePlayBtn({ onClick, children }) {
   return (
     <Button
       w={64}
@@ -165,7 +144,7 @@ Welcome.PlayBtn = function WelcomePlayBtn({ children }) {
       bg="black"
       color="brand.500"
       _hover={{ bg: "blackAlpha.800" }}
-      onClick={() => router.push("/play")}
+      onClick={onClick}
     >
       {children}
     </Button>

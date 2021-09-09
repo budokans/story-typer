@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer } from "react";
+import { useRouter } from "next/router";
 import { firebase } from "@/lib/firebase";
 import { createUser, queryUser } from "@/lib/db";
 import { User as FirebaseUser } from "@firebase/auth-types";
@@ -35,6 +36,7 @@ const AuthReducer = (state: UseAuthState, action: AuthAction): UseAuthState => {
 };
 
 export const useProvideAuth = (): ProvideAuth => {
+  const router = useRouter();
   const [state, dispatch] = useReducer(AuthReducer, {
     status: "idle",
     user: null,
@@ -88,6 +90,7 @@ export const useProvideAuth = (): ProvideAuth => {
     try {
       await firebase.auth().signOut();
       handleUser(null);
+      router.push("/");
     } catch (error) {
       console.error(error);
     }

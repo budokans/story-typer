@@ -1,9 +1,10 @@
 import { GetStaticProps } from "next";
+import { useRouter } from "next/router";
 import { Skeleton } from "@chakra-ui/react";
 import { getStoriesCount } from "@/lib/db-admin";
 import { useAuth } from "@/context/auth";
 import { Page } from "@/components/Page";
-import { Welcome } from "@/components/Welcome";
+import { Home } from "@/components/Home";
 import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
 import { CountUp } from "@/components/CountUp";
 import { GoogleIcon } from "@/components/GoogleIcon";
@@ -17,18 +18,19 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, signInWithGoogle } = useAuth();
+  const router = useRouter();
 
   return (
     <Page>
-      <Welcome>
-        <Welcome.Brand />
+      <Home>
+        <Home.Brand />
 
-        <Welcome.HeadlinesWrapper>
-          <Welcome.Headline>
+        <Home.HeadlinesWrapper>
+          <Home.Headline>
             The speed-typing game for lovers of short stories.
-          </Welcome.Headline>
-          <Welcome.Headline>
+          </Home.Headline>
+          <Home.Headline>
             Over{" "}
             <CountUp
               start={storiesCount - 150}
@@ -40,42 +42,37 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
               fiftywordstories.com
             </FiftyWordStoriesLink>
             .
-          </Welcome.Headline>
-          <Welcome.Headline>Updated daily.</Welcome.Headline>
-        </Welcome.HeadlinesWrapper>
+          </Home.Headline>
+          <Home.Headline>Updated daily.</Home.Headline>
+        </Home.HeadlinesWrapper>
 
         <Skeleton isLoaded={!isLoading}>
-          <Welcome.CTAWrapper>
+          <Home.CTAWrapper>
             {!user ? (
               <>
-                <Welcome.CTA />
-                <Welcome.Benefits>
-                  <Welcome.Benefit>
-                    Never play the same story twice
-                  </Welcome.Benefit>
-                  <Welcome.Benefit>
-                    Review previous games and stats
-                  </Welcome.Benefit>
-                  <Welcome.Benefit>
+                <Home.CTA />
+                <Home.Benefits>
+                  <Home.Benefit>Never play the same story twice</Home.Benefit>
+                  <Home.Benefit>Review previous games and stats</Home.Benefit>
+                  <Home.Benefit>
                     Keep tabs on your favorite stories
-                  </Welcome.Benefit>
-                  <Welcome.Benefit>
-                    View your top and average speeds
-                  </Welcome.Benefit>
-                </Welcome.Benefits>
+                  </Home.Benefit>
+                  <Home.Benefit>View your top and average speeds</Home.Benefit>
+                </Home.Benefits>
 
-                <Welcome.SignInBtn>
+                <Home.PlayBtn onClick={() => signInWithGoogle()}>
                   <GoogleIcon />
-                  Sign in with Google
-                </Welcome.SignInBtn>
-                <Welcome.PlayBtn>Play Now</Welcome.PlayBtn>
+                  Continue with Google
+                </Home.PlayBtn>
               </>
             ) : (
-              <Welcome.PlayBtn>Play Now</Welcome.PlayBtn>
+              <Home.PlayBtn onClick={() => router.push("/play")}>
+                Play Now
+              </Home.PlayBtn>
             )}
-          </Welcome.CTAWrapper>
+          </Home.CTAWrapper>
         </Skeleton>
-      </Welcome>
+      </Home>
     </Page>
   );
 };
