@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
-import { useAuth } from "@/context/auth";
+import { useUser } from "@/context/user";
 import { useStories } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
@@ -92,7 +92,7 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
-  const { user } = useAuth();
+  const user = useUser();
   const {
     stories,
     isLoading: storiesAreLoading,

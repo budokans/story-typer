@@ -7,17 +7,15 @@ import { getUser } from "@/lib/db";
 const userContext = createContext<User | null>(null);
 
 export const UserProvider: React.FC = ({ children }) => {
-  const { user: authUser } = useAuth();
-  const userId = authUser?.uid; // Query below has enabled set to true, so the query won't run until userId is truthy.
+  const { userId } = useAuth();
+  // Query below has enabled set to true, so the query won't run until userId is truthy.
 
   const { data } = useQuery(["user", userId], () => getUser(userId), {
     enabled: !!userId,
   });
 
   return (
-    <userContext.Provider value={data ? data : authUser}>
-      {children}
-    </userContext.Provider>
+    <userContext.Provider value={data || null}>{children}</userContext.Provider>
   );
 };
 
