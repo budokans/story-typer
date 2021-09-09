@@ -8,7 +8,7 @@ const userContext = createContext<User | null>(null);
 
 export const UserProvider: React.FC = ({ children }) => {
   const { user: authUser } = useAuth();
-  const userId = authUser!.uid; // Query below has enabled set to true, so the query won't run until userId is truthy.
+  const userId = authUser?.uid; // Query below has enabled set to true, so the query won't run until userId is truthy.
 
   const { data } = useQuery(["user", userId], () => getUser(userId), {
     enabled: !!userId,
