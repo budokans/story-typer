@@ -37,7 +37,6 @@ const AuthReducer = (state: UseAuthState, action: AuthAction): UseAuthState => {
 
 export const useProvideAuth = (): ProvideAuth => {
   const router = useRouter();
-
   const [state, dispatch] = useReducer(AuthReducer, {
     status: "idle",
     user: null,

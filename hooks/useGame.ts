@@ -132,7 +132,7 @@ export const useGame = () => {
 
   const handleSkipClick = () => {
     if (user) {
-      const game = constructGame(user?.uid, currentStory, 0);
+      const game = constructGame(user.uid, currentStory, 0);
       createPrevGame(game);
     }
     setGameCount(gameCount + 1);
@@ -203,7 +203,7 @@ export const useGame = () => {
     if (state.userStoredInput === currentStory?.storyText) {
       const wpm = getWpm(timer.totalSeconds);
       if (user) {
-        const game = constructGame(user?.uid, currentStory, wpm);
+        const game = constructGame(user.uid, currentStory, wpm);
         createPrevGame(game);
       }
       setGameCount(gameCount + 1);

@@ -14,6 +14,12 @@ export const queryUser = async (uid: string): Promise<User | undefined> => {
   return doc.exists ? (doc.data() as User) : undefined;
 };
 
+export const getUser = async (uid: string): Promise<User> => {
+  const userRef = db.collection("users").doc(uid);
+  const doc = await userRef.get();
+  return doc.data() as User;
+};
+
 export const createUser = async (uid: string, user: User): Promise<void> => {
   db.collection("users").doc(uid).set(user, { merge: true });
 };

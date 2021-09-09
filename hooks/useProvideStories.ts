@@ -7,7 +7,7 @@ import { StoryWithId } from "interfaces";
 export const useProvideStories = (
   gameCount: number
 ): { stories: StoryWithId[]; isLoading: boolean } => {
-  const { user, isLoading: authIsLoading } = useAuth();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<StoryWithId[]>([]);
   const [cursor, setCursor] =
@@ -25,13 +25,13 @@ export const useProvideStories = (
   };
 
   useEffect(() => {
-    if (!authIsLoading) {
+    if (user) {
       loadStories(null);
     }
-  }, [authIsLoading]);
+  }, [user]);
 
   useEffect(() => {
-    if (!authIsLoading && gameCount === stories.length) {
+    if (user && gameCount === stories.length) {
       loadStories(cursor);
     }
   }, [gameCount]);
