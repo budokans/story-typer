@@ -9,10 +9,12 @@ import { ProvideAuth, User } from "../interfaces";
 
 interface UseAuthState {
   status: "idle" | "pending" | "resolved" | "rejected";
-  user: User | null;
+  userId: User["uid"] | null;
 }
 
-type AuthAction = { type: "success"; user: User | null } | { type: "started" };
+type AuthAction =
+  | { type: "success"; userId: User["uid"] | null }
+  | { type: "started" };
 
 const AuthReducer = (state: UseAuthState, action: AuthAction): UseAuthState => {
   switch (action.type) {
@@ -20,7 +22,7 @@ const AuthReducer = (state: UseAuthState, action: AuthAction): UseAuthState => {
       return {
         ...state,
         status: "resolved",
-        user: action.user,
+        userId: action.userId,
       };
     }
     case "started": {
@@ -39,16 +41,16 @@ export const useProvideAuth = (): ProvideAuth => {
   const router = useRouter();
   const [state, dispatch] = useReducer(AuthReducer, {
     status: "idle",
-    user: null,
+    userId: null,
   });
 
   const handleUser = useCallback(async (rawUser: FirebaseUser | null) => {
     if (rawUser) {
       const user = await formatUser(rawUser);
       await createUser(user.uid, user);
-      dispatch({ type: "success", user });
+      dispatch({ type: "success", userId: user.uid });
     } else {
-      dispatch({ type: "success", user: null });
+      dispatch({ type: "success", userId: null });
     }
   }, []);
 
@@ -106,7 +108,7 @@ export const useProvideAuth = (): ProvideAuth => {
 
   return {
     isLoading: state.status === "idle" || state.status === "pending",
-    user: state.user,
+    userId: state.userId,
     signInWithGoogle,
     signOut,
   };
