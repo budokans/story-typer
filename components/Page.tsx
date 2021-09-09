@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
 import { useAuth } from "@/context/auth";
-import { useUser } from "@/context/user";
+import { useUser } from "@/hooks/useUser";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GoogleIcon } from "@/components/GoogleIcon";
 
 export const Page: React.FC = ({ children }) => {
   const { signOut, signInWithGoogle } = useAuth();
-  const user = useUser();
+  const { data: user } = useUser();
   const userMenuItemStateStyles = {
     _hover: { bg: "blackAlpha.600" },
     _active: { bg: "blackAlpha.300" },
@@ -22,11 +22,11 @@ export const Page: React.FC = ({ children }) => {
           <>
             <Header.StatsContainer>
               <Header.StatsType>Best:</Header.StatsType>
-              <Header.Stat>110</Header.Stat>
+              <Header.Stat>{user.personalBest || "TBA"}</Header.Stat>
             </Header.StatsContainer>
             <Header.StatsContainer>
               <Header.StatsType>Avg:</Header.StatsType>
-              <Header.Stat>105</Header.Stat>
+              <Header.Stat>{user.averageSpeed || "TBA"}</Header.Stat>
             </Header.StatsContainer>
             <Header.Archive />
             <Header.Favorites />

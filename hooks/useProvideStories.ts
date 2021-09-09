@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore-types";
 import { queryStories } from "@/lib/db";
-import { useUser } from "@/context/user";
+import { useUser } from "@/hooks/useUser";
 import { StoryWithId } from "interfaces";
 
 export const useProvideStories = (
   gameCount: number
 ): { stories: StoryWithId[]; isLoading: boolean } => {
-  const user = useUser();
+  const { data: user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<StoryWithId[]>([]);
   const [cursor, setCursor] =
