@@ -10,6 +10,7 @@ export const createPostWinUser = (
   personalBest:
     !user.personalBest || score > user.personalBest ? score : user.personalBest,
   lastTenScores: updateUserLastTenScores(user.lastTenScores, score),
+  gamesPlayed: user.gamesPlayed + 1,
 });
 
 const updateUserLastTenScores = (

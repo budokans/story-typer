@@ -15,7 +15,6 @@ export const GameContainer: React.FC = () => {
     userError,
     onResetClick,
     onSkipClick,
-    wpm,
   } = useGame();
 
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
