@@ -5,6 +5,7 @@ import {
   DocumentData,
 } from "@firebase/firestore-types";
 import { PrevGame, Story, StoryWithId, User } from "../interfaces";
+import { GameState } from "@/hooks/useGame.types";
 
 const db = firebase.firestore();
 
@@ -94,4 +95,9 @@ export const queryStories = async (
 
 export const createPrevGame = async (game: PrevGame): Promise<void> => {
   await db.collection("prevGames").add(game);
+};
+
+export const updateUserDataOnWin = async (user: User): Promise<void> => {
+  const userRef = db.collection("users").doc(user.uid);
+  await userRef.update(user);
 };

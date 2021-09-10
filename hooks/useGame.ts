@@ -1,11 +1,12 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
+import { useMutation } from "react-query";
 import { useUser } from "@/hooks/useUser";
 import { useStories } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
-import { PrevGame, StoryWithId } from "interfaces";
-import { createPrevGame } from "@/lib/db";
+import { PrevGame, StoryWithId, User } from "interfaces";
+import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
 
 const initialState: GameState = {
   status: "pending",
@@ -65,6 +66,7 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...state,
         status: "complete",
+        userStoredInput: "",
         wpm: action.wpm,
       };
     }
@@ -93,6 +95,9 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
   const { data: user } = useUser();
+  const userWinMutation = useMutation((newUserData: User) =>
+    updateUserDataOnWin(newUserData)
+  );
   const {
     stories,
     isLoading: storiesAreLoading,
@@ -163,6 +168,18 @@ export const useGame = () => {
     score: wpm,
   });
 
+  const updateUserData = (
+    user: User,
+    // story: StoryWithId,
+    score: GameState["wpm"]
+  ) => ({
+    ...user,
+    personalBest:
+      !user.personalBest || score > user.personalBest
+        ? score
+        : user.personalBest,
+  });
+
   // Listen for user errors and finished words.
   useEffect(() => {
     if (currentStory) {
@@ -204,6 +221,8 @@ export const useGame = () => {
       const wpm = getWpm(timer.totalSeconds);
       if (user) {
         const game = constructGame(user.uid, currentStory, wpm);
+        const updatedUser = updateUserData(user, wpm);
+        userWinMutation.mutate(updatedUser);
         createPrevGame(game);
       }
       setGameCount(gameCount + 1);
