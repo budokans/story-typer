@@ -6,6 +6,7 @@ import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
 import { PrevGame, StoryWithId, User } from "interfaces";
+import { createPostWinUser } from "@/lib/manageUser";
 import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
 
 const initialState: GameState = {
@@ -168,18 +169,6 @@ export const useGame = () => {
     score: wpm,
   });
 
-  const updateUserData = (
-    user: User,
-    // story: StoryWithId,
-    score: GameState["wpm"]
-  ) => ({
-    ...user,
-    personalBest:
-      !user.personalBest || score > user.personalBest
-        ? score
-        : user.personalBest,
-  });
-
   // Listen for user errors and finished words.
   useEffect(() => {
     if (currentStory) {
@@ -221,7 +210,7 @@ export const useGame = () => {
       const wpm = getWpm(timer.totalSeconds);
       if (user) {
         const game = constructGame(user.uid, currentStory, wpm);
-        const updatedUser = updateUserData(user, wpm);
+        const updatedUser = createPostWinUser(user, wpm);
         userWinMutation.mutate(updatedUser);
         createPrevGame(game);
       }
