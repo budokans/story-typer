@@ -60,7 +60,7 @@ export const useProvideAuth = (): ProvideAuth => {
     const userInitFields = {
       registeredDate: firebase.firestore.FieldValue.serverTimestamp(),
       personalBest: null,
-      averageSpeed: null,
+      lastTenSpeeds: [],
       gamesPlayed: 0,
       uniqueStoriesPlayed: 0,
       newestPlayedStoryAddedDate: null,

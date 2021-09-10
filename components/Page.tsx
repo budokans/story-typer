@@ -26,7 +26,7 @@ export const Page: React.FC = ({ children }) => {
             </Header.StatsContainer>
             <Header.StatsContainer>
               <Header.StatsType>Avg:</Header.StatsType>
-              <Header.Stat>{user.averageSpeed || "TBA"}</Header.Stat>
+              <Header.Stat>TBA</Header.Stat>
             </Header.StatsContainer>
             <Header.Archive />
             <Header.Favorites />
