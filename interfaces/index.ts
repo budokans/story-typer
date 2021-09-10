@@ -10,7 +10,7 @@ export interface UserAuth {
 export interface User extends UserAuth {
   registeredDate: FieldValue;
   personalBest: number | null;
-  lastTenSpeeds: number[];
+  lastTenScores: number[];
   gamesPlayed: number;
   uniqueStoriesPlayed: number;
   newestPlayedStoryAddedDate: string | null;

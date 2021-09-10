@@ -5,6 +5,7 @@ import { useUser } from "@/hooks/useUser";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GoogleIcon } from "@/components/GoogleIcon";
+import { getUserAverageScoresDisplay } from "@/lib/manageUser";
 
 export const Page: React.FC = ({ children }) => {
   const { signOut, signInWithGoogle } = useAuth();
@@ -26,7 +27,9 @@ export const Page: React.FC = ({ children }) => {
             </Header.StatsContainer>
             <Header.StatsContainer>
               <Header.StatsType>Avg:</Header.StatsType>
-              <Header.Stat>TBA</Header.Stat>
+              <Header.Stat>
+                {getUserAverageScoresDisplay(user.lastTenScores)}
+              </Header.Stat>
             </Header.StatsContainer>
             <Header.Archive />
             <Header.Favorites />
