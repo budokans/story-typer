@@ -16,7 +16,7 @@ const getUserAverageScore = (scores: User["lastTenScores"]): number =>
     scores.reduce((acc, currentVal) => acc + currentVal) / scores.length
   );
 
-export const getUserAverageScoreDisplay = (
+export const getUserAverageScoresDisplay = (
   scores: User["lastTenScores"]
 ): number | "TBA" =>
   scores.length === 0 ? "TBA" : getUserAverageScore(scores);
