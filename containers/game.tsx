@@ -63,7 +63,6 @@ export const GameContainer: React.FC = () => {
               {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
             </Game.StopWatch>
           )}
-          {status === "complete" && <div>{wpm}</div>}
         </>
       )}
     </Game>
