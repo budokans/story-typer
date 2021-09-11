@@ -210,7 +210,7 @@ export const useGame = () => {
       const wpm = getWpm(timer.totalSeconds);
       if (user) {
         const game = constructGame(user.uid, currentStory, wpm);
-        const updatedUser = createPostWinUser(user, wpm);
+        const updatedUser = createPostWinUser(user, currentStory, wpm);
         userWinMutation.mutate(updatedUser);
         createPrevGame(game);
       }

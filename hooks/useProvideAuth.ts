@@ -63,8 +63,8 @@ export const useProvideAuth = (): ProvideAuth => {
       lastTenScores: [],
       gamesPlayed: 0,
       uniqueStoriesPlayed: 0,
-      newestPlayedStoryAddedDate: null,
-      oldestPlayedStoryAddedDate: null,
+      newestPlayedStoryPublishedDate: null,
+      oldestPlayedStoryPublishedDate: null,
     };
     const userAuthData = {
       uid: user.uid,

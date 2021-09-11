@@ -12,8 +12,8 @@ export interface User extends UserAuth {
   personalBest: number | null;
   lastTenScores: number[];
   gamesPlayed: number;
-  newestPlayedStoryAddedDate: string | null;
-  oldestPlayedStoryAddedDate: string | null;
+  newestPlayedStoryPublishedDate: string | null;
+  oldestPlayedStoryPublishedDate: string | null;
 }
 
 export interface Post {

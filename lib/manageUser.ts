@@ -1,9 +1,9 @@
 import { GameState } from "@/hooks/useGame.types";
-import { User } from "interfaces";
+import { User, StoryWithId } from "interfaces";
 
 export const createPostWinUser = (
   user: User,
-  // story: StoryWithId,
+  story: StoryWithId,
   score: GameState["wpm"]
 ): User => ({
   ...user,
@@ -11,7 +11,19 @@ export const createPostWinUser = (
     !user.personalBest || score > user.personalBest ? score : user.personalBest,
   lastTenScores: updateUserLastTenScores(user.lastTenScores, score),
   gamesPlayed: user.gamesPlayed + 1,
+  newestPlayedStoryPublishedDate: getMostRecentDate(
+    user.newestPlayedStoryPublishedDate,
+    story.datePublished
+  ),
 });
+
+const getMostRecentDate = (
+  storedDate: User["newestPlayedStoryPublishedDate"],
+  newDate: StoryWithId["datePublished"]
+) => {
+  if (!storedDate) return newDate;
+  return storedDate.localeCompare(newDate) ? newDate : storedDate;
+};
 
 const updateUserLastTenScores = (
   scores: User["lastTenScores"],
