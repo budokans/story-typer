@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { useUser } from "@/hooks/useUser";
 import { useStories } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
@@ -96,8 +96,14 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
   const { data: user } = useUser();
-  const userWinMutation = useMutation((newUserData: User) =>
-    updateUserDataOnWin(newUserData)
+  const queryClient = useQueryClient();
+  const userWinMutation = useMutation(
+    (newUserData: User) => updateUserDataOnWin(newUserData),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("user");
+      },
+    }
   );
   const {
     stories,
