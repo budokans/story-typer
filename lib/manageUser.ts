@@ -32,6 +32,18 @@ export const createPostWinUser = (
   };
 };
 
+export const createPostSkipUser = (user: User, story: StoryWithId): User => ({
+  ...user,
+  newestPlayedStoryPublishedDate: getMostRecentDate(
+    user.newestPlayedStoryPublishedDate,
+    story.datePublished
+  ),
+  oldestPlayedStoryPublishedDate: getOldestDate(
+    user.oldestPlayedStoryPublishedDate,
+    story.datePublished
+  ),
+});
+
 const getMostRecentDate = (
   storedDate: User["newestPlayedStoryPublishedDate"],
   currentStoryDate: StoryWithId["datePublished"]

@@ -6,7 +6,7 @@ import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
 import { PrevGame, StoryWithId, User } from "interfaces";
-import { createPostWinUser } from "@/lib/manageUser";
+import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
 import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
 
 const initialState: GameState = {
@@ -146,6 +146,8 @@ export const useGame = () => {
     if (user) {
       const game = constructGame(user.uid, currentStory, 0);
       createPrevGame(game);
+      const updatedUser = createPostSkipUser(user, currentStory);
+      userWinMutation.mutate(updatedUser);
     }
     setGameCount(gameCount + 1);
     dispatch({ type: "next" });
@@ -214,7 +216,7 @@ export const useGame = () => {
     const wpm = getWpm(timer.totalSeconds);
     if (user) {
       const game = constructGame(user.uid, currentStory, wpm);
-      const updatedUser = createPostWinUser(user, currentStory, 90);
+      const updatedUser = createPostWinUser(user, currentStory, wpm);
       userWinMutation.mutate(updatedUser);
       createPrevGame(game);
     }
