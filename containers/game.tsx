@@ -15,6 +15,7 @@ export const GameContainer: React.FC = () => {
     userError,
     onResetClick,
     onSkipClick,
+    winGame,
   } = useGame();
 
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
@@ -51,7 +52,7 @@ export const GameContainer: React.FC = () => {
               error={userError}
             />
             {userError && <Game.ErrorAlert />}
-            <Game.BtnSm type="restart" onClick={onResetClick} />
+            <Game.BtnSm type="restart" onClick={winGame} />
             <Game.BtnSm type="new" onClick={onSkipClick} />
           </Game.Pad>
           {status === "countdown" ? (

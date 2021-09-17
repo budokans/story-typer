@@ -5,24 +5,57 @@ export const createPostWinUser = (
   user: User,
   story: StoryWithId,
   score: GameState["wpm"]
-): User => ({
-  ...user,
-  personalBest:
-    !user.personalBest || score > user.personalBest ? score : user.personalBest,
-  lastTenScores: updateUserLastTenScores(user.lastTenScores, score),
-  gamesPlayed: user.gamesPlayed + 1,
-  newestPlayedStoryPublishedDate: getMostRecentDate(
+): User => {
+  const updatedPersonalBest =
+    !user.personalBest || score > user.personalBest ? score : user.personalBest;
+  const updatedLastTenScores = updateUserLastTenScores(
+    user.lastTenScores,
+    score
+  );
+  const updatedGamesPlayed = user.gamesPlayed + 1;
+  const updatedNewestPlayedStoryPublishedDate = getMostRecentDate(
     user.newestPlayedStoryPublishedDate,
     story.datePublished
-  ),
-});
+  );
+  const updatedOldestPlayedStoryPublishedDate = getOldestDate(
+    user.oldestPlayedStoryPublishedDate,
+    story.datePublished
+  );
+
+  return {
+    ...user,
+    personalBest: updatedPersonalBest,
+    lastTenScores: updatedLastTenScores,
+    gamesPlayed: updatedGamesPlayed,
+    newestPlayedStoryPublishedDate: updatedNewestPlayedStoryPublishedDate,
+    oldestPlayedStoryPublishedDate: updatedOldestPlayedStoryPublishedDate,
+  };
+};
 
 const getMostRecentDate = (
   storedDate: User["newestPlayedStoryPublishedDate"],
-  newDate: StoryWithId["datePublished"]
+  currentStoryDate: StoryWithId["datePublished"]
 ) => {
-  if (!storedDate) return newDate;
-  return storedDate.localeCompare(newDate) ? newDate : storedDate;
+  if (!storedDate) return currentStoryDate;
+  const parsedStoredDate = Date.parse(storedDate);
+  const parsedCurrentStoryDate = Date.parse(currentStoryDate);
+
+  return parsedCurrentStoryDate > parsedStoredDate
+    ? currentStoryDate
+    : storedDate;
+};
+
+const getOldestDate = (
+  storedDate: User["oldestPlayedStoryPublishedDate"],
+  currentStoryDate: StoryWithId["datePublished"]
+) => {
+  if (!storedDate) return currentStoryDate;
+  const parsedStoredDate = Date.parse(storedDate);
+  const parsedCurrentStoryDate = Date.parse(currentStoryDate);
+
+  return parsedCurrentStoryDate < parsedStoredDate
+    ? currentStoryDate
+    : storedDate;
 };
 
 const updateUserLastTenScores = (

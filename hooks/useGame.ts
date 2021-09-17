@@ -204,18 +204,22 @@ export const useGame = () => {
     totalUserInput,
   ]);
 
+  const winGame = () => {
+    const wpm = getWpm(timer.totalSeconds);
+    if (user) {
+      const game = constructGame(user.uid, currentStory, wpm);
+      const updatedUser = createPostWinUser(user, currentStory, 90);
+      userWinMutation.mutate(updatedUser);
+      createPrevGame(game);
+    }
+    setGameCount(gameCount + 1);
+    dispatch({ type: "win", wpm: wpm });
+  };
+
   // Listen for game completion
   useEffect(() => {
     if (state.userStoredInput === currentStory?.storyText) {
-      const wpm = getWpm(timer.totalSeconds);
-      if (user) {
-        const game = constructGame(user.uid, currentStory, wpm);
-        const updatedUser = createPostWinUser(user, currentStory, wpm);
-        userWinMutation.mutate(updatedUser);
-        createPrevGame(game);
-      }
-      setGameCount(gameCount + 1);
-      dispatch({ type: "win", wpm: wpm });
+      winGame();
     }
   }, [state.userStoredInput, currentStory]);
 
@@ -231,5 +235,6 @@ export const useGame = () => {
     wpm: state.wpm,
     onResetClick: handleResetClick,
     onSkipClick: handleSkipClick,
+    winGame,
   };
 };
