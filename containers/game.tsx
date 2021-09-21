@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { Game } from "@/components/Game";
 import { useGame } from "@/hooks/useGame";
+import { useUser } from "@/hooks/useUser";
 
 export const GameContainer: React.FC = () => {
   const {
@@ -17,6 +18,7 @@ export const GameContainer: React.FC = () => {
     onSkipClick,
     winGame,
   } = useGame();
+  const { data: user } = useUser();
 
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);
@@ -35,7 +37,7 @@ export const GameContainer: React.FC = () => {
 
   return (
     <Game>
-      {status === "pending" ? (
+      {status === "pending" || !user ? (
         <Game.Skeleton isLargeViewport={isLargeViewport} />
       ) : (
         <>
