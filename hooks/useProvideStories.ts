@@ -34,5 +34,11 @@ export const useProvideStories = (
     }
   }, [gameCount, stories.length]);
 
+  useEffect(() => {
+    if (!user) {
+      setStories([]);
+    }
+  }, [user]);
+
   return { stories, isLoading };
 };
