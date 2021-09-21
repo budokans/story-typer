@@ -20,6 +20,12 @@ const initialState: GameState = {
 
 const GameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
+    case "storiesLoading": {
+      return {
+        ...state,
+        status: "pending",
+      };
+    }
     case "storiesLoaded": {
       return {
         ...state,
@@ -120,6 +126,8 @@ export const useGame = () => {
   useEffect(() => {
     if (!storiesAreLoading) {
       dispatch({ type: "storiesLoaded" });
+    } else if (storiesAreLoading) {
+      dispatch({ type: "storiesLoading" });
     }
   }, [storiesAreLoading, stories]);
 

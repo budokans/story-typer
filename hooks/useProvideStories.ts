@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { queryStories } from "@/lib/db";
 import { useUser } from "@/hooks/useUser";
-import { StoryWithId } from "interfaces";
+import { StoryWithId, User } from "interfaces";
 
 export const useProvideStories = (
   gameCount: number
@@ -10,7 +10,7 @@ export const useProvideStories = (
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<StoryWithId[]>([]);
 
-  const loadStories = async () => {
+  const loadStories = async (user: User) => {
     const batch = await queryStories(
       user!.newestPlayedStoryPublishedDate,
       user!.oldestPlayedStoryPublishedDate
@@ -22,16 +22,17 @@ export const useProvideStories = (
   };
 
   useEffect(() => {
-    if (user) {
-      loadStories();
+    if (user && stories.length === 0) {
+      loadStories(user);
     }
-  }, [user]);
+  }, [user, stories]);
 
   useEffect(() => {
     if (user && gameCount === stories.length) {
-      loadStories();
+      setIsLoading(true);
+      loadStories(user);
     }
-  }, [gameCount]);
+  }, [gameCount, stories.length]);
 
   return { stories, isLoading };
 };
