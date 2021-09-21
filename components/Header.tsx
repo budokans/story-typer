@@ -13,7 +13,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
-import { useAuth } from "@/context/auth";
+import { useUser } from "@/hooks/useUser";
 
 interface Compound {
   UserMenu: React.FC;
@@ -87,7 +87,7 @@ const Logo: React.FC = () => {
 };
 
 Header.UserMenu = function HeaderUserMenu({ children }) {
-  const { user } = useAuth();
+  const { data: user } = useUser();
 
   return (
     <Box as="li">

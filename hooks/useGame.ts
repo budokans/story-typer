@@ -1,11 +1,13 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
-import { useAuth } from "@/context/auth";
+import { useMutation, useQueryClient } from "react-query";
+import { useUser } from "@/hooks/useUser";
 import { useStories } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { GameAction, GameState } from "./useGame.types";
-import { PrevGame, StoryWithId } from "interfaces";
-import { createPrevGame } from "@/lib/db";
+import { PrevGame, StoryWithId, User } from "interfaces";
+import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
+import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
 
 const initialState: GameState = {
   status: "pending",
@@ -18,6 +20,12 @@ const initialState: GameState = {
 
 const GameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
+    case "storiesLoading": {
+      return {
+        ...state,
+        status: "pending",
+      };
+    }
     case "storiesLoaded": {
       return {
         ...state,
@@ -65,6 +73,7 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...state,
         status: "complete",
+        userStoredInput: "",
         wpm: action.wpm,
       };
     }
@@ -92,7 +101,16 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
 
 export const useGame = () => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
-  const { user } = useAuth();
+  const { data: user } = useUser();
+  const queryClient = useQueryClient();
+  const userWinMutation = useMutation(
+    (newUserData: User) => updateUserDataOnWin(newUserData),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("user");
+      },
+    }
+  );
   const {
     stories,
     isLoading: storiesAreLoading,
@@ -108,6 +126,8 @@ export const useGame = () => {
   useEffect(() => {
     if (!storiesAreLoading) {
       dispatch({ type: "storiesLoaded" });
+    } else if (storiesAreLoading) {
+      dispatch({ type: "storiesLoading" });
     }
   }, [storiesAreLoading, stories]);
 
@@ -134,6 +154,8 @@ export const useGame = () => {
     if (user) {
       const game = constructGame(user.uid, currentStory, 0);
       createPrevGame(game);
+      const updatedUser = createPostSkipUser(user, currentStory);
+      userWinMutation.mutate(updatedUser);
     }
     setGameCount(gameCount + 1);
     dispatch({ type: "next" });
@@ -198,16 +220,22 @@ export const useGame = () => {
     totalUserInput,
   ]);
 
+  const winGame = () => {
+    const wpm = getWpm(timer.totalSeconds);
+    if (user) {
+      const game = constructGame(user.uid, currentStory, wpm);
+      const updatedUser = createPostWinUser(user, currentStory, wpm);
+      userWinMutation.mutate(updatedUser);
+      createPrevGame(game);
+    }
+    setGameCount(gameCount + 1);
+    dispatch({ type: "win", wpm: wpm });
+  };
+
   // Listen for game completion
   useEffect(() => {
     if (state.userStoredInput === currentStory?.storyText) {
-      const wpm = getWpm(timer.totalSeconds);
-      if (user) {
-        const game = constructGame(user.uid, currentStory, wpm);
-        createPrevGame(game);
-      }
-      setGameCount(gameCount + 1);
-      dispatch({ type: "win", wpm: wpm });
+      winGame();
     }
   }, [state.userStoredInput, currentStory]);
 
@@ -223,5 +251,6 @@ export const useGame = () => {
     wpm: state.wpm,
     onResetClick: handleResetClick,
     onSkipClick: handleSkipClick,
+    winGame,
   };
 };

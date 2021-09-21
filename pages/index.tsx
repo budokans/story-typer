@@ -18,7 +18,8 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
-  const { user, isLoading, signInWithGoogle } = useAuth();
+  const { userId, isLoading, signInWithGoogle } = useAuth();
+  const userIsLoggedIn = !!userId;
   const router = useRouter();
 
   return (
@@ -48,7 +49,7 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
 
         <Skeleton isLoaded={!isLoading}>
           <Home.CTAWrapper>
-            {!user ? (
+            {!userIsLoggedIn ? (
               <>
                 <Home.CTA />
                 <Home.Benefits>

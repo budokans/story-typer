@@ -8,6 +8,7 @@ export interface GameState {
 }
 
 export type GameAction =
+  | { type: "storiesLoading" }
   | { type: "storiesLoaded" }
   | { type: "startCountdown" }
   | { type: "countdownTick" }

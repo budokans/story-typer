@@ -1,23 +1,20 @@
 import { useEffect, useState } from "react";
-import { QueryDocumentSnapshot, DocumentData } from "@firebase/firestore-types";
 import { queryStories } from "@/lib/db";
-import { useAuth } from "@/context/auth";
-import { StoryWithId } from "interfaces";
+import { useUser } from "@/hooks/useUser";
+import { StoryWithId, User } from "interfaces";
 
 export const useProvideStories = (
   gameCount: number
 ): { stories: StoryWithId[]; isLoading: boolean } => {
-  const { user } = useAuth();
+  const { data: user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<StoryWithId[]>([]);
-  const [cursor, setCursor] =
-    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
 
-  const loadStories = async (
-    snapshot: QueryDocumentSnapshot<DocumentData> | null
-  ) => {
-    const { batch, last } = await queryStories(snapshot);
-    setCursor(last);
+  const loadStories = async (user: User) => {
+    const batch = await queryStories(
+      user!.newestPlayedStoryPublishedDate,
+      user!.oldestPlayedStoryPublishedDate
+    );
     setStories((prevStories) => {
       return [...prevStories, ...batch];
     });
@@ -25,16 +22,23 @@ export const useProvideStories = (
   };
 
   useEffect(() => {
-    if (user) {
-      loadStories(null);
+    if (user && stories.length === 0) {
+      loadStories(user);
     }
-  }, [user]);
+  }, [user, stories]);
 
   useEffect(() => {
     if (user && gameCount === stories.length) {
-      loadStories(cursor);
+      setIsLoading(true);
+      loadStories(user);
     }
-  }, [gameCount]);
+  }, [gameCount, stories.length]);
+
+  useEffect(() => {
+    if (!user) {
+      setStories([]);
+    }
+  }, [user]);
 
   return { stories, isLoading };
 };

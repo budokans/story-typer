@@ -10,11 +10,10 @@ export interface UserAuth {
 export interface User extends UserAuth {
   registeredDate: FieldValue;
   personalBest: number | null;
-  averageSpeed: number | null;
+  lastTenScores: number[];
   gamesPlayed: number;
-  uniqueStoriesPlayed: number;
-  newestPlayedStoryAddedDate: string | null;
-  oldestPlayedStoryAddedDate: string | null;
+  newestPlayedStoryPublishedDate: string | null;
+  oldestPlayedStoryPublishedDate: string | null;
 }
 
 export interface Post {
@@ -42,7 +41,7 @@ export interface StoryWithId extends Story {
 }
 
 export interface ProvideAuth {
-  user: User | null;
+  userId: string | null;
   isLoading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;

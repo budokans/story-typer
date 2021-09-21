@@ -5,6 +5,7 @@ import {
   DocumentData,
 } from "@firebase/firestore-types";
 import { PrevGame, Story, StoryWithId, User } from "../interfaces";
+import { GameState } from "@/hooks/useGame.types";
 
 const db = firebase.firestore();
 
@@ -56,42 +57,64 @@ export const getLatestTimestamp = async (): Promise<string> => {
   return snapshot.docs[0].data().datePublished;
 };
 
-export const queryStories = async (
-  startAfter: QueryDocumentSnapshot<DocumentData> | null
-): Promise<{
-  batch: StoryWithId[];
-  last: QueryDocumentSnapshot<DocumentData>;
-}> => {
-  let snapshot: QuerySnapshot<DocumentData>;
-
-  if (startAfter) {
-    snapshot = await db
-      .collection("stories")
-      .orderBy("datePublished", "desc")
-      .startAfter(startAfter.data().datePublished)
-      .limit(10)
-      .get();
-  } else {
-    snapshot = await db
-      .collection("stories")
-      .orderBy("datePublished", "desc")
-      .limit(10)
-      .get();
-  }
-
-  const last = snapshot.docs[snapshot.docs.length - 1];
-
-  const batch = snapshot.docs.map((doc) => {
+const processStories = (snapshot: QuerySnapshot) => {
+  return snapshot.docs.map((doc) => {
     const story = doc.data() as Story;
     return {
       uid: doc.id,
       ...story,
     } as StoryWithId;
   });
+};
 
-  return { batch, last };
+export const queryStories = async (
+  latest: User["newestPlayedStoryPublishedDate"],
+  oldest: User["oldestPlayedStoryPublishedDate"]
+): Promise<StoryWithId[]> => {
+  let limit = 10;
+  let batch: StoryWithId[] = [];
+  let snapshot;
+
+  if (!latest) {
+    snapshot = await db
+      .collection("stories")
+      .orderBy("datePublished", "desc")
+      .limit(limit)
+      .get();
+  } else {
+    snapshot = await db
+      .collection("stories")
+      .orderBy("datePublished", "asc")
+      .startAfter(latest)
+      .limit(limit)
+      .get();
+  }
+
+  if (snapshot.docs.length > 0) {
+    const processedStories = processStories(snapshot);
+    batch = [...batch, ...processedStories];
+  }
+
+  if (batch.length < 10) {
+    limit -= batch.length;
+    snapshot = await db
+      .collection("stories")
+      .orderBy("datePublished", "desc")
+      .startAfter(oldest)
+      .limit(limit)
+      .get();
+    const processedStories = processStories(snapshot);
+    batch = [...batch, ...processedStories];
+  }
+
+  return batch;
 };
 
 export const createPrevGame = async (game: PrevGame): Promise<void> => {
   await db.collection("prevGames").add(game);
+};
+
+export const updateUserDataOnWin = async (user: User): Promise<void> => {
+  const userRef = db.collection("users").doc(user.uid);
+  await userRef.update(user);
 };
