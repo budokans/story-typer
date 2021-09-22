@@ -29,7 +29,9 @@ interface Compound {
   }>;
   ErrorAlert: React.FC;
   BtnSm: React.FC<{ type: "restart" | "new"; onClick: () => void }>;
-  Countdown: React.FC;
+  Countdown: React.FC<{
+    active?: boolean;
+  }>;
   StopWatch: React.FC<{
     gameStatus: GameState["status"];
   }>;
@@ -171,9 +173,9 @@ Game.BtnSm = function GameBtnSm({ type, onClick }) {
   );
 };
 
-Game.Countdown = function GameCountdown({ children }) {
+Game.Countdown = function GameCountdown({ active, children }) {
   return (
-    <Heading as="h3" color="brand.500">
+    <Heading as="h3" color={active ? "brand.500" : "blackAlpha.800"}>
       {children}
     </Heading>
   );
