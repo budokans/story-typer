@@ -17,6 +17,7 @@ export const GameContainer: React.FC = () => {
     onResetClick,
     onSkipClick,
     winGame,
+    wpm,
   } = useGame();
   const { data: user } = useUser();
 
@@ -46,13 +47,17 @@ export const GameContainer: React.FC = () => {
           </Game.StoryHeader>
           <Game.StoryText>{currentStory.storyText}</Game.StoryText>
           <Game.Pad>
-            <Game.Input
-              onInputClick={onInitCountdown}
-              onInputChange={onInputChange}
-              value={inputValue}
-              gameStatus={status}
-              error={userError}
-            />
+            {status === "complete" ? (
+              <Game.Score>{wpm} WPM!</Game.Score>
+            ) : (
+              <Game.Input
+                onInputClick={onInitCountdown}
+                onInputChange={onInputChange}
+                value={inputValue}
+                gameStatus={status}
+                error={userError}
+              />
+            )}
             {userError && <Game.ErrorAlert />}
             <Game.BtnSm type="restart" onClick={winGame} />
             <Game.BtnSm type="new" onClick={onSkipClick} />

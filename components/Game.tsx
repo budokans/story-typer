@@ -35,6 +35,7 @@ interface Compound {
   StopWatch: React.FC<{
     gameStatus: GameState["status"];
   }>;
+  Score: React.FC;
 }
 
 type GameCC = Compound & React.FC;
@@ -193,5 +194,13 @@ Game.StopWatch = function GameStopWatch({ gameStatus, children }) {
     >
       {children}
     </Heading>
+  );
+};
+
+Game.Score = function GameScore({ children }) {
+  return (
+    <Text mr="auto" color="white" fontWeight="semibold" fontSize="1.5rem">
+      {children}
+    </Text>
   );
 };
