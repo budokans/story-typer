@@ -20,7 +20,6 @@ export const GameContainer: React.FC = () => {
     wpm,
   } = useGame();
   const { data: user } = useUser();
-
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);
 
@@ -59,6 +58,15 @@ export const GameContainer: React.FC = () => {
               />
             )}
             {userError && <Game.ErrorAlert />}
+
+            {status === "complete" && (
+              <Game.Favorite
+                onFavoriteClick={() => {
+                  console.log("favoriting");
+                }}
+                isFavorited={true}
+              />
+            )}
             <Game.BtnSm type="restart" onClick={winGame} />
             <Game.BtnSm type="new" onClick={onSkipClick} />
           </Game.Pad>
