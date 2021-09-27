@@ -1,11 +1,6 @@
 import { firebase } from "./firebase";
-import {
-  QueryDocumentSnapshot,
-  QuerySnapshot,
-  DocumentData,
-} from "@firebase/firestore-types";
+import { QuerySnapshot } from "@firebase/firestore-types";
 import { PrevGame, Story, StoryWithId, User } from "../interfaces";
-import { GameState } from "@/hooks/useGame.types";
 
 const db = firebase.firestore();
 
@@ -117,4 +112,15 @@ export const createPrevGame = async (game: PrevGame): Promise<void> => {
 export const updateUserDataOnWin = async (user: User): Promise<void> => {
   const userRef = db.collection("users").doc(user.uid);
   await userRef.update(user);
+};
+
+export const createFavorite = async (
+  userId: User["uid"],
+  storyId: StoryWithId["uid"]
+): Promise<void> => {
+  db.collection("favorites").add({
+    userId,
+    storyId,
+    dateFavorited: firebase.firestore.FieldValue.serverTimestamp(),
+  });
 };
