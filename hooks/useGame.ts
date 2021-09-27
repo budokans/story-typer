@@ -228,7 +228,6 @@ export const useGame = () => {
       userWinMutation.mutate(updatedUser);
       createPrevGame(game);
     }
-    setGameCount(gameCount + 1);
     dispatch({ type: "win", wpm: wpm });
   };
 

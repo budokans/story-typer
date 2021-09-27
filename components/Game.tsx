@@ -12,7 +12,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
-import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
+import {
+  RiRestartFill,
+  RiSkipForwardFill,
+  RiStarFill,
+  RiStarLine,
+} from "react-icons/ri";
 import { GameState } from "@/hooks/useGame.types";
 
 interface Compound {
@@ -29,10 +34,14 @@ interface Compound {
   }>;
   ErrorAlert: React.FC;
   BtnSm: React.FC<{ type: "restart" | "new"; onClick: () => void }>;
-  Countdown: React.FC;
+  Countdown: React.FC<{
+    active?: boolean;
+  }>;
   StopWatch: React.FC<{
     gameStatus: GameState["status"];
   }>;
+  Score: React.FC;
+  Favorite: React.FC<{ isFavorited: boolean; onFavoriteClick: () => void }>;
 }
 
 type GameCC = Compound & React.FC;
@@ -171,9 +180,9 @@ Game.BtnSm = function GameBtnSm({ type, onClick }) {
   );
 };
 
-Game.Countdown = function GameCountdown({ children }) {
+Game.Countdown = function GameCountdown({ active, children }) {
   return (
-    <Heading as="h3" color="brand.500">
+    <Heading as="h3" color={active ? "brand.500" : "blackAlpha.800"}>
       {children}
     </Heading>
   );
@@ -191,5 +200,30 @@ Game.StopWatch = function GameStopWatch({ gameStatus, children }) {
     >
       {children}
     </Heading>
+  );
+};
+
+Game.Score = function GameScore({ children }) {
+  return (
+    <Text mr="auto" color="white" fontWeight="semibold" fontSize="1.5rem">
+      {children}
+    </Text>
+  );
+};
+
+Game.Favorite = function GameFavorite({ isFavorited, onFavoriteClick }) {
+  return (
+    <IconButton
+      icon={isFavorited ? <RiStarFill /> : <RiStarLine />}
+      isRound
+      cursor="pointer"
+      fontSize="2.5rem"
+      aria-label="favorite this story"
+      bg="transparent"
+      color="gold"
+      onClick={onFavoriteClick}
+      _hover={{ background: "transparent" }}
+      _focus={{ boxShadow: "none" }}
+    />
   );
 };

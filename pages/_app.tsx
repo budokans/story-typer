@@ -14,15 +14,15 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   const queryClient = new QueryClient();
 
   return (
-    <ChakraProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ChakraProvider theme={theme}>
         <AuthProvider>
           <StoriesProvider>
             <Component {...pageProps} />
           </StoriesProvider>
         </AuthProvider>
-      </QueryClientProvider>
-    </ChakraProvider>
+      </ChakraProvider>
+    </QueryClientProvider>
   );
 };
 
