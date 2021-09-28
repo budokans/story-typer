@@ -20,7 +20,8 @@ export const GameContainer: React.FC = () => {
     winGame,
     wpm,
   } = useGame();
-  const { handleFavoriteClick, isFavorited } = useIsFavorite(currentStory.uid);
+  const storyId = currentStory && currentStory.uid;
+  const { handleFavoriteClick, isFavorited } = useIsFavorite(storyId, status);
   const { data: user } = useUser();
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);

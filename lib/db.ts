@@ -124,3 +124,16 @@ export const createFavorite = async (
     dateFavorited: firebase.firestore.FieldValue.serverTimestamp(),
   });
 };
+
+export const queryFavorite = async (
+  userId: User["uid"],
+  storyId: StoryWithId["uid"]
+): Promise<boolean> => {
+  const favoritesRef = db.collection("favorites");
+  const queryRef = favoritesRef
+    .where("userId", "==", userId)
+    .where("storyId", "==", storyId);
+
+  const doc = await queryRef.get();
+  return doc.docs.length > 0;
+};

@@ -41,7 +41,10 @@ interface Compound {
     gameStatus: GameState["status"];
   }>;
   Score: React.FC;
-  Favorite: React.FC<{ isFavorited: boolean; onFavoriteClick: () => void }>;
+  Favorite: React.FC<{
+    isFavorited: boolean | undefined;
+    onFavoriteClick: () => void;
+  }>;
 }
 
 type GameCC = Compound & React.FC;
