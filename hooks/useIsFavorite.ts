@@ -7,7 +7,7 @@ import { GameState } from "./useGame.types";
 export const useIsFavorite = (
   storyId: StoryWithId["uid"],
   gameStatus: GameState["status"]
-) => {
+): { isFavorited: boolean; handleFavoriteClick: () => void } => {
   const { data: user } = useUser();
   const userId = user && user.uid;
   const queryClient = useQueryClient();
@@ -34,7 +34,7 @@ export const useIsFavorite = (
     }
   );
 
-  const handleFavoriteClick = async () => {
+  const handleFavoriteClick = () => {
     if (user) {
       favoriteId
         ? deleteFavoriteMutation.mutate(favoriteId)
