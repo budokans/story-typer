@@ -56,3 +56,8 @@ export interface PrevGame {
   datePlayed: string;
   score: number;
 }
+
+export interface Favorite {
+  userId: User["uid"];
+  storyId: StoryWithId["uid"];
+}

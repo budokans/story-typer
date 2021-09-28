@@ -1,6 +1,6 @@
 import { firebase } from "./firebase";
 import { QuerySnapshot } from "@firebase/firestore-types";
-import { PrevGame, Story, StoryWithId, User } from "../interfaces";
+import { Favorite, PrevGame, Story, StoryWithId, User } from "../interfaces";
 
 const db = firebase.firestore();
 
@@ -114,13 +114,10 @@ export const updateUserDataOnWin = async (user: User): Promise<void> => {
   await userRef.update(user);
 };
 
-export const createFavorite = async (
-  userId: User["uid"],
-  storyId: StoryWithId["uid"]
-): Promise<void> => {
+export const createFavorite = async (favorite: Favorite): Promise<void> => {
   db.collection("favorites").add({
-    userId,
-    storyId,
+    userId: favorite.userId,
+    storyId: favorite.storyId,
     dateFavorited: firebase.firestore.FieldValue.serverTimestamp(),
   });
 };
@@ -128,12 +125,12 @@ export const createFavorite = async (
 export const queryFavorite = async (
   userId: User["uid"],
   storyId: StoryWithId["uid"]
-): Promise<boolean> => {
+): Promise<string | null> => {
   const favoritesRef = db.collection("favorites");
   const queryRef = favoritesRef
     .where("userId", "==", userId)
     .where("storyId", "==", storyId);
 
   const doc = await queryRef.get();
-  return doc.docs.length > 0;
+  return doc.docs.length > 0 ? doc.docs[0].id : null;
 };
