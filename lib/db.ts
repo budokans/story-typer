@@ -134,3 +134,7 @@ export const queryFavorite = async (
   const doc = await queryRef.get();
   return doc.docs.length > 0 ? doc.docs[0].id : null;
 };
+
+export const deleteFavorite = async (id: string): Promise<void> => {
+  return await db.collection("favorites").doc(id).delete();
+};
