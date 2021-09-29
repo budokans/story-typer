@@ -1,11 +1,6 @@
 import { firebase } from "./firebase";
-import {
-  QueryDocumentSnapshot,
-  QuerySnapshot,
-  DocumentData,
-} from "@firebase/firestore-types";
-import { PrevGame, Story, StoryWithId, User } from "../interfaces";
-import { GameState } from "@/hooks/useGame.types";
+import { QuerySnapshot } from "@firebase/firestore-types";
+import { Favorite, PrevGame, Story, StoryWithId, User } from "../interfaces";
 
 const db = firebase.firestore();
 
@@ -117,4 +112,29 @@ export const createPrevGame = async (game: PrevGame): Promise<void> => {
 export const updateUserDataOnWin = async (user: User): Promise<void> => {
   const userRef = db.collection("users").doc(user.uid);
   await userRef.update(user);
+};
+
+export const createFavorite = async (favorite: Favorite): Promise<void> => {
+  db.collection("favorites").add({
+    userId: favorite.userId,
+    storyId: favorite.storyId,
+    dateFavorited: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+};
+
+export const queryFavorite = async (
+  userId: User["uid"],
+  storyId: StoryWithId["uid"]
+): Promise<string | null> => {
+  const favoritesRef = db.collection("favorites");
+  const queryRef = favoritesRef
+    .where("userId", "==", userId)
+    .where("storyId", "==", storyId);
+
+  const doc = await queryRef.get();
+  return doc.docs.length > 0 ? doc.docs[0].id : null;
+};
+
+export const deleteFavorite = async (id: string): Promise<void> => {
+  return await db.collection("favorites").doc(id).delete();
 };
