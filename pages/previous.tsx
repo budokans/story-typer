@@ -4,7 +4,9 @@ import { Archive } from "@/components/Archive";
 const Previous: React.FC = () => {
   return (
     <Page>
-      <Archive>Archive component</Archive>
+      <Archive>
+        <h1>Test</h1>
+      </Archive>
     </Page>
   );
 };
