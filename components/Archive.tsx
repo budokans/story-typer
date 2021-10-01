@@ -59,7 +59,14 @@ Archive.Toggles = function ArchiveToggles({ value, onSetValue }) {
 
 Archive.Card = function ArchiveCard({ children }) {
   return (
-    <Box w={["100vw", "100%"]} bg="white" px={[2, 4, 6]} py={[3, 6]}>
+    <Box
+      w={["100vw", "100%"]}
+      bg="white"
+      px={[2, 4, 6]}
+      py={[3, 6]}
+      borderRadius={["none", "lg"]}
+      boxShadow="2px 2px 4px rgba(0, 0, 0, 0.1)"
+    >
       {children}
     </Box>
   );
@@ -67,7 +74,7 @@ Archive.Card = function ArchiveCard({ children }) {
 
 Archive.CardTitle = function ArchiveCardTitle({ children }) {
   return (
-    <Heading as="h2" fontSize="clamp(1rem, 3.5vw, 4rem)">
+    <Heading as="h2" fontSize="clamp(1rem, 3.5vw, 1.5rem)">
       {children}
     </Heading>
   );
