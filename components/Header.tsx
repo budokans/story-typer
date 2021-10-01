@@ -9,7 +9,6 @@ import {
   MenuButton,
   MenuList,
   Text,
-  Link as ChakraLink,
   Icon,
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
@@ -142,9 +141,7 @@ Header.Archive = function HeaderArchive() {
       fontSize="clamp(0.75rem, 2.5vw, 1rem)"
       fontWeight="medium"
     >
-      <ChakraLink as={Link} href="#" passHref>
-        Archive
-      </ChakraLink>
+      <Link href="/previous">Previous</Link>
     </Box>
   );
 };
