@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Divider } from "@chakra-ui/react";
 import { Page } from "@/components/Page";
 import { Archive } from "@/components/Archive";
 
@@ -13,8 +14,8 @@ const Previous: React.FC = () => {
     userId: "12312312312",
     storyId: "92929292",
     storyTitle: "The Title of the Story by Vons Limmerman",
-    storyText:
-      "When the GPS said that I had arrived at my destination, I found myself parked in front of an abandoned country church on a dead end, gravel road. Most of the paint had long peeled away, and the graveyard beside it was full. I wondered who buried the last member.",
+    storyHtml:
+      '<p>I was a dreamer<br /> and when my heart was sleeping<br /> there was no pain<br /> but then there was a man<br /> who came to waken me<br /> from sleep.</p> <p>He whispered his words in my heart.<br /> "Wake up," he said, and I did.</p> <p>Now I feel everything;<br /> I can no longer dream.</p>',
     datePlayed: "2021-09-17T14:54:59.329Z",
     score: 100,
   };
@@ -26,6 +27,8 @@ const Previous: React.FC = () => {
       <Archive.CardTitle>{story.storyTitle}</Archive.CardTitle>
       <Archive.CardScore>{story.score}</Archive.CardScore>
       <Archive.CardDate dateString={story.datePlayed} />
+      <Divider />
+      <Archive.FullStory story={story.storyHtml} />
     </Archive.Card>
   ));
 

@@ -53,7 +53,7 @@ export interface PrevGame {
   userId: string;
   storyId: string;
   storyTitle: string;
-  storyHTML: string;
+  storyHtml: string;
   datePlayed: string;
   score: number;
 }

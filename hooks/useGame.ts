@@ -186,7 +186,7 @@ export const useGame = () => {
     userId: userId,
     storyId: story.uid,
     storyTitle: story.title,
-    storyHTML: story.storyHtml,
+    storyHtml: story.storyHtml,
     datePlayed: new Date().toISOString(),
     score: wpm,
   });

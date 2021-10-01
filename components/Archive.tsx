@@ -10,6 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { parseISO, formatDistance } from "date-fns";
+import parse from "html-react-parser";
 import { PrevGame } from "interfaces";
 
 interface Compound {
@@ -22,6 +23,7 @@ interface Compound {
   CardTitle: FC;
   CardScore: FC;
   CardDate: FC<{ dateString: PrevGame["datePlayed"] }>;
+  FullStory: FC<{ story: PrevGame["storyHtml"] }>;
 }
 
 type ArchiveCC = FC & Compound;
@@ -92,8 +94,12 @@ Archive.CardScore = function ArchiveCardScore({ children }) {
 Archive.CardDate = function ArchiveCardDate({ dateString }) {
   const iso = parseISO(dateString);
   return (
-    <time dateTime={dateString} style={{ fontSize: ".825rem" }}>
+    <time dateTime={dateString} style={{ fontSize: ".75rem" }}>
       {formatDistance(iso, new Date())} ago
     </time>
   );
+};
+
+Archive.FullStory = function ArchiveFullStroy({ story }) {
+  return <Text mt={4}>{parse(story)}</Text>;
 };
