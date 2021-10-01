@@ -25,6 +25,7 @@
     "@emotion/styled": "^11.3.0",
     "@fontsource/inter": "^4.5.0",
     "axios": "^0.21.1",
+    "date-fns": "^2.24.0",
     "entities": "^2.2.0",
     "firebase": "^8.7.1",
     "firebase-admin": "^9.11.1",

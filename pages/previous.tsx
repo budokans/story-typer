@@ -25,7 +25,7 @@ const Previous: React.FC = () => {
     <Archive.Card key={idx}>
       <Archive.CardTitle>{story.storyTitle}</Archive.CardTitle>
       <Archive.CardScore>{story.score}</Archive.CardScore>
-      <Archive.CardDate>{story.datePlayed}</Archive.CardDate>
+      <Archive.CardDate dateString={story.datePlayed} />
     </Archive.Card>
   ));
 
