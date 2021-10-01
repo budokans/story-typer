@@ -7,6 +7,7 @@ import {
   RadioGroup,
   Stack,
   Box,
+  Text,
 } from "@chakra-ui/react";
 
 interface Compound {
@@ -17,6 +18,7 @@ interface Compound {
   }>;
   Card: FC;
   CardTitle: FC;
+  CardScore: FC;
 }
 
 type ArchiveCC = FC & Compound;
@@ -78,4 +80,8 @@ Archive.CardTitle = function ArchiveCardTitle({ children }) {
       {children}
     </Heading>
   );
+};
+
+Archive.CardScore = function ArchiveCardScore({ children }) {
+  return <Text fontSize="sm">Score: {children} WPM</Text>;
 };

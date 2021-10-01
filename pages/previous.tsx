@@ -14,6 +14,7 @@ const Previous: React.FC = () => {
   const cards = stories.map(({ title, uid }) => (
     <Archive.Card key={uid}>
       <Archive.CardTitle>{title}</Archive.CardTitle>
+      <Archive.CardScore>100</Archive.CardScore>
     </Archive.Card>
   ));
 
