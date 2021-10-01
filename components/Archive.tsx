@@ -19,6 +19,7 @@ interface Compound {
   Card: FC;
   CardTitle: FC;
   CardScore: FC;
+  CardDate: FC;
 }
 
 type ArchiveCC = FC & Compound;
@@ -84,4 +85,8 @@ Archive.CardTitle = function ArchiveCardTitle({ children }) {
 
 Archive.CardScore = function ArchiveCardScore({ children }) {
   return <Text fontSize="sm">Score: {children} WPM</Text>;
+};
+
+Archive.CardDate = function ArchiveCardDate({ children }) {
+  return <Text fontSize="sm">{children}</Text>;
 };
