@@ -180,7 +180,8 @@ export const useGame = () => {
   ): PrevGame => ({
     userId: userId,
     storyId: story.uid,
-    storyText: story.storyText,
+    storyTitle: story.title,
+    storyHTML: story.storyHtml,
     datePlayed: new Date().toISOString(),
     score: wpm,
   });

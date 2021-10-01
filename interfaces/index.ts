@@ -52,7 +52,8 @@ export type AuthContext = ProvideAuth | null;
 export interface PrevGame {
   userId: string;
   storyId: string;
-  storyText: string;
+  storyTitle: string;
+  storyHTML: string;
   datePlayed: string;
   score: number;
 }
