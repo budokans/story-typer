@@ -1,13 +1,14 @@
+import { FC } from "react";
 import { Box, Flex, Link as ChakraLink, Text, Icon } from "@chakra-ui/react";
 import { RiGithubFill } from "react-icons/ri";
 
 interface Compound {
-  Text: React.FC;
-  NameLink: React.FC;
-  GitHub: React.FC;
+  Text: FC;
+  NameLink: FC;
+  GitHub: FC;
 }
 
-type FooterCC = React.FC & Compound;
+type FooterCC = FC & Compound;
 
 export const Footer: FooterCC = ({ children }) => {
   return (
@@ -17,7 +18,7 @@ export const Footer: FooterCC = ({ children }) => {
   );
 };
 
-const Container: React.FC = ({ children }) => {
+const Container: FC = ({ children }) => {
   return (
     <Box as="footer" bg="white" w="full" position="absolute" bottom={0}>
       {children}
@@ -25,7 +26,7 @@ const Container: React.FC = ({ children }) => {
   );
 };
 
-const Inner: React.FC = ({ children }) => {
+const Inner: FC = ({ children }) => {
   return (
     <Flex
       h={[9, 9, 14]}

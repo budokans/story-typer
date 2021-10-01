@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, FC } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { Game } from "@/components/Game";
 import { useGame } from "@/hooks/useGame";
 import { useUser } from "@/hooks/useUser";
 import { useIsFavorite } from "@/hooks/useIsFavorite";
 
-export const GameContainer: React.FC = () => {
+export const GameContainer: FC = () => {
   const {
     currentStory,
     onInitCountdown,

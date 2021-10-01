@@ -1,3 +1,4 @@
+import { FC } from "react";
 import {
   Container as ChakraContainer,
   Heading,
@@ -5,16 +6,16 @@ import {
 } from "@chakra-ui/react";
 
 interface Compound {
-  Header: React.FC;
+  Header: FC;
 }
 
-type ArchiveCC = React.FC & Compound;
+type ArchiveCC = FC & Compound;
 
 export const Archive: ArchiveCC = ({ children }) => {
   return <Container>{children}</Container>;
 };
 
-const Container: React.FC = ({ children }) => {
+const Container: FC = ({ children }) => {
   return (
     <ChakraContainer px={[0, 2, 6]}>
       <VStack>{children}</VStack>

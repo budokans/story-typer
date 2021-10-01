@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { useAuth } from "@/context/auth";
 import {
   Box,
@@ -16,23 +17,23 @@ import { RiThumbUpFill } from "react-icons/ri";
 import logo from "../public/story-typer-logo.png";
 
 interface Compound {
-  Brand: React.FC;
-  HeadlinesWrapper: React.FC;
-  Headline: React.FC;
-  CTAWrapper: React.FC;
-  CTA: React.FC;
-  Benefits: React.FC;
-  Benefit: React.FC;
-  PlayBtn: React.FC<{ onClick: () => void }>;
+  Brand: FC;
+  HeadlinesWrapper: FC;
+  Headline: FC;
+  CTAWrapper: FC;
+  CTA: FC;
+  Benefits: FC;
+  Benefit: FC;
+  PlayBtn: FC<{ onClick: () => void }>;
 }
 
-type HomeCC = React.FC & Compound;
+type HomeCC = FC & Compound;
 
 export const Home: HomeCC = ({ children }) => {
   return <Container>{children}</Container>;
 };
 
-const Container: React.FC = ({ children }) => {
+const Container: FC = ({ children }) => {
   return (
     <VStack direction="column" spacing={[3, 3, 8]} align="center">
       {children}

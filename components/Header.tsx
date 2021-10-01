@@ -1,3 +1,4 @@
+import { FC } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../public/story-typer-logo.png";
@@ -15,15 +16,15 @@ import { RiStarFill } from "react-icons/ri";
 import { useUser } from "@/hooks/useUser";
 
 interface Compound {
-  UserMenu: React.FC;
-  StatsContainer: React.FC;
-  StatsType: React.FC;
-  Stat: React.FC;
-  Favorites: React.FC;
-  Archive: React.FC;
+  UserMenu: FC;
+  StatsContainer: FC;
+  StatsType: FC;
+  Stat: FC;
+  Favorites: FC;
+  Archive: FC;
 }
 
-type HeaderCC = React.FC & Compound;
+type HeaderCC = FC & Compound;
 
 export const Header: HeaderCC = ({ children }) => {
   return (
@@ -36,7 +37,7 @@ export const Header: HeaderCC = ({ children }) => {
   );
 };
 
-const Container: React.FC = ({ children }) => {
+const Container: FC = ({ children }) => {
   return (
     <Box
       as="nav"
@@ -51,7 +52,7 @@ const Container: React.FC = ({ children }) => {
   );
 };
 
-const Inner: React.FC = ({ children }) => {
+const Inner: FC = ({ children }) => {
   return (
     <Flex
       as="ul"
@@ -67,7 +68,7 @@ const Inner: React.FC = ({ children }) => {
   );
 };
 
-const Logo: React.FC = () => {
+const Logo: FC = () => {
   return (
     <Box
       as="li"
