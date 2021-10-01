@@ -101,5 +101,5 @@ Archive.CardDate = function ArchiveCardDate({ dateString }) {
 };
 
 Archive.FullStory = function ArchiveFullStroy({ story }) {
-  return <Text mt={4}>{parse(story)}</Text>;
+  return <Box mt={4}>{parse(story)}</Box>;
 };

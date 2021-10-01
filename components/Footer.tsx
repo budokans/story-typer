@@ -43,7 +43,7 @@ const Inner: FC = ({ children }) => {
 
 Footer.Text = function FooterText({ children }) {
   return (
-    <Text color="blackAlpha.800" fontSize="clamp(0.75rem, 2vw, 1rem)">
+    <Text color="blackAlpha.800" fontSize="clamp(0.75rem, 2vw, 1rem)" mb={0}>
       {children}
     </Text>
   );

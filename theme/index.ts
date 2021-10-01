@@ -32,6 +32,9 @@ export const theme = extendTheme({
       li: {
         listStyleType: "none",
       },
+      p: {
+        marginBottom: "1rem",
+      },
     },
   },
   components: {

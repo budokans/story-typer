@@ -120,6 +120,7 @@ Header.StatsType = function HeaderStatsType({ children }) {
       mr={2}
       fontSize="clamp(0.75rem, 2.5vw, 1rem)"
       fontWeight="medium"
+      mb={0}
     >
       {children}
     </Text>
@@ -128,7 +129,7 @@ Header.StatsType = function HeaderStatsType({ children }) {
 
 Header.Stat = function HeaderStat({ children }) {
   return (
-    <Text fontSize="clamp(0.75rem, 2.5vw, 1rem)" fontWeight="semibold">
+    <Text fontSize="clamp(0.75rem, 2.5vw, 1rem)" fontWeight="semibold" mb={0}>
       {children}
     </Text>
   );
