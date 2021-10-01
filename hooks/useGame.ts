@@ -161,6 +161,11 @@ export const useGame = () => {
     dispatch({ type: "next" });
   };
 
+  const handleNextStoryClick = () => {
+    setGameCount(gameCount + 1);
+    dispatch({ type: "next" });
+  };
+
   const checkForUserError = (
     currentInput: string,
     storedInput: string,
@@ -251,6 +256,7 @@ export const useGame = () => {
     wpm: state.wpm,
     onResetClick: handleResetClick,
     onSkipClick: handleSkipClick,
+    onNextClick: handleNextStoryClick,
     winGame,
   };
 };
