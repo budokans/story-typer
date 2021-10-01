@@ -5,7 +5,7 @@ const Previous: React.FC = () => {
   return (
     <Page>
       <Archive>
-        <h1>Test</h1>
+        <Archive.Header>Previously...</Archive.Header>
       </Archive>
     </Page>
   );
