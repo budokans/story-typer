@@ -12,7 +12,9 @@ const Previous: React.FC = () => {
   };
 
   const cards = stories.map(({ title, uid }) => (
-    <Archive.Card key={uid}>{title}</Archive.Card>
+    <Archive.Card key={uid}>
+      <Archive.CardTitle>{title}</Archive.CardTitle>
+    </Archive.Card>
   ));
 
   return (

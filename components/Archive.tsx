@@ -16,6 +16,7 @@ interface Compound {
     onSetValue: (nextValue: "all" | "favorites") => void;
   }>;
   Card: FC;
+  CardTitle: FC;
 }
 
 type ArchiveCC = FC & Compound;
@@ -33,7 +34,11 @@ const Container: FC = ({ children }) => {
 };
 
 Archive.Header = function ArchiveHeader({ children }) {
-  return <Heading fontSize="clamp(1.5rem, 6vw, 4rem)">{children}</Heading>;
+  return (
+    <Heading as="h1" fontSize="clamp(1.5rem, 6vw, 4rem)">
+      {children}
+    </Heading>
+  );
 };
 
 Archive.Toggles = function ArchiveToggles({ value, onSetValue }) {
@@ -42,7 +47,7 @@ Archive.Toggles = function ArchiveToggles({ value, onSetValue }) {
       onChange={onSetValue}
       value={value}
       alignSelf="flex-start"
-      pl={[4, 0]}
+      pl={[1, 0]}
     >
       <Stack direction="row">
         <Radio value="all">All</Radio>
@@ -54,8 +59,16 @@ Archive.Toggles = function ArchiveToggles({ value, onSetValue }) {
 
 Archive.Card = function ArchiveCard({ children }) {
   return (
-    <Box w={["100vw", "100%"]} bg="white" px={[2, 4, 6]}>
+    <Box w={["100vw", "100%"]} bg="white" px={[2, 4, 6]} py={[3, 6]}>
       {children}
     </Box>
+  );
+};
+
+Archive.CardTitle = function ArchiveCardTitle({ children }) {
+  return (
+    <Heading as="h2" fontSize="clamp(1rem, 3.5vw, 4rem)">
+      {children}
+    </Heading>
   );
 };
