@@ -11,14 +11,16 @@ import {
   Container as ChakraContainer,
   Heading,
   VStack,
+  HStack,
   Radio,
   RadioGroup,
   Stack,
   Box,
   Text,
   Icon,
+  IconButton,
 } from "@chakra-ui/react";
-import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
+import { RiArrowUpSLine, RiPlayFill } from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
 import { PrevGame } from "interfaces";
@@ -37,6 +39,8 @@ interface Compound {
   CloseCardIcon: FC<{ id: number }>;
   CardExpandedSection: FC<{ id: number }>;
   FullStory: FC<{ story: PrevGame["storyHtml"] }>;
+  Buttons: FC;
+  PlayAgainButton: FC;
 }
 
 type ArchiveCC = FC & Compound;
@@ -95,7 +99,7 @@ Archive.Card = function ArchiveCard({ children }) {
         w={["100vw", "100%"]}
         bg="white"
         px={[2, 4, 6]}
-        py={[3, 6]}
+        py={[4, 6]}
         borderRadius={["none", "lg"]}
         boxShadow="2px 2px 4px rgba(0, 0, 0, 0.1)"
       >
@@ -176,4 +180,26 @@ Archive.FullStory = function ArchiveFullStroy({ story }) {
   );
 
   return <Box mt={4}>{parse(storyWithPMargins)}</Box>;
+};
+
+Archive.Buttons = function ArchiveButtons({ children }) {
+  return (
+    <HStack spacing={6} justify="center">
+      {children}
+    </HStack>
+  );
+};
+
+Archive.PlayAgainButton = function ArchivePlayAgainButton() {
+  return (
+    <IconButton
+      icon={<RiPlayFill />}
+      aria-label="Play this story again"
+      isRound
+      cursor="pointer"
+      fontSize="1.75rem"
+      bg="lime"
+      color="blackAlpha.800"
+    />
+  );
 };

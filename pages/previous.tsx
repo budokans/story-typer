@@ -34,6 +34,9 @@ const Previous: React.FC = () => {
         <Divider mt={4} />
         <Archive.FullStory story={story.storyHtml} />
         <Divider my={4} />
+        <Archive.Buttons>
+          <Archive.PlayAgainButton />
+        </Archive.Buttons>
       </Archive.CardExpandedSection>
     </Archive.Card>
   ));
