@@ -24,12 +24,12 @@ const Previous: React.FC = () => {
 
   const cards = tenDummyStories.map((story, idx) => (
     <Archive.Card key={idx}>
-      <Archive.CardHeader>
+      <Archive.CardHeader id={idx}>
         <Archive.CardTitle>{story.storyTitle}</Archive.CardTitle>
         <Archive.CardScore>{story.score}</Archive.CardScore>
         <Archive.CardDate dateString={story.datePlayed} />
       </Archive.CardHeader>
-      <Archive.CardExpandedSection>
+      <Archive.CardExpandedSection id={idx}>
         <Divider mt={4} />
         <Archive.FullStory story={story.storyHtml} />
         <Divider my={4} />

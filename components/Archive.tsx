@@ -1,4 +1,12 @@
-import { FC } from "react";
+import {
+  Context,
+  createContext,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 import {
   Container as ChakraContainer,
   Heading,
@@ -20,15 +28,24 @@ interface Compound {
     onSetValue: (nextValue: "all" | "favorites") => void;
   }>;
   Card: FC;
-  CardHeader: FC;
+  CardHeader: FC<{ id: number }>;
   CardTitle: FC;
   CardScore: FC;
   CardDate: FC<{ dateString: PrevGame["datePlayed"] }>;
-  CardExpandedSection: FC;
+  CardExpandedSection: FC<{ id: number }>;
   FullStory: FC<{ story: PrevGame["storyHtml"] }>;
 }
 
 type ArchiveCC = FC & Compound;
+
+interface ExpandedContext {
+  expandedIdx: number | null;
+  setExpandedIdx: Dispatch<SetStateAction<number | null>>;
+}
+
+const expandedContext = createContext<ExpandedContext | null>(null);
+const useExpandedContext = (): ExpandedContext =>
+  useContext(expandedContext as Context<ExpandedContext>);
 
 export const Archive: ArchiveCC = ({ children }) => {
   return <Container>{children}</Container>;
@@ -67,23 +84,33 @@ Archive.Toggles = function ArchiveToggles({ value, onSetValue }) {
 };
 
 Archive.Card = function ArchiveCard({ children }) {
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+
   return (
-    <Box
-      w={["100vw", "100%"]}
-      bg="white"
-      px={[2, 4, 6]}
-      py={[3, 6]}
-      borderRadius={["none", "lg"]}
-      boxShadow="2px 2px 4px rgba(0, 0, 0, 0.1)"
-    >
-      {children}
-    </Box>
+    <expandedContext.Provider value={{ expandedIdx, setExpandedIdx }}>
+      <Box
+        w={["100vw", "100%"]}
+        bg="white"
+        px={[2, 4, 6]}
+        py={[3, 6]}
+        borderRadius={["none", "lg"]}
+        boxShadow="2px 2px 4px rgba(0, 0, 0, 0.1)"
+      >
+        {children}
+      </Box>
+    </expandedContext.Provider>
   );
 };
 
-Archive.CardHeader = function ArchiveCardHeader({ children }) {
+Archive.CardHeader = function ArchiveCardHeader({ id, children }) {
+  const { expandedIdx, setExpandedIdx } = useExpandedContext();
+  const isExpanded = expandedIdx === id;
+
   return (
-    <Box role="button">
+    <Box
+      role="button"
+      onClick={() => (isExpanded ? setExpandedIdx(null) : setExpandedIdx(id))}
+    >
       <header>{children}</header>
     </Box>
   );
@@ -111,9 +138,13 @@ Archive.CardDate = function ArchiveCardDate({ dateString }) {
 };
 
 Archive.CardExpandedSection = function ArchiveCardExpandedSection({
+  id,
   children,
 }) {
-  return <Box>{children}</Box>;
+  const { expandedIdx } = useExpandedContext();
+  const isExpanded = expandedIdx === id;
+
+  return isExpanded ? <Box>{children}</Box> : null;
 };
 
 Archive.FullStory = function ArchiveFullStroy({ story }) {
