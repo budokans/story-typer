@@ -14,15 +14,17 @@ import parse from "html-react-parser";
 import { PrevGame } from "interfaces";
 
 interface Compound {
-  Header: FC;
+  PageTitle: FC;
   Toggles: FC<{
     value: "all" | "favorites";
     onSetValue: (nextValue: "all" | "favorites") => void;
   }>;
   Card: FC;
+  CardHeader: FC;
   CardTitle: FC;
   CardScore: FC;
   CardDate: FC<{ dateString: PrevGame["datePlayed"] }>;
+  CardExpandedSection: FC;
   FullStory: FC<{ story: PrevGame["storyHtml"] }>;
 }
 
@@ -40,7 +42,7 @@ const Container: FC = ({ children }) => {
   );
 };
 
-Archive.Header = function ArchiveHeader({ children }) {
+Archive.PageTitle = function ArchiveHeader({ children }) {
   return (
     <Heading as="h1" fontSize="clamp(1.5rem, 6vw, 4rem)">
       {children}
@@ -79,6 +81,14 @@ Archive.Card = function ArchiveCard({ children }) {
   );
 };
 
+Archive.CardHeader = function ArchiveCardHeader({ children }) {
+  return (
+    <Box role="button">
+      <header>{children}</header>
+    </Box>
+  );
+};
+
 Archive.CardTitle = function ArchiveCardTitle({ children }) {
   return (
     <Heading as="h2" fontSize="clamp(1rem, 3.5vw, 1.5rem)">
@@ -98,6 +108,12 @@ Archive.CardDate = function ArchiveCardDate({ dateString }) {
       {formatDistance(iso, new Date())} ago
     </time>
   );
+};
+
+Archive.CardExpandedSection = function ArchiveCardExpandedSection({
+  children,
+}) {
+  return <Box>{children}</Box>;
 };
 
 Archive.FullStory = function ArchiveFullStroy({ story }) {
