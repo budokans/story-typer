@@ -16,7 +16,9 @@ import {
   Stack,
   Box,
   Text,
+  Icon,
 } from "@chakra-ui/react";
+import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
 import { PrevGame } from "interfaces";
@@ -32,6 +34,7 @@ interface Compound {
   CardTitle: FC;
   CardScore: FC;
   CardDate: FC<{ dateString: PrevGame["datePlayed"] }>;
+  CloseCardIcon: FC<{ id: number }>;
   CardExpandedSection: FC<{ id: number }>;
   FullStory: FC<{ story: PrevGame["storyHtml"] }>;
 }
@@ -109,7 +112,9 @@ Archive.CardHeader = function ArchiveCardHeader({ id, children }) {
   return (
     <Box
       role="button"
+      aria-role={`${isExpanded ? "Hide" : "Show"} game details`}
       onClick={() => (isExpanded ? setExpandedIdx(null) : setExpandedIdx(id))}
+      position="relative"
     >
       <header>{children}</header>
     </Box>
@@ -135,6 +140,23 @@ Archive.CardDate = function ArchiveCardDate({ dateString }) {
       {formatDistance(iso, new Date())} ago
     </time>
   );
+};
+
+Archive.CloseCardIcon = function ArchiveCloseCardIcon({ id }) {
+  const { expandedIdx } = useExpandedContext();
+  const isExpanded = expandedIdx === id;
+
+  return isExpanded ? (
+    <Icon
+      as={RiArrowUpSLine}
+      aria-label="Hide game details"
+      position="absolute"
+      left="calc(50% - 1rem)"
+      bottom="-5px"
+      w="2rem"
+      h="2rem"
+    />
+  ) : null;
 };
 
 Archive.CardExpandedSection = function ArchiveCardExpandedSection({

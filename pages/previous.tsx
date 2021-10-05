@@ -28,6 +28,7 @@ const Previous: React.FC = () => {
         <Archive.CardTitle>{story.storyTitle}</Archive.CardTitle>
         <Archive.CardScore>{story.score}</Archive.CardScore>
         <Archive.CardDate dateString={story.datePlayed} />
+        <Archive.CloseCardIcon id={idx} />
       </Archive.CardHeader>
       <Archive.CardExpandedSection id={idx}>
         <Divider mt={4} />
