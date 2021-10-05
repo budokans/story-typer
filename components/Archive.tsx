@@ -54,7 +54,7 @@ Archive.Toggles = function ArchiveToggles({ value, onSetValue }) {
       onChange={onSetValue}
       value={value}
       alignSelf="flex-start"
-      pl={[1, 0]}
+      pl={[1, 4, 6]}
     >
       <Stack direction="row">
         <Radio value="all">All</Radio>
@@ -101,5 +101,10 @@ Archive.CardDate = function ArchiveCardDate({ dateString }) {
 };
 
 Archive.FullStory = function ArchiveFullStroy({ story }) {
-  return <Box mt={4}>{parse(story)}</Box>;
+  const storyWithPMargins = story.replace(
+    /<p/g,
+    '<p style="margin-bottom: 1rem"'
+  );
+
+  return <Box mt={4}>{parse(storyWithPMargins)}</Box>;
 };
