@@ -4,7 +4,6 @@ import { Game } from "@/components/Game";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { useGame } from "@/hooks/useGame";
 import { useUser } from "@/hooks/useUser";
-import { useIsFavorite } from "@/hooks/useIsFavorite";
 
 export const GameContainer: FC = () => {
   const {
@@ -23,7 +22,6 @@ export const GameContainer: FC = () => {
     wpm,
   } = useGame();
   const storyId = currentStory && currentStory.uid;
-  const { handleFavoriteClick, isFavorited } = useIsFavorite(storyId, status);
   const { data: user } = useUser();
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);
@@ -64,12 +62,7 @@ export const GameContainer: FC = () => {
             )}
             {userError && <Game.ErrorAlert />}
 
-            {status === "complete" && (
-              <FavoriteButton
-                onFavoriteClick={handleFavoriteClick}
-                isFavorited={isFavorited}
-              />
-            )}
+            {status === "complete" && <FavoriteButton storyId={storyId} />}
             <Game.BtnSm type="restart" onClick={winGame} />
             <Game.BtnSm
               type="new"

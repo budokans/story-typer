@@ -1,15 +1,13 @@
 import { IconButton } from "@chakra-ui/button";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
+import { useIsFavorite } from "@/hooks/useIsFavorite";
+import { StoryWithId } from "interfaces";
 
-interface FavoriteButtonProps {
-  isFavorited: boolean | undefined;
-  onFavoriteClick: () => void;
-}
+export const FavoriteButton: React.FC<{
+  storyId: StoryWithId["uid"];
+}> = ({ storyId }) => {
+  const { handleFavoriteClick, isFavorited } = useIsFavorite(storyId);
 
-export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
-  isFavorited,
-  onFavoriteClick,
-}) => {
   return (
     <IconButton
       icon={isFavorited ? <RiStarFill /> : <RiStarLine />}
@@ -19,7 +17,7 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
       aria-label="favorite this story"
       bg="transparent"
       color="gold"
-      onClick={onFavoriteClick}
+      onClick={handleFavoriteClick}
       _hover={{ background: "transparent" }}
       _focus={{ boxShadow: "none" }}
     />
