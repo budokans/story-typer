@@ -171,7 +171,8 @@ export const queryPrevGames = async (
     queryRef = db
       .collection("prevGames")
       .orderBy("datePlayed", "desc")
-      .startAfter(last.data().limit(10));
+      .startAfter(last.data().datePlayed)
+      .limit(10);
   }
 
   const snapshot = await queryRef.get();

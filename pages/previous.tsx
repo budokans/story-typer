@@ -1,10 +1,11 @@
-import { useState, FC, Fragment } from "react";
+import { useState, FC, Fragment, useRef } from "react";
 import { useInfiniteQuery } from "react-query";
-import { Divider, Skeleton } from "@chakra-ui/react";
+import { Divider, Skeleton, Spinner, Text } from "@chakra-ui/react";
 import { Page } from "@/components/Page";
 import { Archive } from "@/components/Archive";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { queryPrevGames } from "@/lib/db";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 const Previous: FC = () => {
   const [listType, setListType] = useState<"all" | "favorites">("all");
@@ -28,9 +29,17 @@ const Previous: FC = () => {
       return res;
     },
     {
-      getNextPageParam: (lastPage) => lastPage.cursor ?? false,
+      getNextPageParam: (lastPage) => lastPage.cursor,
     }
   );
+
+  const loadMoreRef = useRef(null);
+
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage,
+  });
 
   return (
     <Page>
@@ -72,6 +81,22 @@ const Previous: FC = () => {
               </Fragment>
             ))
           : null}
+
+        <div ref={loadMoreRef}>
+          {isFetchingNextPage ? (
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="brand.500"
+              size="xl"
+            />
+          ) : hasNextPage ? (
+            <Text>Load more</Text>
+          ) : (
+            <Text>No more results</Text>
+          )}
+        </div>
       </Archive>
     </Page>
   );
