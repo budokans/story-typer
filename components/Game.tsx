@@ -12,12 +12,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
-import {
-  RiRestartFill,
-  RiSkipForwardFill,
-  RiStarFill,
-  RiStarLine,
-} from "react-icons/ri";
+import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 import { GameState } from "@/hooks/useGame.types";
 
 interface Compound {

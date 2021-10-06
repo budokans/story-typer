@@ -2,6 +2,7 @@ import { useState, FC } from "react";
 import { Divider } from "@chakra-ui/react";
 import { Page } from "@/components/Page";
 import { Archive } from "@/components/Archive";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 const Previous: FC = () => {
   const [listType, setListType] = useState<"all" | "favorites">("all");
@@ -36,6 +37,7 @@ const Previous: FC = () => {
         <Divider my={4} />
         <Archive.Buttons>
           <Archive.PlayAgainButton />
+          <FavoriteButton storyId={story.storyId} />
         </Archive.Buttons>
       </Archive.CardExpandedSection>
     </Archive.Card>
