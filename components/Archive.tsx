@@ -21,10 +21,12 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import Link from "next/link";
+import router from "next/router";
 import { RiArrowLeftSLine, RiArrowUpSLine, RiPlayFill } from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
 import { PrevGame } from "interfaces";
+import { useStories } from "@/context/stories";
 
 interface Compound {
   PageTitle: FC;
@@ -41,7 +43,7 @@ interface Compound {
   CardExpandedSection: FC<{ id: number }>;
   FullStory: FC<{ story: PrevGame["storyHtml"] }>;
   Buttons: FC;
-  PlayAgainButton: FC;
+  PlayAgainButton: FC<{ storyId: PrevGame["storyId"] }>;
   BackToGameButton: FC;
 }
 
@@ -196,7 +198,9 @@ Archive.Buttons = function ArchiveButtons({ children }) {
   );
 };
 
-Archive.PlayAgainButton = function ArchivePlayAgainButton() {
+Archive.PlayAgainButton = function ArchivePlayAgainButton({ storyId }) {
+  const { handlePlayArchiveStoryClick } = useStories();
+
   return (
     <IconButton
       icon={<RiPlayFill />}
@@ -206,6 +210,10 @@ Archive.PlayAgainButton = function ArchivePlayAgainButton() {
       fontSize="1.75rem"
       bg="lime"
       color="blackAlpha.800"
+      onClick={() => {
+        handlePlayArchiveStoryClick(storyId);
+        router.push("./play");
+      }}
     />
   );
 };

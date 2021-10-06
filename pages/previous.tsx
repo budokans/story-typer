@@ -6,7 +6,7 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 
 const Previous: FC = () => {
   const [listType, setListType] = useState<"all" | "favorites">("all");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleToggleValue = (nextValue: "all" | "favorites") => {
     setListType(nextValue);
@@ -14,7 +14,7 @@ const Previous: FC = () => {
 
   const dummyPrevGame = {
     userId: "12312312312",
-    storyId: "92929292",
+    storyId: "012Rsnjw5cKvvfNzokpC",
     storyTitle: "The Title of the Story by Vons Limmerman",
     storyHtml:
       '<p>I was a dreamer<br /> and when my heart was sleeping<br /> there was no pain<br /> but then there was a man<br /> who came to waken me<br /> from sleep.</p> <p>He whispered his words in my heart.<br /> "Wake up," he said, and I did.</p> <p>Now I feel everything;<br /> I can no longer dream.</p>',
@@ -43,7 +43,7 @@ const Previous: FC = () => {
           <Archive.FullStory story={story.storyHtml} />
           <Divider my={4} />
           <Archive.Buttons>
-            <Archive.PlayAgainButton />
+            <Archive.PlayAgainButton storyId={story.storyId} />
             <FavoriteButton storyId={story.storyId} />
           </Archive.Buttons>
         </Archive.CardExpandedSection>
@@ -57,7 +57,7 @@ const Previous: FC = () => {
         <Archive.BackToGameButton />
         <Archive.PageTitle>Previously...</Archive.PageTitle>
         <Archive.Toggles value={listType} onSetValue={handleToggleValue} />
-        {cards}
+        {cards ? cards : null}
       </Archive>
     </Page>
   );

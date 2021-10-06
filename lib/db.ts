@@ -105,6 +105,17 @@ export const queryStories = async (
   return batch;
 };
 
+export const queryStory = async (
+  id: StoryWithId["uid"]
+): Promise<StoryWithId> => {
+  const snapshot = await db.collection("stories").doc(id).get();
+  const withId = {
+    ...(snapshot.data() as Story),
+    uid: snapshot.id,
+  };
+  return withId;
+};
+
 export const createPrevGame = async (game: PrevGame): Promise<void> => {
   await db.collection("prevGames").add(game);
 };

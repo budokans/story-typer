@@ -17,13 +17,15 @@ interface StoryContext {
   isLoading: boolean;
   gameCount: number;
   setGameCount: Dispatch<SetStateAction<number>>;
+  handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
 }
 
 const storiesContext = createContext<StoryContext | null>(null);
 
 export const StoriesProvider: FC = ({ children }) => {
   const [gameCount, setGameCount] = useState(1);
-  const { stories, isLoading } = useProvideStories(gameCount);
+  const { stories, isLoading, handlePlayArchiveStoryClick } =
+    useProvideStories(gameCount);
   const { data: user } = useUser();
 
   // Listen for no user (signed out) and reset gameCount
@@ -35,7 +37,13 @@ export const StoriesProvider: FC = ({ children }) => {
 
   return (
     <storiesContext.Provider
-      value={{ stories, isLoading, gameCount, setGameCount }}
+      value={{
+        stories,
+        isLoading,
+        gameCount,
+        setGameCount,
+        handlePlayArchiveStoryClick,
+      }}
     >
       {children}
     </storiesContext.Provider>
