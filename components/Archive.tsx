@@ -212,7 +212,7 @@ Archive.PlayAgainButton = function ArchivePlayAgainButton() {
 
 Archive.BackToGameButton = function ArchiveBackToGameButton() {
   return (
-    <Box alignSelf="flex-end" fontSize={["14px", "16px"]}>
+    <Box alignSelf="flex-start" fontSize={["14px", "16px"]}>
       <Link href="/play" passHref>
         <a>
           <Icon as={RiArrowLeftSLine} h="1rem" w="1rem" /> Back to Game

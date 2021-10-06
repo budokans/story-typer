@@ -25,7 +25,12 @@ const Previous: FC = () => {
   const tenDummyStories = Array(10).fill(dummyPrevGame);
 
   const cards = tenDummyStories.map((story, idx) => (
-    <Skeleton isLoaded={!isLoading} key={idx}>
+    <Skeleton
+      isLoaded={!isLoading}
+      key={idx}
+      borderRadius={["none", "lg"]}
+      boxShadow="2px 2px 4px rgba(0, 0, 0, 0.1)"
+    >
       <Archive.Card>
         <Archive.CardHeader id={idx}>
           <Archive.CardTitle>{story.storyTitle}</Archive.CardTitle>
