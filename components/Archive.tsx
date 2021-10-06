@@ -20,7 +20,8 @@ import {
   Icon,
   IconButton,
 } from "@chakra-ui/react";
-import { RiArrowUpSLine, RiPlayFill } from "react-icons/ri";
+import Link from "next/link";
+import { RiArrowLeftSLine, RiArrowUpSLine, RiPlayFill } from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
 import { PrevGame } from "interfaces";
@@ -41,6 +42,7 @@ interface Compound {
   FullStory: FC<{ story: PrevGame["storyHtml"] }>;
   Buttons: FC;
   PlayAgainButton: FC;
+  BackToGameButton: FC;
 }
 
 type ArchiveCC = FC & Compound;
@@ -201,5 +203,17 @@ Archive.PlayAgainButton = function ArchivePlayAgainButton() {
       bg="lime"
       color="blackAlpha.800"
     />
+  );
+};
+
+Archive.BackToGameButton = function ArchiveBackToGameButton() {
+  return (
+    <Box alignSelf="flex-start" fontSize={["14px", "16px"]}>
+      <Link href="/play" passHref>
+        <a>
+          <Icon as={RiArrowLeftSLine} h="1rem" w="1rem" /> Back to Game
+        </a>
+      </Link>
+    </Box>
   );
 };

@@ -46,6 +46,7 @@ const Previous: FC = () => {
   return (
     <Page>
       <Archive>
+        <Archive.BackToGameButton />
         <Archive.PageTitle>Previously...</Archive.PageTitle>
         <Archive.Toggles value={listType} onSetValue={handleToggleValue} />
         {cards}
