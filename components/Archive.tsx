@@ -85,8 +85,12 @@ Archive.Toggles = function ArchiveToggles({ value, onSetValue }) {
       pl={[1, 4, 6]}
     >
       <Stack direction="row">
-        <Radio value="all">All</Radio>
-        <Radio value="favorites">Favorites</Radio>
+        <Radio value="all" cursor="pointer">
+          All
+        </Radio>
+        <Radio value="favorites" cursor="pointer">
+          Favorites
+        </Radio>
       </Stack>
     </RadioGroup>
   );
@@ -129,7 +133,7 @@ Archive.CardHeader = function ArchiveCardHeader({ id, children }) {
 
 Archive.CardTitle = function ArchiveCardTitle({ children }) {
   return (
-    <Heading as="h2" fontSize="clamp(1rem, 3.5vw, 1.5rem)">
+    <Heading as="h2" fontSize="clamp(1rem, 3.5vw, 1.5rem)" noOfLines={1}>
       {children}
     </Heading>
   );
@@ -208,7 +212,7 @@ Archive.PlayAgainButton = function ArchivePlayAgainButton() {
 
 Archive.BackToGameButton = function ArchiveBackToGameButton() {
   return (
-    <Box alignSelf="flex-start" fontSize={["14px", "16px"]}>
+    <Box alignSelf="flex-end" fontSize={["14px", "16px"]}>
       <Link href="/play" passHref>
         <a>
           <Icon as={RiArrowLeftSLine} h="1rem" w="1rem" /> Back to Game

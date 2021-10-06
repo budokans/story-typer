@@ -1,11 +1,12 @@
 import { useState, FC } from "react";
-import { Divider } from "@chakra-ui/react";
+import { Divider, Skeleton } from "@chakra-ui/react";
 import { Page } from "@/components/Page";
 import { Archive } from "@/components/Archive";
 import { FavoriteButton } from "@/components/FavoriteButton";
 
 const Previous: FC = () => {
   const [listType, setListType] = useState<"all" | "favorites">("all");
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleToggleValue = (nextValue: "all" | "favorites") => {
     setListType(nextValue);
@@ -24,23 +25,25 @@ const Previous: FC = () => {
   const tenDummyStories = Array(10).fill(dummyPrevGame);
 
   const cards = tenDummyStories.map((story, idx) => (
-    <Archive.Card key={idx}>
-      <Archive.CardHeader id={idx}>
-        <Archive.CardTitle>{story.storyTitle}</Archive.CardTitle>
-        <Archive.CardScore>{story.score}</Archive.CardScore>
-        <Archive.CardDate dateString={story.datePlayed} />
-        <Archive.CloseCardIcon id={idx} />
-      </Archive.CardHeader>
-      <Archive.CardExpandedSection id={idx}>
-        <Divider mt={4} />
-        <Archive.FullStory story={story.storyHtml} />
-        <Divider my={4} />
-        <Archive.Buttons>
-          <Archive.PlayAgainButton />
-          <FavoriteButton storyId={story.storyId} />
-        </Archive.Buttons>
-      </Archive.CardExpandedSection>
-    </Archive.Card>
+    <Skeleton isLoaded={!isLoading} key={idx}>
+      <Archive.Card>
+        <Archive.CardHeader id={idx}>
+          <Archive.CardTitle>{story.storyTitle}</Archive.CardTitle>
+          <Archive.CardScore>{story.score}</Archive.CardScore>
+          <Archive.CardDate dateString={story.datePlayed} />
+          <Archive.CloseCardIcon id={idx} />
+        </Archive.CardHeader>
+        <Archive.CardExpandedSection id={idx}>
+          <Divider mt={4} />
+          <Archive.FullStory story={story.storyHtml} />
+          <Divider my={4} />
+          <Archive.Buttons>
+            <Archive.PlayAgainButton />
+            <FavoriteButton storyId={story.storyId} />
+          </Archive.Buttons>
+        </Archive.CardExpandedSection>
+      </Archive.Card>
+    </Skeleton>
   ));
 
   return (
