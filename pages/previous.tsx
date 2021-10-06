@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, FC } from "react";
 import { Divider } from "@chakra-ui/react";
 import { Page } from "@/components/Page";
 import { Archive } from "@/components/Archive";
 
-const Previous: React.FC = () => {
+const Previous: FC = () => {
   const [listType, setListType] = useState<"all" | "favorites">("all");
 
   const handleToggleValue = (nextValue: "all" | "favorites") => {

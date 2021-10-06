@@ -41,10 +41,6 @@ interface Compound {
     gameStatus: GameState["status"];
   }>;
   Score: FC;
-  Favorite: FC<{
-    isFavorited: boolean | undefined;
-    onFavoriteClick: () => void;
-  }>;
 }
 
 type GameCC = Compound & FC;
@@ -211,22 +207,5 @@ Game.Score = function GameScore({ children }) {
     <Text mr="auto" color="white" fontWeight="semibold" fontSize="1.5rem">
       {children}
     </Text>
-  );
-};
-
-Game.Favorite = function GameFavorite({ isFavorited, onFavoriteClick }) {
-  return (
-    <IconButton
-      icon={isFavorited ? <RiStarFill /> : <RiStarLine />}
-      isRound
-      cursor="pointer"
-      fontSize="2.5rem"
-      aria-label="favorite this story"
-      bg="transparent"
-      color="gold"
-      onClick={onFavoriteClick}
-      _hover={{ background: "transparent" }}
-      _focus={{ boxShadow: "none" }}
-    />
   );
 };

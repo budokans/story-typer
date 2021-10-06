@@ -68,7 +68,7 @@ const Container: FC = ({ children }) => {
 
 Archive.PageTitle = function ArchiveHeader({ children }) {
   return (
-    <Heading as="h1" fontSize="clamp(1.5rem, 6vw, 4rem)">
+    <Heading as="h1" fontSize="clamp(2rem, 6vw, 4rem)">
       {children}
     </Heading>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState, FC } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { Game } from "@/components/Game";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { useGame } from "@/hooks/useGame";
 import { useUser } from "@/hooks/useUser";
 import { useIsFavorite } from "@/hooks/useIsFavorite";
@@ -64,7 +65,7 @@ export const GameContainer: FC = () => {
             {userError && <Game.ErrorAlert />}
 
             {status === "complete" && (
-              <Game.Favorite
+              <FavoriteButton
                 onFavoriteClick={handleFavoriteClick}
                 isFavorited={isFavorited}
               />
