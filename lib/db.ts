@@ -182,3 +182,36 @@ export const queryPrevGames = async (
 
   return { prevGames, cursor };
 };
+
+export const queryFavorites = async (
+  last: QueryDocumentSnapshot<DocumentData>
+): Promise<{
+  favorites: Favorite[];
+  cursor: QueryDocumentSnapshot<DocumentData> | null;
+}> => {
+  let queryRef;
+
+  if (!last) {
+    queryRef = db
+      .collection("favorites")
+      .orderBy("dateFavorited", "desc")
+      .limit(10);
+  } else {
+    queryRef = db
+      .collection("favorites")
+      .orderBy("dateFavorited", "desc")
+      .startAfter(last.data().dateFavorited)
+      .limit(10);
+  }
+
+  const snapshot = await queryRef.get();
+  const favorites = snapshot.docs.map(
+    (favorite) => favorite.data() as Favorite
+  );
+  const cursor =
+    snapshot.docs.length === 10
+      ? snapshot.docs[snapshot.docs.length - 1]
+      : null;
+
+  return { favorites, cursor };
+};

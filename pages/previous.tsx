@@ -2,6 +2,7 @@ import { useState, FC } from "react";
 import { Page } from "@/components/Page";
 import { Archive } from "@/components/Archive";
 import { PrevGamesContainer } from "@/containers/prevGames";
+import { FavoritesContainer } from "@/containers/favorites";
 
 const Previous: FC = () => {
   const [listType, setListType] = useState<"all" | "favorites">("all");
@@ -16,7 +17,7 @@ const Previous: FC = () => {
         <Archive.BackToGameButton />
         <Archive.PageTitle>Previously...</Archive.PageTitle>
         <Archive.Toggles value={listType} onSetValue={handleToggleValue} />
-        <PrevGamesContainer />
+        {listType === "all" ? <PrevGamesContainer /> : <FavoritesContainer />}
       </Archive>
     </Page>
   );
