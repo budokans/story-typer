@@ -22,11 +22,17 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import router from "next/router";
-import { RiArrowLeftSLine, RiArrowUpSLine, RiPlayFill } from "react-icons/ri";
+import {
+  RiArrowLeftSLine,
+  RiArrowUpSLine,
+  RiDeleteBin2Line,
+  RiPlayFill,
+} from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
-import { PrevGame } from "interfaces";
+import { FavoriteBase, PrevGame } from "interfaces";
 import { useStories } from "@/context/stories";
+import { useFavorite } from "@/hooks/useFavorite";
 
 interface Compound {
   PageTitle: FC;
@@ -44,6 +50,7 @@ interface Compound {
   FullStory: FC<{ story: PrevGame["storyHtml"] }>;
   Buttons: FC;
   PlayAgainButton: FC<{ storyId: PrevGame["storyId"] }>;
+  DeleteFavoriteButton: FC<{ storyDetails: FavoriteBase }>;
   BackToGameButton: FC;
 }
 
@@ -55,6 +62,7 @@ interface ExpandedContext {
 }
 
 const expandedContext = createContext<ExpandedContext | null>(null);
+
 const useExpandedContext = (): ExpandedContext =>
   useContext(expandedContext as Context<ExpandedContext>);
 
@@ -213,6 +221,27 @@ Archive.PlayAgainButton = function ArchivePlayAgainButton({ storyId }) {
       onClick={() => {
         handlePlayArchiveStoryClick(storyId);
         router.push("./play");
+      }}
+    />
+  );
+};
+
+Archive.DeleteFavoriteButton = function DeleteFavoriteButton({ storyDetails }) {
+  const { handleFavoriteClick } = useFavorite(storyDetails);
+  const { setExpandedIdx } = useExpandedContext();
+
+  return (
+    <IconButton
+      icon={<RiDeleteBin2Line />}
+      aria-label="Remove from favorites"
+      isRound
+      cursor="pointer"
+      fontSize="1.75rem"
+      bg="blackAlpha.400"
+      color="blackAlpha.800"
+      onClick={() => {
+        handleFavoriteClick();
+        setExpandedIdx(null);
       }}
     />
   );
