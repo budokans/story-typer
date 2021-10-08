@@ -1,12 +1,12 @@
 import { IconButton } from "@chakra-ui/button";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
-import { useIsFavorite } from "@/hooks/useIsFavorite";
+import { useFavorite } from "@/hooks/useFavorite";
 import { StoryWithId } from "interfaces";
 
 export const FavoriteButton: React.FC<{
   storyId: StoryWithId["uid"];
 }> = ({ storyId }) => {
-  const { handleFavoriteClick, isFavorited } = useIsFavorite(storyId);
+  const { handleFavoriteClick, isFavorited } = useFavorite(storyId);
 
   return (
     <IconButton

@@ -3,7 +3,7 @@ import { createFavorite, deleteFavorite, queryFavorite } from "@/lib/db";
 import { Favorite, StoryWithId } from "interfaces";
 import { useUser } from "./useUser";
 
-export const useIsFavorite = (
+export const useFavorite = (
   storyId: StoryWithId["uid"]
 ): { isFavorited: boolean; handleFavoriteClick: () => void } => {
   const { data: user } = useUser();
