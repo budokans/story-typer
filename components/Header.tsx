@@ -150,7 +150,13 @@ Header.Archive = function HeaderArchive() {
 Header.Favorites = function HeaderFavorites() {
   return (
     <Box as="li" mr={[3, 3, 5]}>
-      <Link href="#" passHref>
+      <Link
+        href={{
+          pathname: "/previous",
+          query: { favorites: true },
+        }}
+        passHref
+      >
         <a>
           <Icon as={RiStarFill} h={[7, 7, 8]} w={[7, 7, 8]} />
         </a>
