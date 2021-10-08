@@ -82,12 +82,13 @@ export const GameContainer: FC = () => {
             <Game.Countdown active>{CountDown[countdown]}</Game.Countdown>
           )}
 
-          {status === "inGame" && (
-            <Game.StopWatch gameStatus={status}>
-              {timer.minutes}:
-              {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
-            </Game.StopWatch>
-          )}
+          {status === "inGame" ||
+            (status === "complete" && (
+              <Game.StopWatch gameStatus={status}>
+                {timer.minutes}:
+                {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
+              </Game.StopWatch>
+            ))}
         </>
       )}
     </Game>
