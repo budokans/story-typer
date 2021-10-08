@@ -66,4 +66,5 @@ export interface FavoriteBase {
 
 export interface Favorite extends FavoriteBase {
   userId: User["uid"];
+  dateFavorited: string;
 }

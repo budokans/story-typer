@@ -36,6 +36,7 @@ export const useFavorite = (
         : addFavoriteMutation.mutate({
             userId: user.uid,
             ...storyDetails,
+            dateFavorited: new Date().toISOString(),
           });
     }
   };
