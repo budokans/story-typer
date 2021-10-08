@@ -62,6 +62,7 @@ interface ExpandedContext {
 }
 
 const expandedContext = createContext<ExpandedContext | null>(null);
+
 const useExpandedContext = (): ExpandedContext =>
   useContext(expandedContext as Context<ExpandedContext>);
 
@@ -227,6 +228,7 @@ Archive.PlayAgainButton = function ArchivePlayAgainButton({ storyId }) {
 
 Archive.DeleteFavoriteButton = function DeleteFavoriteButton({ storyDetails }) {
   const { handleFavoriteClick } = useFavorite(storyDetails);
+  const { setExpandedIdx } = useExpandedContext();
 
   return (
     <IconButton
@@ -237,7 +239,10 @@ Archive.DeleteFavoriteButton = function DeleteFavoriteButton({ storyDetails }) {
       fontSize="1.75rem"
       bg="blackAlpha.400"
       color="blackAlpha.800"
-      onClick={handleFavoriteClick}
+      onClick={() => {
+        handleFavoriteClick();
+        setExpandedIdx(null);
+      }}
     />
   );
 };
