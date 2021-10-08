@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { Spinner, Center } from "@chakra-ui/react";
+import { Center } from "@chakra-ui/react";
+import { Spinner } from "@/components/Spinner";
 import { useAuth } from "@/context/auth";
 
 export const LoginRerouter: React.FC = () => {
@@ -14,13 +15,7 @@ export const LoginRerouter: React.FC = () => {
 
   return (
     <Center minH={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
-      <Spinner
-        thickness="4px"
-        speed="0.65s"
-        emptyColor="gray.200"
-        color="brand.500"
-        size="xl"
-      />
+      <Spinner />
     </Center>
   );
 };
