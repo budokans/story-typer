@@ -51,6 +51,13 @@ export const FavoritesContainer: FC = () => {
                   <Divider my={4} />
                   <Archive.Buttons>
                     <Archive.PlayAgainButton storyId={favorite.storyId} />
+                    <Archive.DeleteFavoriteButton
+                      storyDetails={{
+                        storyId: favorite.storyId,
+                        storyTitle: favorite.storyTitle,
+                        storyHtml: favorite.storyHtml,
+                      }}
+                    />
                   </Archive.Buttons>
                 </Archive.CardExpandedSection>
               </Archive.Card>

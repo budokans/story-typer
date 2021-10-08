@@ -25,7 +25,10 @@ export const useFavorite = (
   const deleteFavoriteMutation = useMutation(
     (id: string) => deleteFavorite(id),
     {
-      onSuccess: () => queryClient.invalidateQueries("isFavorite"),
+      onSuccess: () => {
+        queryClient.invalidateQueries("isFavorite");
+        queryClient.invalidateQueries("favorites");
+      },
     }
   );
 
