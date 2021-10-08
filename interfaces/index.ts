@@ -58,7 +58,12 @@ export interface PrevGame {
   score: number;
 }
 
-export interface Favorite {
-  userId: User["uid"];
+export interface FavoriteBase {
   storyId: StoryWithId["uid"];
+  storyTitle: StoryWithId["title"];
+  storyHtml: StoryWithId["storyHtml"];
+}
+
+export interface Favorite extends FavoriteBase {
+  userId: User["uid"];
 }

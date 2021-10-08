@@ -21,7 +21,6 @@ export const GameContainer: FC = () => {
     winGame,
     wpm,
   } = useGame();
-  const storyId = currentStory && currentStory.uid;
   const { data: user } = useUser();
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);
@@ -62,7 +61,15 @@ export const GameContainer: FC = () => {
             )}
             {userError && <Game.ErrorAlert />}
 
-            {status === "complete" && <FavoriteButton storyId={storyId} />}
+            {status === "complete" && (
+              <FavoriteButton
+                storyDetails={{
+                  storyId: currentStory.uid,
+                  storyTitle: currentStory.title,
+                  storyHtml: currentStory.storyHtml,
+                }}
+              />
+            )}
             <Game.BtnSm type="restart" onClick={winGame} />
             <Game.BtnSm
               type="new"

@@ -1,17 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { createFavorite, deleteFavorite, queryFavorite } from "@/lib/db";
-import { Favorite, StoryWithId } from "interfaces";
+import { FavoriteBase, Favorite } from "interfaces";
 import { useUser } from "./useUser";
 
 export const useFavorite = (
-  storyId: StoryWithId["uid"]
+  storyDetails: FavoriteBase
 ): { isFavorited: boolean; handleFavoriteClick: () => void } => {
   const { data: user } = useUser();
   const userId = user && user.uid;
   const queryClient = useQueryClient();
 
-  const { data: favoriteId } = useQuery(["isFavorite", userId, storyId], () =>
-    queryFavorite(userId!, storyId)
+  const { data: favoriteId } = useQuery(
+    ["isFavorite", userId, storyDetails.storyId],
+    () => queryFavorite(userId!, storyDetails.storyId)
   );
 
   const addFavoriteMutation = useMutation(
@@ -32,7 +33,10 @@ export const useFavorite = (
     if (user) {
       favoriteId
         ? deleteFavoriteMutation.mutate(favoriteId)
-        : addFavoriteMutation.mutate({ userId: user.uid, storyId: storyId });
+        : addFavoriteMutation.mutate({
+            userId: user.uid,
+            ...storyDetails,
+          });
     }
   };
 

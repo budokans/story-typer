@@ -64,7 +64,13 @@ const Previous: FC = () => {
                     <Divider my={4} />
                     <Archive.Buttons>
                       <Archive.PlayAgainButton storyId={prevGame.storyId} />
-                      <FavoriteButton storyId={prevGame.storyId} />
+                      <FavoriteButton
+                        storyDetails={{
+                          storyId: prevGame.storyId,
+                          storyTitle: prevGame.storyTitle,
+                          storyHtml: prevGame.storyHtml,
+                        }}
+                      />
                     </Archive.Buttons>
                   </Archive.CardExpandedSection>
                 </Archive.Card>

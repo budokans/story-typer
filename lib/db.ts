@@ -131,8 +131,7 @@ export const updateUserDataOnWin = async (user: User): Promise<void> => {
 
 export const createFavorite = async (favorite: Favorite): Promise<void> => {
   db.collection("favorites").add({
-    userId: favorite.userId,
-    storyId: favorite.storyId,
+    ...favorite,
     dateFavorited: firebase.firestore.FieldValue.serverTimestamp(),
   });
 };
