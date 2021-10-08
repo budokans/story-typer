@@ -15,7 +15,6 @@ const Previous: FC = () => {
   };
 
   const {
-    status,
     data,
     error,
     isFetching,
@@ -74,7 +73,7 @@ const Previous: FC = () => {
           ))
         ) : error ? (
           <Text>
-            Sorry, that didn&apos;t quite work. Please refresh and try again
+            Sorry, that didn&apos;t quite work. Please refresh the page.
           </Text>
         ) : null}
 
@@ -89,8 +88,10 @@ const Previous: FC = () => {
             />
           ) : hasNextPage ? (
             <Text>Load more</Text>
-          ) : (
-            <Text>No more results</Text>
+          ) : data?.pages[0].prevGames.length === 0 ? (
+            <Text>No previous games found.</Text>
+          ) : data && data?.pages[0].prevGames.length < 10 ? null : (
+            <Text>No more results.</Text>
           )}
         </div>
       </Archive>
