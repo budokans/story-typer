@@ -1,5 +1,6 @@
 import { useState, useEffect, FC } from "react";
 import { useRouter } from "next/router";
+import { DocHead } from "@/components/DocHead";
 import { useAuth } from "@/context/auth";
 import { Page } from "@/components/Page";
 import { Archive } from "@/components/Archive";
@@ -21,18 +22,25 @@ const Previous: FC = () => {
   };
 
   return (
-    <Page>
-      {userIsAuthorized ? (
-        <Archive>
-          <Archive.BackToGameButton />
-          <Archive.PageTitle>Previously...</Archive.PageTitle>
-          <Archive.Toggles value={listType} onSetValue={handleToggleValue} />
-          {listType === "all" ? <PrevGamesContainer /> : <FavoritesContainer />}
-        </Archive>
-      ) : (
-        <LoginRerouter />
-      )}
-    </Page>
+    <>
+      <DocHead />
+      <Page>
+        {userIsAuthorized ? (
+          <Archive>
+            <Archive.BackToGameButton />
+            <Archive.PageTitle>Previously...</Archive.PageTitle>
+            <Archive.Toggles value={listType} onSetValue={handleToggleValue} />
+            {listType === "all" ? (
+              <PrevGamesContainer />
+            ) : (
+              <FavoritesContainer />
+            )}
+          </Archive>
+        ) : (
+          <LoginRerouter />
+        )}
+      </Page>
+    </>
   );
 };
 
