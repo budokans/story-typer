@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, FC } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { Game } from "@/components/Game";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { useGame } from "@/hooks/useGame";
 import { useUser } from "@/hooks/useUser";
-import { useIsFavorite } from "@/hooks/useIsFavorite";
 
-export const GameContainer: React.FC = () => {
+export const GameContainer: FC = () => {
   const {
     currentStory,
     onInitCountdown,
@@ -17,11 +17,11 @@ export const GameContainer: React.FC = () => {
     userError,
     onResetClick,
     onSkipClick,
+    onNextClick,
     winGame,
     wpm,
   } = useGame();
   const storyId = currentStory && currentStory.uid;
-  const { handleFavoriteClick, isFavorited } = useIsFavorite(storyId, status);
   const { data: user } = useUser();
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
   const [isLargeViewport, setIsLargeViewport] = useState(false);
@@ -62,14 +62,12 @@ export const GameContainer: React.FC = () => {
             )}
             {userError && <Game.ErrorAlert />}
 
-            {status === "complete" && (
-              <Game.Favorite
-                onFavoriteClick={handleFavoriteClick}
-                isFavorited={isFavorited}
-              />
-            )}
+            {status === "complete" && <FavoriteButton storyId={storyId} />}
             <Game.BtnSm type="restart" onClick={winGame} />
-            <Game.BtnSm type="new" onClick={onSkipClick} />
+            <Game.BtnSm
+              type="new"
+              onClick={status === "complete" ? onNextClick : onSkipClick}
+            />
           </Game.Pad>
 
           {status === "idle" && <Game.Countdown>Ready</Game.Countdown>}

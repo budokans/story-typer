@@ -161,6 +161,11 @@ export const useGame = () => {
     dispatch({ type: "next" });
   };
 
+  const handleNextStoryClick = () => {
+    setGameCount(gameCount + 1);
+    dispatch({ type: "next" });
+  };
+
   const checkForUserError = (
     currentInput: string,
     storedInput: string,
@@ -180,7 +185,8 @@ export const useGame = () => {
   ): PrevGame => ({
     userId: userId,
     storyId: story.uid,
-    storyText: story.storyText,
+    storyTitle: story.title,
+    storyHtml: story.storyHtml,
     datePlayed: new Date().toISOString(),
     score: wpm,
   });
@@ -250,6 +256,7 @@ export const useGame = () => {
     wpm: state.wpm,
     onResetClick: handleResetClick,
     onSkipClick: handleSkipClick,
+    onNextClick: handleNextStoryClick,
     winGame,
   };
 };

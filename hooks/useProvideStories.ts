@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import { queryStories } from "@/lib/db";
+import { queryStories, queryStory } from "@/lib/db";
 import { useUser } from "@/hooks/useUser";
 import { StoryWithId, User } from "interfaces";
 
 export const useProvideStories = (
   gameCount: number
-): { stories: StoryWithId[]; isLoading: boolean } => {
+): {
+  stories: StoryWithId[];
+  isLoading: boolean;
+  handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
+} => {
   const { data: user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<StoryWithId[]>([]);
@@ -40,5 +44,16 @@ export const useProvideStories = (
     }
   }, [user]);
 
-  return { stories, isLoading };
+  // Add selected story to current position in array if user chooses play again from Archive
+  const handlePlayArchiveStoryClick = async (id: StoryWithId["uid"]) => {
+    const story = await queryStory(id);
+    const destinationIdx = gameCount - 1;
+    setStories([
+      ...stories.slice(0, destinationIdx),
+      story,
+      ...stories.slice(destinationIdx),
+    ]);
+  };
+
+  return { stories, isLoading, handlePlayArchiveStoryClick };
 };

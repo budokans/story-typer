@@ -1,5 +1,9 @@
 import { firebase } from "./firebase";
-import { QuerySnapshot } from "@firebase/firestore-types";
+import {
+  QuerySnapshot,
+  QueryDocumentSnapshot,
+  DocumentData,
+} from "@firebase/firestore-types";
 import { Favorite, PrevGame, Story, StoryWithId, User } from "../interfaces";
 
 const db = firebase.firestore();
@@ -105,6 +109,17 @@ export const queryStories = async (
   return batch;
 };
 
+export const queryStory = async (
+  id: StoryWithId["uid"]
+): Promise<StoryWithId> => {
+  const snapshot = await db.collection("stories").doc(id).get();
+  const withId = {
+    ...(snapshot.data() as Story),
+    uid: snapshot.id,
+  };
+  return withId;
+};
+
 export const createPrevGame = async (game: PrevGame): Promise<void> => {
   await db.collection("prevGames").add(game);
 };
@@ -137,4 +152,37 @@ export const queryFavorite = async (
 
 export const deleteFavorite = async (id: string): Promise<void> => {
   return await db.collection("favorites").doc(id).delete();
+};
+
+export const queryPrevGames = async (
+  last: QueryDocumentSnapshot<DocumentData>
+): Promise<{
+  prevGames: PrevGame[];
+  cursor: QueryDocumentSnapshot<DocumentData> | null;
+}> => {
+  let queryRef;
+
+  if (!last) {
+    queryRef = db
+      .collection("prevGames")
+      .orderBy("datePlayed", "desc")
+      .limit(10);
+  } else {
+    queryRef = db
+      .collection("prevGames")
+      .orderBy("datePlayed", "desc")
+      .startAfter(last.data().datePlayed)
+      .limit(10);
+  }
+
+  const snapshot = await queryRef.get();
+  const prevGames = snapshot.docs.map(
+    (prevGame) => prevGame.data() as PrevGame
+  );
+  const cursor =
+    snapshot.docs.length === 10
+      ? snapshot.docs[snapshot.docs.length - 1]
+      : null;
+
+  return { prevGames, cursor };
 };

@@ -1,4 +1,4 @@
-import { ChangeEvent, MutableRefObject, useEffect, useRef } from "react";
+import { ChangeEvent, MutableRefObject, useEffect, useRef, FC } from "react";
 import {
   Center,
   Container as ChakraContainer,
@@ -12,48 +12,39 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
-import {
-  RiRestartFill,
-  RiSkipForwardFill,
-  RiStarFill,
-  RiStarLine,
-} from "react-icons/ri";
+import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 import { GameState } from "@/hooks/useGame.types";
 
 interface Compound {
-  Skeleton: React.FC<{ isLargeViewport: boolean }>;
-  StoryHeader: React.FC<{ isLargeViewport: boolean }>;
-  StoryText: React.FC;
-  Pad: React.FC;
-  Input: React.FC<{
+  Skeleton: FC<{ isLargeViewport: boolean }>;
+  StoryHeader: FC<{ isLargeViewport: boolean }>;
+  StoryText: FC;
+  Pad: FC;
+  Input: FC<{
     onInputClick: () => void;
     onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
     value: string;
     error: boolean;
     gameStatus: GameState["status"];
   }>;
-  ErrorAlert: React.FC;
-  BtnSm: React.FC<{ type: "restart" | "new"; onClick: () => void }>;
-  Countdown: React.FC<{
+  ErrorAlert: FC;
+  BtnSm: FC<{ type: "restart" | "new"; onClick: () => void }>;
+  Countdown: FC<{
     active?: boolean;
   }>;
-  StopWatch: React.FC<{
+  StopWatch: FC<{
     gameStatus: GameState["status"];
   }>;
-  Score: React.FC;
-  Favorite: React.FC<{
-    isFavorited: boolean | undefined;
-    onFavoriteClick: () => void;
-  }>;
+  Score: FC;
 }
 
-type GameCC = Compound & React.FC;
+type GameCC = Compound & FC;
 
 export const Game: GameCC = ({ children }) => {
   return <Container>{children}</Container>;
 };
 
-const Container: React.FC = ({ children }) => {
+const Container: FC = ({ children }) => {
   return (
     // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
     <Center minH={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
@@ -211,22 +202,5 @@ Game.Score = function GameScore({ children }) {
     <Text mr="auto" color="white" fontWeight="semibold" fontSize="1.5rem">
       {children}
     </Text>
-  );
-};
-
-Game.Favorite = function GameFavorite({ isFavorited, onFavoriteClick }) {
-  return (
-    <IconButton
-      icon={isFavorited ? <RiStarFill /> : <RiStarLine />}
-      isRound
-      cursor="pointer"
-      fontSize="2.5rem"
-      aria-label="favorite this story"
-      bg="transparent"
-      color="gold"
-      onClick={onFavoriteClick}
-      _hover={{ background: "transparent" }}
-      _focus={{ boxShadow: "none" }}
-    />
   );
 };
