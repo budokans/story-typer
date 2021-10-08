@@ -161,6 +161,7 @@ export const useGame = () => {
     dispatch({ type: "next" });
   };
 
+  // This is just for testing - handy if you need to complete a game without typing it all out.
   const handleNextStoryClick = () => {
     setGameCount(gameCount + 1);
     dispatch({ type: "next" });
