@@ -1,11 +1,14 @@
 import { useState, useEffect, FC } from "react";
 import { useRouter } from "next/router";
+import { useAuth } from "@/context/auth";
 import { Page } from "@/components/Page";
 import { Archive } from "@/components/Archive";
 import { PrevGamesContainer } from "@/containers/prevGames";
 import { FavoritesContainer } from "@/containers/favorites";
+import { LoginRerouter } from "@/components/LoginRerouter";
 
 const Previous: FC = () => {
+  const { userId: userIsAuthorized } = useAuth();
   const [listType, setListType] = useState<"all" | "favorites">("all");
   const { query } = useRouter();
 
@@ -19,12 +22,16 @@ const Previous: FC = () => {
 
   return (
     <Page>
-      <Archive>
-        <Archive.BackToGameButton />
-        <Archive.PageTitle>Previously...</Archive.PageTitle>
-        <Archive.Toggles value={listType} onSetValue={handleToggleValue} />
-        {listType === "all" ? <PrevGamesContainer /> : <FavoritesContainer />}
-      </Archive>
+      {userIsAuthorized ? (
+        <Archive>
+          <Archive.BackToGameButton />
+          <Archive.PageTitle>Previously...</Archive.PageTitle>
+          <Archive.Toggles value={listType} onSetValue={handleToggleValue} />
+          {listType === "all" ? <PrevGamesContainer /> : <FavoritesContainer />}
+        </Archive>
+      ) : (
+        <LoginRerouter />
+      )}
     </Page>
   );
 };
