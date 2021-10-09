@@ -7,9 +7,10 @@ import { Archive } from "@/components/Archive";
 import { PrevGamesContainer } from "@/containers/prevGames";
 import { FavoritesContainer } from "@/containers/favorites";
 import { LoginRerouter } from "@/components/LoginRerouter";
+import { Spinner } from "@/components/Spinner";
 
 const Previous: FC = () => {
-  const { userId: userIsAuthorized } = useAuth();
+  const { userId: userIsAuthorized, isLoading: isLoadingAuth } = useAuth();
   const [listType, setListType] = useState<"all" | "favorites">("all");
   const { query } = useRouter();
 
@@ -21,7 +22,9 @@ const Previous: FC = () => {
     setListType(nextValue);
   };
 
-  return (
+  return isLoadingAuth ? (
+    <Spinner />
+  ) : (
     <>
       <DocHead />
       <Page>
