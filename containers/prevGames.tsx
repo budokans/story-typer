@@ -6,7 +6,6 @@ import { Spinner } from "@/components/Spinner";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { queryPrevGames } from "@/lib/db";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import { CenterContent } from "@/components/CenterContent";
 
 export const PrevGamesContainer: FC = () => {
   const {

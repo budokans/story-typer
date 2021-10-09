@@ -3,6 +3,7 @@ import Head from "next/head";
 export const DocHead: React.FC = () => {
   return (
     <Head>
+      <title>Story Typer</title>
       <meta
         name="description"
         content="Story Typer: The speed-typing game for lovers of short stories."
