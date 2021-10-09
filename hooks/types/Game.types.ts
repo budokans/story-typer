@@ -11,8 +11,7 @@ export interface GameState {
     | "complete"
     | "outOfTime";
   userError: boolean;
-  userStoredInput: string;
-  userCurrentInput: string;
+  userInput: string;
   wpm: number;
 }
 
@@ -25,7 +24,6 @@ export type GameAction =
   | { type: "inputValueChange"; inputValue: string }
   | { type: "errorFree" }
   | { type: "userTypingError" }
-  | { type: "wordCompleted" }
   | { type: "win"; wpm: number }
   | { type: "reset" }
   | { type: "next" }
