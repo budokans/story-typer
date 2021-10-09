@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { useAuth } from "@/context/auth";
 import {
   Box,
   Button,
@@ -49,7 +48,7 @@ Home.Brand = function HomeBrand() {
 };
 
 Home.HeadlinesWrapper = function HomeHeadlinesWrapper({ children }) {
-  return <Box>{children}</Box>;
+  return <Box textAlign="center">{children}</Box>;
 };
 
 Home.Headline = function HomeHeadline({ children }) {
@@ -60,7 +59,6 @@ Home.Headline = function HomeHeadline({ children }) {
       fontSize="clamp(1.25rem, calc(14.40px + 2.00vw), 32px)"
       fontWeight="light"
       lineHeight="sm"
-      textAlign="center"
       mb={2}
     >
       {children}
@@ -68,13 +66,13 @@ Home.Headline = function HomeHeadline({ children }) {
   );
 };
 
-Home.CTAWrapper = function HomeCTAWrapper({ children }) {
+Home.FeaturesWrapper = function HomeFeaturesWrapper({ children }) {
   return (
     <Center bg="white" w="100vw">
       <Flex
         direction="column"
         align="center"
-        py={[8, 12, 16]}
+        py={[8, 12]}
         px={[2, 4, 4, 0]}
         maxW="930px"
       >
@@ -84,9 +82,7 @@ Home.CTAWrapper = function HomeCTAWrapper({ children }) {
   );
 };
 
-Home.CTA = function HomeCTA() {
-  const { signInWithGoogle } = useAuth();
-
+Home.FeaturesHeading = function HomeFeaturesHeading() {
   return (
     <Heading
       as="h3"
@@ -95,28 +91,16 @@ Home.CTA = function HomeCTA() {
       mb={[4, 4, 6]}
       textAlign="center"
     >
-      <Text
-        as="strong"
-        onClick={() => signInWithGoogle()}
-        cursor="pointer"
-        _hover={{ textDecoration: "underline" }}
-      >
-        Sign in
-      </Text>{" "}
-      to
+      <Text as="strong">Features</Text>
     </Heading>
   );
 };
 
-Home.Benefits = function HomeBenefits({ children }) {
-  return (
-    <List spacing={3} mb={12}>
-      {children}
-    </List>
-  );
+Home.Features = function HomeFeatures({ children }) {
+  return <List spacing={3}>{children}</List>;
 };
 
-Home.Benefit = function HomeBenefit({ children }) {
+Home.Feature = function HomeFeature({ children }) {
   return (
     <ListItem fontSize={["1rem", "1rem", "1.25rem"]}>
       <ListIcon as={RiThumbUpFill} mb="3px" />

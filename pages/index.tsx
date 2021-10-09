@@ -1,6 +1,6 @@
 import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import { Skeleton } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { getStoriesCount } from "@/lib/db-admin";
 import { useAuth } from "@/context/auth";
 import { DocHead } from "@/components/DocHead";
@@ -19,7 +19,7 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
-  const { userId, isLoading, signInWithGoogle } = useAuth();
+  const { userId, signInWithGoogle } = useAuth();
   const userIsLoggedIn = !!userId;
   const router = useRouter();
 
@@ -50,34 +50,28 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
             <Home.Headline>Updated daily.</Home.Headline>
           </Home.HeadlinesWrapper>
 
-          <Skeleton isLoaded={!isLoading}>
-            <Home.CTAWrapper>
-              {!userIsLoggedIn ? (
-                <>
-                  <Home.CTA />
-                  <Home.Benefits>
-                    <Home.Benefit>Never play the same story twice</Home.Benefit>
-                    <Home.Benefit>Review previous games and stats</Home.Benefit>
-                    <Home.Benefit>
-                      Keep tabs on your favorite stories
-                    </Home.Benefit>
-                    <Home.Benefit>
-                      View your top and average speeds
-                    </Home.Benefit>
-                  </Home.Benefits>
+          <Box pt={2} pb={4}>
+            {!userIsLoggedIn ? (
+              <Home.PlayBtn onClick={() => signInWithGoogle()}>
+                <GoogleIcon />
+                Continue with Google
+              </Home.PlayBtn>
+            ) : (
+              <Home.PlayBtn onClick={() => router.push("/play")}>
+                Play Now
+              </Home.PlayBtn>
+            )}
+          </Box>
 
-                  <Home.PlayBtn onClick={() => signInWithGoogle()}>
-                    <GoogleIcon />
-                    Continue with Google
-                  </Home.PlayBtn>
-                </>
-              ) : (
-                <Home.PlayBtn onClick={() => router.push("/play")}>
-                  Play Now
-                </Home.PlayBtn>
-              )}
-            </Home.CTAWrapper>
-          </Skeleton>
+          <Home.FeaturesWrapper>
+            <Home.FeaturesHeading />
+            <Home.Features>
+              <Home.Feature>Never play the same story twice</Home.Feature>
+              <Home.Feature>Review previous games and stats</Home.Feature>
+              <Home.Feature>Keep tabs on your favorite stories</Home.Feature>
+              <Home.Feature>Keep track of your top scores</Home.Feature>
+            </Home.Features>
+          </Home.FeaturesWrapper>
         </Home>
       </Page>
     </>
