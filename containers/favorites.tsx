@@ -5,8 +5,10 @@ import { Archive } from "@/components/Archive";
 import { Spinner } from "@/components/Spinner";
 import { queryFavorites } from "@/lib/db";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { useAuth } from "@/context/auth";
 
 export const FavoritesContainer: FC = () => {
+  const { userId } = useAuth();
   const {
     data,
     error,
@@ -17,12 +19,13 @@ export const FavoritesContainer: FC = () => {
   } = useInfiniteQuery(
     "favorites",
     async ({ pageParam = null }) => {
-      const res = await queryFavorites(pageParam);
+      const res = await queryFavorites(userId!, pageParam);
       return res;
     },
     {
       getNextPageParam: (lastPage) => lastPage.cursor,
       refetchOnWindowFocus: false,
+      enabled: !!userId,
     }
   );
 

@@ -151,6 +151,7 @@ export const deleteFavorite = async (id: string): Promise<void> => {
 };
 
 export const queryPrevGames = async (
+  userId: User["uid"],
   last: QueryDocumentSnapshot<DocumentData>
 ): Promise<{
   prevGames: PrevGame[];
@@ -161,11 +162,13 @@ export const queryPrevGames = async (
   if (!last) {
     queryRef = db
       .collection("prevGames")
+      .where("userId", "==", userId)
       .orderBy("datePlayed", "desc")
       .limit(10);
   } else {
     queryRef = db
       .collection("prevGames")
+      .where("userId", "==", userId)
       .orderBy("datePlayed", "desc")
       .startAfter(last.data().datePlayed)
       .limit(10);
@@ -175,6 +178,7 @@ export const queryPrevGames = async (
   const prevGames = snapshot.docs.map(
     (prevGame) => prevGame.data() as PrevGame
   );
+
   const cursor =
     snapshot.docs.length === 10
       ? snapshot.docs[snapshot.docs.length - 1]
@@ -184,6 +188,7 @@ export const queryPrevGames = async (
 };
 
 export const queryFavorites = async (
+  userId: User["uid"],
   last: QueryDocumentSnapshot<DocumentData>
 ): Promise<{
   favorites: Favorite[];
@@ -194,11 +199,13 @@ export const queryFavorites = async (
   if (!last) {
     queryRef = db
       .collection("favorites")
+      .where("userId", "==", userId)
       .orderBy("dateFavorited", "desc")
       .limit(10);
   } else {
     queryRef = db
       .collection("favorites")
+      .where("userId", "==", userId)
       .orderBy("dateFavorited", "desc")
       .startAfter(last.data().dateFavorited)
       .limit(10);

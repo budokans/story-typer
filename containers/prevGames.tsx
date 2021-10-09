@@ -6,8 +6,11 @@ import { Spinner } from "@/components/Spinner";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { queryPrevGames } from "@/lib/db";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { useAuth } from "@/context/auth";
 
 export const PrevGamesContainer: FC = () => {
+  const { userId } = useAuth();
+
   const {
     data,
     error,
@@ -18,10 +21,11 @@ export const PrevGamesContainer: FC = () => {
   } = useInfiniteQuery(
     "prevGames",
     async ({ pageParam = null }) => {
-      const res = await queryPrevGames(pageParam);
+      const res = await queryPrevGames(userId!, pageParam);
       return res;
     },
     {
+      enabled: !!userId,
       getNextPageParam: (lastPage) => lastPage.cursor,
       refetchOnWindowFocus: false,
     }
