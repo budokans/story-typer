@@ -2,14 +2,9 @@ import { useEffect, useState } from "react";
 import { queryStories, queryStory } from "@/lib/db";
 import { useUser } from "@/hooks/useUser";
 import { StoryWithId, User } from "interfaces";
+import { ProvideStories } from "./types/ProvideStories.types";
 
-export const useProvideStories = (
-  gameCount: number
-): {
-  stories: StoryWithId[];
-  isLoading: boolean;
-  handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
-} => {
+export const useProvideStories = (gameCount: number): ProvideStories => {
   const { data: user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<StoryWithId[]>([]);
