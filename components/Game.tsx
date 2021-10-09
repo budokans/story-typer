@@ -137,6 +137,9 @@ Game.Input = function GameInput({
       value={value}
       disabled={gameStatus === "countdown"}
       ref={inputRef}
+      autoCapitalize="off"
+      autoComplete="off"
+      onPaste={(e) => e.preventDefault()}
     />
   );
 };
