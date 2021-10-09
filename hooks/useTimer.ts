@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { GameState } from "./useGame.types";
-
-export interface Timer {
-  minutes: number;
-  seconds: number;
-  totalSeconds: number;
-}
+import { GameState } from "./types/Game.types";
+import { Timer } from "./types/Timer.types";
 
 export const useTimer = (status: GameState["status"], limit: number): Timer => {
   const [count, setCount] = useState(0);

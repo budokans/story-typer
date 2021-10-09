@@ -1,6 +1,6 @@
 import { StoryWithId } from "interfaces";
 import { ChangeEvent } from "react";
-import { Timer } from "../useTimer";
+import { Timer } from "./Timer.types";
 
 export interface GameState {
   status:
