@@ -1,5 +1,12 @@
 import { FC } from "react";
-import { Box, Flex, Link as ChakraLink, Text, Icon } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Link as ChakraLink,
+  Text,
+  Icon,
+  VisuallyHidden,
+} from "@chakra-ui/react";
 import { RiGithubFill } from "react-icons/ri";
 import { FooterCompound } from "./types/Footer.types";
 
@@ -64,6 +71,7 @@ Footer.GitHub = function FooterGitHub() {
       isExternal
       ml={2}
     >
+      <VisuallyHidden>Visit Steven&apos;s GitHub</VisuallyHidden>
       <Icon
         as={RiGithubFill}
         h={[6, 6, 8]}
