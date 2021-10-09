@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useReducer } from "react";
-import { useRouter } from "next/router";
 import { firebase } from "@/lib/firebase";
 import { createUser, queryUser } from "@/lib/db";
 import { User as FirebaseUser } from "@firebase/auth-types";
@@ -10,7 +9,6 @@ import { ProvideAuth } from "./types/ProvideAuth.types";
 // This hook is called in @context/auth. Its value is then passed to the authProvider and thereby accessible via the useAuth() hook.
 
 export const useProvideAuth = (): ProvideAuth => {
-  const router = useRouter();
   const [state, dispatch] = useReducer(AuthReducer, initialAuthState);
 
   const handleUser = useCallback(async (rawUser: FirebaseUser | null) => {
@@ -61,7 +59,6 @@ export const useProvideAuth = (): ProvideAuth => {
     try {
       await firebase.auth().signOut();
       handleUser(null);
-      router.push("/");
     } catch (error) {
       console.error(error);
     }
