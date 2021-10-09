@@ -1,4 +1,4 @@
-import { GameAction, GameState } from "../useGame.types";
+import { GameAction, GameState } from "../types/Game.types";
 
 export const initialGameState: GameState = {
   status: "pending",

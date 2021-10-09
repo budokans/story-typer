@@ -1,4 +1,4 @@
-import { AuthAction, AuthState } from "../useProvideAuth.types";
+import { AuthAction, AuthState } from "../types/ProvideAuth.types";
 
 export const initialAuthState: AuthState = {
   status: "idle",
