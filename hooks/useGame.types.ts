@@ -1,5 +1,11 @@
 export interface GameState {
-  status: "pending" | "idle" | "countdown" | "inGame" | "complete";
+  status:
+    | "pending"
+    | "idle"
+    | "countdown"
+    | "inGame"
+    | "complete"
+    | "outOfTime";
   firstPlay: boolean;
   userError: boolean;
   userStoredInput: string;
@@ -19,4 +25,5 @@ export type GameAction =
   | { type: "wordCompleted" }
   | { type: "win"; wpm: number }
   | { type: "reset" }
-  | { type: "next" };
+  | { type: "next" }
+  | { type: "outOfTime" };

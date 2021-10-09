@@ -47,10 +47,14 @@ export const GameContainer: FC = () => {
             <Game.StoryHeader isLargeViewport={isLargeViewport}>
               {currentStory.title}
             </Game.StoryHeader>
+
             <Game.StoryText>{currentStory.storyText}</Game.StoryText>
+
             <Game.Pad>
               {status === "complete" ? (
                 <Game.Score>{wpm} WPM!</Game.Score>
+              ) : status === "outOfTime" ? (
+                <Game.Score>Out of time!</Game.Score>
               ) : (
                 <Game.Input
                   onInputClick={onInitCountdown}
@@ -60,6 +64,7 @@ export const GameContainer: FC = () => {
                   error={userError}
                 />
               )}
+
               {userError && <Game.ErrorAlert />}
 
               {status === "complete" && (
@@ -71,6 +76,7 @@ export const GameContainer: FC = () => {
                   }}
                 />
               )}
+
               <Game.BtnSm type="restart" onClick={winGame} />
               <Game.BtnSm
                 type="new"

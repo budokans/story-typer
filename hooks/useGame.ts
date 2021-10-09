@@ -18,6 +18,8 @@ const initialState: GameState = {
   wpm: 0,
 };
 
+const TIME_LIMIT = 120;
+
 const GameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
     case "storiesLoading": {
@@ -77,6 +79,12 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
         wpm: action.wpm,
       };
     }
+    case "outOfTime": {
+      return {
+        ...state,
+        status: "outOfTime",
+      };
+    }
     case "reset": {
       return {
         ...state,
@@ -118,7 +126,7 @@ export const useGame = () => {
     setGameCount,
   } = useStories();
   const count = useCountdown(state.status);
-  const timer = useTimer(state.status);
+  const timer = useTimer(state.status, TIME_LIMIT);
   const totalUserInput = state.userStoredInput.concat(state.userCurrentInput);
   const currentStory = stories[gameCount - 1];
 
@@ -137,6 +145,10 @@ export const useGame = () => {
       dispatch({ type: "countdownComplete" });
     }
   }, [count]);
+
+  useEffect(() => {
+    timer.totalSeconds === TIME_LIMIT && dispatch({ type: "outOfTime" });
+  }, [timer.totalSeconds]);
 
   const initCountdown = () =>
     state.status === "idle" && dispatch({ type: "startCountdown" });
