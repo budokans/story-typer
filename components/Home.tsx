@@ -15,21 +15,9 @@ import {
 import Image from "next/image";
 import { RiThumbUpFill } from "react-icons/ri";
 import logo from "../public/story-typer-logo.png";
+import { HomeCompound } from "./types/Home.types";
 
-interface Compound {
-  Brand: FC;
-  HeadlinesWrapper: FC;
-  Headline: FC;
-  CTAWrapper: FC;
-  CTA: FC;
-  Benefits: FC;
-  Benefit: FC;
-  PlayBtn: FC<{ onClick: () => void }>;
-}
-
-type HomeCC = FC & Compound;
-
-export const Home: HomeCC = ({ children }) => {
+export const Home: HomeCompound = ({ children }) => {
   return <Container>{children}</Container>;
 };
 
