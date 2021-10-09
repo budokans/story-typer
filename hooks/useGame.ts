@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { UseGame } from "./useGame.types";
+import { UseGame } from "./types/Game.types";
 import { GameReducer, initialGameState } from "./reducers/GameReducer";
 import { useUser } from "@/hooks/useUser";
 import { useStories } from "@/context/stories";

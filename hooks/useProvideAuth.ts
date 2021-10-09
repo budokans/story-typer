@@ -5,7 +5,7 @@ import { createUser, queryUser } from "@/lib/db";
 import { User as FirebaseUser } from "@firebase/auth-types";
 import { User } from "../interfaces";
 import { AuthReducer, initialAuthState } from "./reducers/AuthReducer";
-import { ProvideAuth } from "./useProvideAuth.types";
+import { ProvideAuth } from "./types/ProvideAuth.types";
 
 // This hook is called in @context/auth. Its value is then passed to the authProvider and thereby accessible via the useAuth() hook.
 
