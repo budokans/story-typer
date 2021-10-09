@@ -1,7 +1,7 @@
 {
   "name": "story-typer",
   "description": "Read 50-word stories from great authors while upping your typing speed.",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "Steven Webster",
   "keywords": [
     "typing",
