@@ -7,7 +7,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: cURL request
-        run: |
-        curl --request POST \
-        --url 'https://story-typer.vercel.app/api/update' \
-        --header 'Authorization: Bearer ${{ process.env.API_ACCESS_TOKEN }}'
+        run: | 
+          curl --request POST --url 'https://story-typer.vercel.app/api/update' --header 'Authorization: Bearer ${{ process.env.API_ACCESS_TOKEN }}'
