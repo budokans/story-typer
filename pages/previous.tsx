@@ -24,7 +24,7 @@ const Previous: FC = () => {
   };
 
   return isLoadingAuth ? (
-    <CenterContent>
+    <CenterContent centerOnMobile>
       <Spinner />
     </CenterContent>
   ) : (

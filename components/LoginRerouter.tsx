@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { Spinner } from "@/components/Spinner";
 import { useAuth } from "@/context/auth";
+import { CenterContent } from "./CenterContent";
 
 export const LoginRerouter: React.FC = () => {
   const router = useRouter();
@@ -12,5 +13,9 @@ export const LoginRerouter: React.FC = () => {
     signInWithGoogle();
   });
 
-  return <Spinner />;
+  return (
+    <CenterContent centerOnMobile>
+      <Spinner />
+    </CenterContent>
+  );
 };

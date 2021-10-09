@@ -10,17 +10,13 @@ const Play: React.FC = () => {
   const { userId: userIsAuthorized, isLoading: isLoadingAuth } = useAuth();
 
   return isLoadingAuth ? (
-    <CenterContent>
+    <CenterContent centerOnMobile>
       <Spinner />
     </CenterContent>
   ) : (
     <>
       <DocHead />
-      <Page>
-        <CenterContent>
-          {userIsAuthorized ? <GameContainer /> : <LoginRerouter />}
-        </CenterContent>
-      </Page>
+      <Page>{userIsAuthorized ? <GameContainer /> : <LoginRerouter />}</Page>
     </>
   );
 };
