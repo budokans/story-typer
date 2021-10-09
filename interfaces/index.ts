@@ -40,15 +40,6 @@ export interface StoryWithId extends Story {
   uid: string;
 }
 
-export interface ProvideAuth {
-  userId: string | null;
-  isLoading: boolean;
-  signInWithGoogle: () => Promise<void>;
-  signOut: () => Promise<void>;
-}
-
-export type AuthContext = ProvideAuth | null;
-
 export interface PrevGame {
   userId: string;
   storyId: string;

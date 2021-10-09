@@ -1,6 +1,6 @@
 import { GameAction, GameState } from "../useGame.types";
 
-export const initialState: GameState = {
+export const initialGameState: GameState = {
   status: "pending",
   userError: false,
   userStoredInput: "",
@@ -88,7 +88,7 @@ export const GameReducer = (
     }
     case "next": {
       return {
-        ...initialState,
+        ...initialGameState,
         status: "idle",
       };
     }

@@ -31,7 +31,7 @@ export type GameAction =
   | { type: "next" }
   | { type: "outOfTime" };
 
-export type UseGame = {
+export interface UseGame {
   currentStory: StoryWithId;
   status: GameState["status"];
   inputValue: string;
@@ -44,4 +44,4 @@ export type UseGame = {
   onResetClick: () => void;
   onSkipClick: () => void;
   onNextClick: () => void;
-};
+}

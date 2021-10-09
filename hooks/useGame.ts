@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useReducer } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { UseGame } from "./useGame.types";
-import { GameReducer, initialState } from "./reducers/GameReducer";
+import { GameReducer, initialGameState } from "./reducers/GameReducer";
 import { useUser } from "@/hooks/useUser";
 import { useStories } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
@@ -13,7 +13,7 @@ import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
 const TIME_LIMIT = 120;
 
 export const useGame = (): UseGame => {
-  const [state, dispatch] = useReducer(GameReducer, initialState);
+  const [state, dispatch] = useReducer(GameReducer, initialGameState);
   const { data: user } = useUser();
   const queryClient = useQueryClient();
   const userWinMutation = useMutation(
