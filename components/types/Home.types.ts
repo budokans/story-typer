@@ -4,10 +4,10 @@ interface Compound {
   Brand: FC;
   HeadlinesWrapper: FC;
   Headline: FC;
-  CTAWrapper: FC;
-  CTA: FC;
-  Benefits: FC;
-  Benefit: FC;
+  FeaturesWrapper: FC;
+  FeaturesHeading: FC;
+  Features: FC;
+  Feature: FC;
   PlayBtn: FC<{ onClick: () => void }>;
 }
 
