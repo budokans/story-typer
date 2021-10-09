@@ -1,12 +1,4 @@
-import {
-  Context,
-  createContext,
-  Dispatch,
-  FC,
-  SetStateAction,
-  useContext,
-  useState,
-} from "react";
+import { Context, createContext, FC, useContext, useState } from "react";
 import {
   Container as ChakraContainer,
   Heading,
@@ -30,43 +22,16 @@ import {
 } from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
-import { FavoriteBase, PrevGame } from "interfaces";
 import { useStories } from "@/context/stories";
 import { useFavorite } from "@/hooks/useFavorite";
-
-interface Compound {
-  PageTitle: FC;
-  Toggles: FC<{
-    value: "all" | "favorites";
-    onSetValue: (nextValue: "all" | "favorites") => void;
-  }>;
-  Card: FC;
-  CardHeader: FC<{ id: number }>;
-  CardTitle: FC;
-  CardScore: FC;
-  CardDate: FC<{ dateString: PrevGame["datePlayed"] }>;
-  CloseCardIcon: FC<{ id: number }>;
-  CardExpandedSection: FC<{ id: number }>;
-  FullStory: FC<{ story: PrevGame["storyHtml"] }>;
-  Buttons: FC;
-  PlayAgainButton: FC<{ storyId: PrevGame["storyId"] }>;
-  DeleteFavoriteButton: FC<{ storyDetails: FavoriteBase }>;
-  BackToGameButton: FC;
-}
-
-type ArchiveCC = FC & Compound;
-
-interface ExpandedContext {
-  expandedIdx: number | null;
-  setExpandedIdx: Dispatch<SetStateAction<number | null>>;
-}
+import { ArchiveCompound, ExpandedContext } from "./types/Archive.types";
 
 const expandedContext = createContext<ExpandedContext | null>(null);
 
 const useExpandedContext = (): ExpandedContext =>
   useContext(expandedContext as Context<ExpandedContext>);
 
-export const Archive: ArchiveCC = ({ children }) => {
+export const Archive: ArchiveCompound = ({ children }) => {
   return <Container>{children}</Container>;
 };
 

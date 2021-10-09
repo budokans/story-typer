@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GameState } from "./useGame.types";
+import { GameState } from "./types/Game.types";
 
 export const useCountdown = (status: GameState["status"]): number => {
   const [count, setCount] = useState(2);

@@ -1,16 +1,9 @@
 import { FC } from "react";
 import { Box, Flex, Link as ChakraLink, Text, Icon } from "@chakra-ui/react";
 import { RiGithubFill } from "react-icons/ri";
+import { FooterCompound } from "./types/Footer.types";
 
-interface Compound {
-  Text: FC;
-  NameLink: FC;
-  GitHub: FC;
-}
-
-type FooterCC = FC & Compound;
-
-export const Footer: FooterCC = ({ children }) => {
+export const Footer: FooterCompound = ({ children }) => {
   return (
     <Container>
       <Inner>{children}</Inner>

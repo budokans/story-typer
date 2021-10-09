@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
-import { GameState } from "./useGame.types";
+import { GameState } from "./types/Game.types";
+import { Timer } from "./types/Timer.types";
 
-interface Timer {
-  minutes: number;
-  seconds: number;
-  totalSeconds: number;
-}
-
-export const useTimer = (status: GameState["status"]): Timer => {
+export const useTimer = (status: GameState["status"], limit: number): Timer => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (status === "inGame" && count < 120) {
+    if (status === "inGame" && count <= limit) {
       const timerInterval = setInterval(() => {
         setCount(count + 1);
       }, 1000);
@@ -19,7 +14,7 @@ export const useTimer = (status: GameState["status"]): Timer => {
     } else {
       setCount(0);
     }
-  }, [status, count]);
+  }, [status, count, limit]);
 
   const getMinutesAndSeconds = (count: number) => {
     return {

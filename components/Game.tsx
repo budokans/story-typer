@@ -1,6 +1,5 @@
-import { ChangeEvent, MutableRefObject, useEffect, useRef, FC } from "react";
+import { MutableRefObject, useEffect, useRef, FC } from "react";
 import {
-  Center,
   Container as ChakraContainer,
   Flex,
   Heading,
@@ -13,45 +12,17 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
-import { GameState } from "@/hooks/useGame.types";
+import { GameCompound } from "./types/Game.types";
 
-interface Compound {
-  Skeleton: FC<{ isLargeViewport: boolean }>;
-  StoryHeader: FC<{ isLargeViewport: boolean }>;
-  StoryText: FC;
-  Pad: FC;
-  Input: FC<{
-    onInputClick: () => void;
-    onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-    value: string;
-    error: boolean;
-    gameStatus: GameState["status"];
-  }>;
-  ErrorAlert: FC;
-  BtnSm: FC<{ type: "restart" | "new"; onClick: () => void }>;
-  Countdown: FC<{
-    active?: boolean;
-  }>;
-  StopWatch: FC<{
-    gameStatus: GameState["status"];
-  }>;
-  Score: FC;
-}
-
-type GameCC = Compound & FC;
-
-export const Game: GameCC = ({ children }) => {
+export const Game: GameCompound = ({ children }) => {
   return <Container>{children}</Container>;
 };
 
 const Container: FC = ({ children }) => {
   return (
-    // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
-    <Center minH={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
-      <ChakraContainer px={[2, 6]}>
-        <VStack spacing={[4, 6, 8]}>{children}</VStack>
-      </ChakraContainer>
-    </Center>
+    <ChakraContainer px={[2, 6]}>
+      <VStack spacing={[4, 6, 8]}>{children}</VStack>
+    </ChakraContainer>
   );
 };
 
@@ -141,6 +112,9 @@ Game.Input = function GameInput({
       value={value}
       disabled={gameStatus === "countdown"}
       ref={inputRef}
+      autoCapitalize="off"
+      autoComplete="off"
+      onPaste={(e) => e.preventDefault()}
     />
   );
 };

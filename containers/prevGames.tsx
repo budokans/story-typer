@@ -1,7 +1,8 @@
 import { Fragment, useRef, FC } from "react";
 import { useInfiniteQuery } from "react-query";
-import { Divider, Spinner, Text } from "@chakra-ui/react";
+import { Divider, Text } from "@chakra-ui/react";
 import { Archive } from "@/components/Archive";
+import { Spinner } from "@/components/Spinner";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { queryPrevGames } from "@/lib/db";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
@@ -71,15 +72,10 @@ export const PrevGamesContainer: FC = () => {
           Sorry, that didn&apos;t quite work. Please refresh the page.
         </Text>
       ) : null}
-      <div ref={loadMoreRef}>
+
+      <div ref={loadMoreRef} style={{ margin: "4rem 0 2rem" }}>
         {isFetchingNextPage || isFetching ? (
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="brand.500"
-            size="xl"
-          />
+          <Spinner />
         ) : hasNextPage ? (
           <Text>Load more</Text>
         ) : data?.pages[0].prevGames.length === 0 ? (

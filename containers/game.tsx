@@ -4,6 +4,7 @@ import { Game } from "@/components/Game";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { useGame } from "@/hooks/useGame";
 import { useUser } from "@/hooks/useUser";
+import { CenterContent } from "@/components/CenterContent";
 
 export const GameContainer: FC = () => {
   const {
@@ -16,9 +17,8 @@ export const GameContainer: FC = () => {
     onInputChange,
     userError,
     onResetClick,
-    onSkipClick,
     onNextClick,
-    winGame,
+    onSkipClick,
     wpm,
   } = useGame();
   const { data: user } = useUser();
@@ -38,59 +38,67 @@ export const GameContainer: FC = () => {
   }
 
   return (
-    <Game>
-      {status === "pending" || !user ? (
-        <Game.Skeleton isLargeViewport={isLargeViewport} />
-      ) : (
-        <>
-          <Game.StoryHeader isLargeViewport={isLargeViewport}>
-            {currentStory.title}
-          </Game.StoryHeader>
-          <Game.StoryText>{currentStory.storyText}</Game.StoryText>
-          <Game.Pad>
-            {status === "complete" ? (
-              <Game.Score>{wpm} WPM!</Game.Score>
-            ) : (
-              <Game.Input
-                onInputClick={onInitCountdown}
-                onInputChange={onInputChange}
-                value={inputValue}
-                gameStatus={status}
-                error={userError}
+    <CenterContent observeLayout>
+      <Game>
+        {status === "pending" || !user ? (
+          <Game.Skeleton isLargeViewport={isLargeViewport} />
+        ) : (
+          <>
+            <Game.StoryHeader isLargeViewport={isLargeViewport}>
+              {currentStory.title}
+            </Game.StoryHeader>
+
+            <Game.StoryText>{currentStory.storyText}</Game.StoryText>
+
+            <Game.Pad>
+              {status === "complete" ? (
+                <Game.Score>{wpm} WPM!</Game.Score>
+              ) : status === "outOfTime" ? (
+                <Game.Score>Out of time!</Game.Score>
+              ) : (
+                <Game.Input
+                  onInputClick={onInitCountdown}
+                  onInputChange={onInputChange}
+                  value={inputValue}
+                  gameStatus={status}
+                  error={userError}
+                />
+              )}
+
+              {userError && <Game.ErrorAlert />}
+
+              {status === "complete" && (
+                <FavoriteButton
+                  storyDetails={{
+                    storyId: currentStory.uid,
+                    storyTitle: currentStory.title,
+                    storyHtml: currentStory.storyHtml,
+                  }}
+                />
+              )}
+
+              <Game.BtnSm type="restart" onClick={onResetClick} />
+              <Game.BtnSm
+                type="new"
+                onClick={status === "complete" ? onNextClick : onSkipClick}
               />
+            </Game.Pad>
+
+            {status === "idle" && <Game.Countdown>Ready</Game.Countdown>}
+
+            {status === "countdown" && (
+              <Game.Countdown active>{CountDown[countdown]}</Game.Countdown>
             )}
-            {userError && <Game.ErrorAlert />}
 
-            {status === "complete" && (
-              <FavoriteButton
-                storyDetails={{
-                  storyId: currentStory.uid,
-                  storyTitle: currentStory.title,
-                  storyHtml: currentStory.storyHtml,
-                }}
-              />
+            {(status === "inGame" || status === "complete") && (
+              <Game.StopWatch gameStatus={status}>
+                {timer.minutes}:
+                {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
+              </Game.StopWatch>
             )}
-            <Game.BtnSm type="restart" onClick={winGame} />
-            <Game.BtnSm
-              type="new"
-              onClick={status === "complete" ? onNextClick : onSkipClick}
-            />
-          </Game.Pad>
-
-          {status === "idle" && <Game.Countdown>Ready</Game.Countdown>}
-
-          {status === "countdown" && (
-            <Game.Countdown active>{CountDown[countdown]}</Game.Countdown>
-          )}
-
-          {status === "inGame" && (
-            <Game.StopWatch gameStatus={status}>
-              {timer.minutes}:
-              {timer.seconds < 10 ? `0${timer.seconds}` : timer.seconds}
-            </Game.StopWatch>
-          )}
-        </>
-      )}
-    </Game>
+          </>
+        )}
+      </Game>
+    </CenterContent>
   );
 };

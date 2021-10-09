@@ -14,19 +14,9 @@ import {
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
 import { useUser } from "@/hooks/useUser";
+import { HeaderCompound } from "./types/Header.types";
 
-interface Compound {
-  UserMenu: FC;
-  StatsContainer: FC;
-  StatsType: FC;
-  Stat: FC;
-  Favorites: FC;
-  Archive: FC;
-}
-
-type HeaderCC = FC & Compound;
-
-export const Header: HeaderCC = ({ children }) => {
+export const Header: HeaderCompound = ({ children }) => {
   return (
     <Container>
       <Inner>

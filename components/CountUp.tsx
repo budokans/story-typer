@@ -1,11 +1,6 @@
 import { useCountUp } from "use-count-up";
 import { Text } from "@chakra-ui/react";
-
-interface CountUpProps {
-  start: number;
-  end: number;
-  duration: number;
-}
+import { CountUpProps } from "./types/CountUp.types";
 
 export const CountUp: React.FC<CountUpProps> = ({ start, end, duration }) => {
   const { value } = useCountUp({

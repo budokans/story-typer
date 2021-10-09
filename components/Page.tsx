@@ -23,7 +23,7 @@ export const Page: React.FC = ({ children }) => {
           <>
             <Header.StatsContainer>
               <Header.StatsType>Best:</Header.StatsType>
-              <Header.Stat>{user.personalBest || "TBA"}</Header.Stat>
+              <Header.Stat>{user.personalBest ?? "TBA"}</Header.Stat>
             </Header.StatsContainer>
             <Header.StatsContainer>
               <Header.StatsType>Avg:</Header.StatsType>
