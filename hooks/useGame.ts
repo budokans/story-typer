@@ -32,7 +32,6 @@ export const useGame = (): UseGame => {
   } = useStories();
   const count = useCountdown(state.status);
   const timer = useTimer(state.status, TIME_LIMIT);
-  const totalUserInput = state.userStoredInput.concat(state.userCurrentInput);
   const currentStory = stories[gameCount - 1];
 
   // Listen for when stories have been loaded into game state and initialise idle state.
@@ -84,14 +83,8 @@ export const useGame = (): UseGame => {
     dispatch({ type: "next" });
   };
 
-  const checkForUserError = (
-    currentInput: string,
-    storedInput: string,
-    source: string
-  ) => {
-    const totalUserInput = storedInput.concat(currentInput);
-    const sourceTilUserInputEnds = source.slice(0, totalUserInput.length);
-    return totalUserInput !== sourceTilUserInputEnds;
+  const checkForUserError = (currentInput: string, source: string) => {
+    return currentInput !== source.slice(0, currentInput.length);
   };
 
   const getWpm = (time: number) => Math.round(50 * (60 / time));
@@ -109,12 +102,11 @@ export const useGame = (): UseGame => {
     score: wpm,
   });
 
-  // Listen for user errors and finished words.
+  // Listen for user error
   useEffect(() => {
     if (currentStory) {
       const errorPresent = checkForUserError(
-        state.userCurrentInput,
-        state.userStoredInput,
+        state.userInput,
         currentStory.storyText
       );
 
@@ -123,26 +115,8 @@ export const useGame = (): UseGame => {
       } else {
         dispatch({ type: "errorFree" });
       }
-
-      const lastInputCharIsSpace =
-        state.userCurrentInput.charAt(state.userCurrentInput.length - 1) ===
-        " ";
-
-      const isFinalChar =
-        totalUserInput.length === currentStory.storyText.length &&
-        !state.userError;
-
-      if ((!state.userError && lastInputCharIsSpace) || isFinalChar) {
-        dispatch({ type: "wordCompleted" });
-      }
     }
-  }, [
-    state.userCurrentInput,
-    state.userStoredInput,
-    currentStory,
-    state.userError,
-    totalUserInput,
-  ]);
+  }, [state.userInput, currentStory, state.userError]);
 
   const winGame = () => {
     const wpm = getWpm(timer.totalSeconds);
@@ -157,15 +131,15 @@ export const useGame = (): UseGame => {
 
   // Listen for game completion
   useEffect(() => {
-    if (state.userStoredInput === currentStory?.storyText) {
+    if (state.userInput === currentStory?.storyText) {
       winGame();
     }
-  }, [state.userStoredInput, currentStory]);
+  }, [state.userInput, currentStory]);
 
   return {
     currentStory,
     status: state.status,
-    inputValue: state.userCurrentInput,
+    inputValue: state.userInput,
     userError: state.userError,
     onInputChange: handleInputChange,
     onInitCountdown: initCountdown,

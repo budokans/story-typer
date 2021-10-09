@@ -3,8 +3,7 @@ import { GameAction, GameState } from "../types/Game.types";
 export const initialGameState: GameState = {
   status: "pending",
   userError: false,
-  userStoredInput: "",
-  userCurrentInput: "",
+  userInput: "",
   wpm: 0,
 };
 
@@ -40,7 +39,7 @@ export const GameReducer = (
     case "inputValueChange": {
       return {
         ...state,
-        userCurrentInput: action.inputValue,
+        userInput: action.inputValue,
       };
     }
     case "errorFree": {
@@ -55,18 +54,11 @@ export const GameReducer = (
         userError: true,
       };
     }
-    case "wordCompleted": {
-      return {
-        ...state,
-        userStoredInput: state.userStoredInput.concat(state.userCurrentInput),
-        userCurrentInput: "",
-      };
-    }
     case "win": {
       return {
         ...state,
         status: "complete",
-        userStoredInput: "",
+        userInput: "",
         wpm: action.wpm,
       };
     }
@@ -80,8 +72,7 @@ export const GameReducer = (
       return {
         ...state,
         userError: false,
-        userStoredInput: "",
-        userCurrentInput: "",
+        userInput: "",
         status: "idle",
         wpm: 0,
       };
