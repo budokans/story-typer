@@ -70,7 +70,8 @@ export const FavoritesContainer: FC = () => {
           Sorry, that didn&apos;t quite work. Please refresh the page.
         </Text>
       ) : null}
-      <div ref={loadMoreRef}>
+
+      <div ref={loadMoreRef} style={{ margin: "4rem 0 2rem" }}>
         {isFetchingNextPage || isFetching ? (
           <Spinner />
         ) : hasNextPage ? (
