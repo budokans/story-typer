@@ -8,6 +8,7 @@ import { PrevGamesContainer } from "@/containers/prevGames";
 import { FavoritesContainer } from "@/containers/favorites";
 import { LoginRerouter } from "@/components/LoginRerouter";
 import { Spinner } from "@/components/Spinner";
+import { CenterContent } from "@/components/CenterContent";
 
 const Previous: FC = () => {
   const { userId: userIsAuthorized, isLoading: isLoadingAuth } = useAuth();
@@ -23,7 +24,9 @@ const Previous: FC = () => {
   };
 
   return isLoadingAuth ? (
-    <Spinner />
+    <CenterContent>
+      <Spinner />
+    </CenterContent>
   ) : (
     <>
       <DocHead />

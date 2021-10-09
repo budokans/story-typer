@@ -1,6 +1,5 @@
 import { ChangeEvent, MutableRefObject, useEffect, useRef, FC } from "react";
 import {
-  Center,
   Container as ChakraContainer,
   Flex,
   Heading,
@@ -46,12 +45,9 @@ export const Game: GameCC = ({ children }) => {
 
 const Container: FC = ({ children }) => {
   return (
-    // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
-    <Center minH={["auto", "calc(100vh - 61px - 56px - 64px)"]}>
-      <ChakraContainer px={[2, 6]}>
-        <VStack spacing={[4, 6, 8]}>{children}</VStack>
-      </ChakraContainer>
-    </Center>
+    <ChakraContainer px={[2, 6]}>
+      <VStack spacing={[4, 6, 8]}>{children}</VStack>
+    </ChakraContainer>
   );
 };
 
