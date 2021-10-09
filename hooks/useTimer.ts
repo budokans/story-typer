@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { GameState } from "./useGame.types";
 
-interface Timer {
+export interface Timer {
   minutes: number;
   seconds: number;
   totalSeconds: number;

@@ -1,3 +1,7 @@
+import { StoryWithId } from "interfaces";
+import { ChangeEvent } from "react";
+import { Timer } from "./useTimer";
+
 export interface GameState {
   status:
     | "pending"
@@ -6,7 +10,6 @@ export interface GameState {
     | "inGame"
     | "complete"
     | "outOfTime";
-  firstPlay: boolean;
   userError: boolean;
   userStoredInput: string;
   userCurrentInput: string;
@@ -27,3 +30,18 @@ export type GameAction =
   | { type: "reset" }
   | { type: "next" }
   | { type: "outOfTime" };
+
+export type UseGame = {
+  currentStory: StoryWithId;
+  status: GameState["status"];
+  inputValue: string;
+  userError: boolean;
+  onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onInitCountdown: () => void;
+  countdown: number;
+  timer: Timer;
+  wpm: GameState["wpm"];
+  onResetClick: () => void;
+  onSkipClick: () => void;
+  onNextClick: () => void;
+};

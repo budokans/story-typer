@@ -4,14 +4,13 @@ import { useUser } from "@/hooks/useUser";
 import { useStories } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
-import { GameAction, GameState } from "./useGame.types";
+import { GameAction, GameState, UseGame } from "./useGame.types";
 import { PrevGame, StoryWithId, User } from "interfaces";
 import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
 import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
 
 const initialState: GameState = {
   status: "pending",
-  firstPlay: true,
   userError: false,
   userStoredInput: "",
   userCurrentInput: "",
@@ -107,7 +106,7 @@ const GameReducer = (state: GameState, action: GameAction): GameState => {
   }
 };
 
-export const useGame = () => {
+export const useGame = (): UseGame => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
   const { data: user } = useUser();
   const queryClient = useQueryClient();
@@ -146,6 +145,7 @@ export const useGame = () => {
     }
   }, [count]);
 
+  // Listen for time limit up and dispatch outOfTime action
   useEffect(() => {
     timer.totalSeconds === TIME_LIMIT && dispatch({ type: "outOfTime" });
   }, [timer.totalSeconds]);
@@ -173,7 +173,6 @@ export const useGame = () => {
     dispatch({ type: "next" });
   };
 
-  // This is just for testing - handy if you need to complete a game without typing it all out.
   const handleNextStoryClick = () => {
     setGameCount(gameCount + 1);
     dispatch({ type: "next" });
@@ -270,6 +269,5 @@ export const useGame = () => {
     onResetClick: handleResetClick,
     onSkipClick: handleSkipClick,
     onNextClick: handleNextStoryClick,
-    winGame,
   };
 };

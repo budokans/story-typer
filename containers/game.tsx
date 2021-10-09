@@ -17,8 +17,8 @@ export const GameContainer: FC = () => {
     onInputChange,
     userError,
     onResetClick,
+    onNextClick,
     onSkipClick,
-    winGame,
     wpm,
   } = useGame();
   const { data: user } = useUser();
@@ -77,10 +77,10 @@ export const GameContainer: FC = () => {
                 />
               )}
 
-              <Game.BtnSm type="restart" onClick={winGame} />
+              <Game.BtnSm type="restart" onClick={onResetClick} />
               <Game.BtnSm
                 type="new"
-                onClick={status === "complete" ? onResetClick : onSkipClick}
+                onClick={status === "complete" ? onNextClick : onSkipClick}
               />
             </Game.Pad>
 
