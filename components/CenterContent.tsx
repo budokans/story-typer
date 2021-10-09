@@ -1,16 +1,14 @@
 import { Center } from "@chakra-ui/react";
 
-export const CenterContent: React.FC<{ centerOnMobile?: boolean }> = ({
-  centerOnMobile,
+export const CenterContent: React.FC<{ observeLayout?: boolean }> = ({
+  observeLayout,
   children,
 }) => {
   // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
   return (
     <Center
       minH={
-        centerOnMobile
-          ? ["100vh", "calc(100vh - 61px - 56px - 64px)"]
-          : ["auto", "calc(100vh - 61px - 56px - 64px)"]
+        observeLayout ? ["auto", "calc(100vh - 61px - 56px - 64px)"] : "100vh"
       }
     >
       {children}

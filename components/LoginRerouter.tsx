@@ -14,7 +14,7 @@ export const LoginRerouter: React.FC = () => {
   });
 
   return (
-    <CenterContent centerOnMobile>
+    <CenterContent>
       <Spinner />
     </CenterContent>
   );

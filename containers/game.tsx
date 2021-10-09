@@ -38,7 +38,7 @@ export const GameContainer: FC = () => {
   }
 
   return (
-    <CenterContent>
+    <CenterContent observeLayout>
       <Game>
         {status === "pending" || !user ? (
           <Game.Skeleton isLargeViewport={isLargeViewport} />
