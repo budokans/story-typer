@@ -1,12 +1,4 @@
-import {
-  Context,
-  createContext,
-  Dispatch,
-  FC,
-  SetStateAction,
-  useContext,
-  useState,
-} from "react";
+import { Context, createContext, FC, useContext, useState } from "react";
 import {
   Container as ChakraContainer,
   Heading,

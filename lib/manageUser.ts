@@ -1,4 +1,4 @@
-import { GameState } from "@/hooks/useGame.types";
+import { GameState } from "@/hooks/types/Game.types";
 import { User, StoryWithId } from "interfaces";
 
 export const createPostWinUser = (
