@@ -1,39 +1,32 @@
-# Example app with [chakra-ui](https://github.com/chakra-ui/chakra-ui) and Typescript
+# Story Typer
 
-This example features how to use [chakra-ui](https://github.com/chakra-ui/chakra-ui) as the component library within a Next.js app with typescript.
+A JamStack speed-typing game for lovers of short - _very_ short - stories.
 
-Next.js and chakra-ui have built-in TypeScript declarations, so we'll get autocompletion for their modules straight away.
+## How it came to be
 
-We are connecting the Next.js `_app.js` with `chakra-ui`'s Provider and theme so the pages can have app-wide dark/light mode. We are also creating some components which shows the usage of `chakra-ui`'s style props.
+Finding myself spending a lot of time on speed-typing apps like [TypeRacer](https://play.typeracer.com "TypeRacer" ), I decided to craft one of my own.
 
-## Preview
+Fifty-word stories are fetched from [fiftywordstories.com](http://fiftywordstories.com "Fifty-Word Stories") via the WordPress API, and this is done daily using a GitHub Actions workflow CRON job that hits an 'update' serverless function.
 
-Preview the example live on [StackBlitz](http://stackblitz.com/):
+Next.js  was used for ease of development, its fast build time, and its flexible rendering options. Because the total stories count changes daily, the homepage is incrementally statically generated such that it forces a daily rebuild so that a reasonably up-to-date total number of stories can be displayed.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/with-chakra-ui-typescript)
+The rest of the pages being private and user-specific, so SEO isn't as important. Therefore these are entirely pre-rendered without data to serve a loading state until auth, user, and other data are fetched client-side.
 
-## Deploy your own
+react-query handles querying, caching, and revalidation for most data-fetching operations. useInfiniteQuery and the Intersection Observer API were used to implement infinite scrolling on the archive and favorites pages.
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+Because no external API needed to be provided and using a REST API would result in performance penalties, almost all data-fetching is accomplished by querying the Firestore database directly.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-chakra-ui-typescript&project-name=with-chakra-ui-typescript&repository-name=with-chakra-ui-typescript)
+Component composition is heavily used throughout, with the compound or 'composite' components composed in containers.
 
-## How to use
+Almost all application state is stored and manipulated in custom hooks, with global state (user auth and currently fetched stories) passed down via context, with the respective context providers calling the respective custom hooks.
 
-### Using `create-next-app`
+Partly tested with Jest, the rest of the project will be functionally tested with a combination of Jest and React Testing Library.
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+## Installation
 
-```bash
-npx create-next-app --example with-chakra-ui-typescript with-chakra-ui-typescript-app
-# or
-yarn create next-app --example with-chakra-ui-typescript with-chakra-ui-typescript-app
-```
+Install via NPM `npm install` and run with `npm run dev`.
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+## Links
 
-## Notes
-
-Chakra has supported Gradients and RTL in `v1.1`. To utilize RTL, [add RTL direction and swap](https://chakra-ui.com/docs/features/rtl-support).
-
-If you don't have multi-direction app, you should make `<Html lang="ar" dir="rtl">` inside `_document.ts`.
+- [Visit Story Typer](https://storytyper.stevenwebster.co "Story Typer")
+- [See my portofolio](https://stevenwebster.co "Steven Webster")
