@@ -10,7 +10,7 @@ Fifty-word stories are fetched from [fiftywordstories.com](http://fiftywordstori
 
 Next.js  was used for ease of development, its fast build time, and its flexible rendering options. Because the total stories count changes daily, the homepage is incrementally statically generated such that it forces a daily rebuild so that a reasonably up-to-date total number of stories can be displayed.
 
-The rest of the pages being private and user-specific, so SEO isn't as important. Therefore these are entirely pre-rendered without data to serve a loading state until auth, user, and other data are fetched client-side.
+The rest of the pages being private and user-specific, SEO isn't as important. Therefore these are entirely pre-rendered without data to serve a loading state until auth, user, and other data are fetched client-side.
 
 react-query handles querying, caching, and revalidation for most data-fetching operations. useInfiniteQuery and the Intersection Observer API were used to implement infinite scrolling on the archive and favorites pages.
 
