@@ -1,11 +1,13 @@
 name: cron-new-stories
 on:
   schedule:
-    - cron: '* 16 * * *'
+    - cron: '40 10 * * *'
 jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
       - name: cURL request
         run: | 
-          curl --request POST --url 'https://story-typer.vercel.app/api/update' --header 'Authorization: Bearer ${{ process.env.API_ACCESS_TOKEN }}'
+          curl --request POST \ 
+          --url 'https://storytyper.stevenwebster.co/api/update' \
+          --header 'Authorization: Bearer ${{ secrets.API_SECRET_KEY }}'
