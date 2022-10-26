@@ -14,6 +14,8 @@ export const useCountdown = (status: GameState["status"]): number => {
     } else {
       setCount(2);
     }
+
+    return;
   }, [status, count]);
 
   return count;
