@@ -36,4 +36,5 @@ yarn-error.log*
 # VSCodeCounter
 .VSCodeCounter
 
-planning.txt
+# tsc
+tsconfig.tsbuildinfo

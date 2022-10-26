@@ -87,6 +87,7 @@ export const addLatestStories = (): Promise<number | void> => {
         incrementStoriesCount(storiesCount);
         return storiesCount;
       }
+      return;
     })
     .catch((e) => console.error(e));
 };

@@ -14,6 +14,8 @@ export const useTimer = (status: GameState["status"], limit: number): Timer => {
     } else {
       setCount(0);
     }
+
+    return;
   }, [status, count, limit]);
 
   const getMinutesAndSeconds = (count: number) => {

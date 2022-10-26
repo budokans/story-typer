@@ -18,10 +18,11 @@ export default async function handler(
       } else {
         res.status(403).json({ message: "Access denied" });
       }
-    } catch (e: any) {
+    } catch (e) {
       res.status(500).json({
-        status: `Story scraping failed - ${e.message}. See logs for info`,
+        status: `Story scraping failed. See logs for info`,
       });
+      console.log(e);
     }
   } else {
     res.setHeader("Allow", "POST");
