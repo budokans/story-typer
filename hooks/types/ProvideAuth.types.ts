@@ -1,17 +1,17 @@
 import { User } from "interfaces";
 
 export interface AuthState {
-  status: "idle" | "pending" | "resolved" | "rejected";
-  userId: User["uid"] | null;
+  readonly status: "idle" | "pending" | "resolved" | "rejected";
+  readonly userId: User["uid"] | null;
 }
 
 export type AuthAction =
-  | { type: "success"; userId: User["uid"] | null }
-  | { type: "started" };
+  | { readonly type: "success"; readonly userId: User["uid"] | null }
+  | { readonly type: "started" };
 
 export interface ProvideAuth {
-  userId: string | null;
-  isLoading: boolean;
-  signInWithGoogle: () => Promise<void>;
-  signOut: () => Promise<void>;
+  readonly userId: string | null;
+  readonly isLoading: boolean;
+  readonly signInWithGoogle: () => Promise<void>;
+  readonly signOut: () => Promise<void>;
 }

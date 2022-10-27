@@ -1,7 +1,7 @@
 import { StoryWithId } from "interfaces";
 
 export interface ProvideStories {
-  stories: StoryWithId[];
-  isLoading: boolean;
-  handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
+  readonly stories: readonly StoryWithId[];
+  readonly isLoading: boolean;
+  readonly handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
 }

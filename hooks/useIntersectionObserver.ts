@@ -1,11 +1,11 @@
 import { useEffect, MutableRefObject } from "react";
 
 interface Parameters {
-  target: MutableRefObject<HTMLElement | null>;
-  onIntersect: () => void;
-  enabled: boolean | undefined;
-  threshold?: number;
-  rootMargin?: string;
+  readonly target: MutableRefObject<HTMLElement | null>;
+  readonly onIntersect: () => void;
+  readonly enabled: boolean | undefined;
+  readonly threshold?: number;
+  readonly rootMargin?: string;
 }
 
 export const useIntersectionObserver = ({

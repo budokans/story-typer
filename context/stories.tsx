@@ -13,11 +13,11 @@ import { StoryWithId } from "interfaces";
 import { useUser } from "@/hooks/useUser";
 
 interface StoryContext {
-  stories: StoryWithId[];
-  isLoading: boolean;
-  gameCount: number;
-  setGameCount: Dispatch<SetStateAction<number>>;
-  handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
+  readonly stories: readonly StoryWithId[];
+  readonly isLoading: boolean;
+  readonly gameCount: number;
+  readonly setGameCount: Dispatch<SetStateAction<number>>;
+  readonly handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
 }
 
 const storiesContext = createContext<StoryContext | null>(null);

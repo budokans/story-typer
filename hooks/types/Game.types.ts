@@ -3,43 +3,43 @@ import { ChangeEvent } from "react";
 import { Timer } from "./Timer.types";
 
 export interface GameState {
-  status:
+  readonly status:
     | "pending"
     | "idle"
     | "countdown"
     | "inGame"
     | "complete"
     | "outOfTime";
-  userError: boolean;
-  userInput: string;
-  wpm: number;
+  readonly userError: boolean;
+  readonly userInput: string;
+  readonly wpm: number;
 }
 
 export type GameAction =
-  | { type: "storiesLoading" }
-  | { type: "storiesLoaded" }
-  | { type: "startCountdown" }
-  | { type: "countdownTick" }
-  | { type: "countdownComplete" }
-  | { type: "inputValueChange"; inputValue: string }
-  | { type: "errorFree" }
-  | { type: "userTypingError" }
-  | { type: "win"; wpm: number }
-  | { type: "reset" }
-  | { type: "next" }
-  | { type: "outOfTime" };
+  | { readonly type: "storiesLoading" }
+  | { readonly type: "storiesLoaded" }
+  | { readonly type: "startCountdown" }
+  | { readonly type: "countdownTick" }
+  | { readonly type: "countdownComplete" }
+  | { readonly type: "inputValueChange"; readonly inputValue: string }
+  | { readonly type: "errorFree" }
+  | { readonly type: "userTypingError" }
+  | { readonly type: "win"; readonly wpm: number }
+  | { readonly type: "reset" }
+  | { readonly type: "next" }
+  | { readonly type: "outOfTime" };
 
 export interface UseGame {
-  currentStory: StoryWithId;
-  status: GameState["status"];
-  inputValue: string;
-  userError: boolean;
-  onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onInitCountdown: () => void;
-  countdown: number;
-  timer: Timer;
-  wpm: GameState["wpm"];
-  onResetClick: () => void;
-  onSkipClick: () => void;
-  onNextClick: () => void;
+  readonly currentStory: StoryWithId;
+  readonly status: GameState["status"];
+  readonly inputValue: string;
+  readonly userError: boolean;
+  readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  readonly onInitCountdown: () => void;
+  readonly countdown: number;
+  readonly timer: Timer;
+  readonly wpm: GameState["wpm"];
+  readonly onResetClick: () => void;
+  readonly onSkipClick: () => void;
+  readonly onNextClick: () => void;
 }

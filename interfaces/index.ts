@@ -1,61 +1,61 @@
 import { FieldValue } from "@firebase/firestore-types";
 
 export interface UserAuth {
-  uid: string;
-  name: string | null;
-  email: string | null;
-  photoURL: string | null;
+  readonly uid: string;
+  readonly name: string | null;
+  readonly email: string | null;
+  readonly photoURL: string | null;
 }
 
 export interface User extends UserAuth {
-  registeredDate: FieldValue;
-  personalBest: number | null;
-  lastTenScores: number[];
-  gamesPlayed: number;
-  newestPlayedStoryPublishedDate: string | null;
-  oldestPlayedStoryPublishedDate: string | null;
+  readonly registeredDate: FieldValue;
+  readonly personalBest: number | null;
+  readonly lastTenScores: readonly number[];
+  readonly gamesPlayed: number;
+  readonly newestPlayedStoryPublishedDate: string | null;
+  readonly oldestPlayedStoryPublishedDate: string | null;
 }
 
 export interface Post {
-  date: string;
-  link: string;
-  title: {
-    rendered: string;
+  readonly date: string;
+  readonly link: string;
+  readonly title: {
+    readonly rendered: string;
   };
-  content: {
-    rendered: string;
+  readonly content: {
+    readonly rendered: string;
   };
 }
 
 export interface Story {
-  title: string;
-  authorBio: string;
-  storyHtml: string;
-  storyText: string;
-  url: string;
-  datePublished: string;
+  readonly title: string;
+  readonly authorBio: string;
+  readonly storyHtml: string;
+  readonly storyText: string;
+  readonly url: string;
+  readonly datePublished: string;
 }
 
 export interface StoryWithId extends Story {
-  uid: string;
+  readonly uid: string;
 }
 
 export interface PrevGame {
-  userId: string;
-  storyId: string;
-  storyTitle: string;
-  storyHtml: string;
-  datePlayed: string;
-  score: number;
+  readonly userId: string;
+  readonly storyId: string;
+  readonly storyTitle: string;
+  readonly storyHtml: string;
+  readonly datePlayed: string;
+  readonly score: number;
 }
 
 export interface FavoriteBase {
-  storyId: StoryWithId["uid"];
-  storyTitle: StoryWithId["title"];
-  storyHtml: StoryWithId["storyHtml"];
+  readonly storyId: string;
+  readonly storyTitle: string;
+  readonly storyHtml: string;
 }
 
 export interface Favorite extends FavoriteBase {
-  userId: User["uid"];
-  dateFavorited: string;
+  readonly userId: User["uid"];
+  readonly dateFavorited: string;
 }

@@ -1,5 +1,5 @@
 export interface Timer {
-  minutes: number;
-  seconds: number;
-  totalSeconds: number;
+  readonly minutes: number;
+  readonly seconds: number;
+  readonly totalSeconds: number;
 }
