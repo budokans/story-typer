@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useReducer } from "react";
+import { ChangeEvent, useCallback, useEffect, useReducer } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { UseGame } from "./types/Game.types";
 import { GameReducer, initialGameState } from "./reducers/GameReducer";
@@ -118,7 +118,7 @@ export const useGame = (): UseGame => {
     }
   }, [state.userInput, currentStory, state.userError]);
 
-  const winGame = () => {
+  const winGame = useCallback(() => {
     const wpm = getWpm(timer.totalSeconds);
     if (user) {
       const game = constructGame(user.uid, currentStory, wpm);
@@ -127,14 +127,14 @@ export const useGame = (): UseGame => {
       createPrevGame(game);
     }
     dispatch({ type: "win", wpm: wpm });
-  };
+  }, [currentStory, timer.totalSeconds, user, userWinMutation]);
 
   // Listen for game completion
   useEffect(() => {
     if (state.userInput === currentStory?.storyText) {
       winGame();
     }
-  }, [state.userInput, currentStory]);
+  }, [state.userInput, currentStory, winGame]);
 
   return {
     currentStory,

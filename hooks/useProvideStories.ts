@@ -31,7 +31,7 @@ export const useProvideStories = (gameCount: number): ProvideStories => {
       setIsLoading(true);
       loadStories(user);
     }
-  }, [gameCount, stories.length]);
+  }, [gameCount, stories.length, user]);
 
   useEffect(() => {
     if (!user) {
