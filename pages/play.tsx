@@ -1,13 +1,7 @@
-import { useAuthContext } from "@/context/auth";
-import { GameContainer } from "@/containers/game";
-import {
-  CenterContent,
-  Spinner,
-  DocHead,
-  Page,
-  LoginRerouter,
-} from "@/components";
 import { ReactElement } from "react";
+import { useAuthContext } from "@/context/auth";
+import { Page, GameContainer } from "@/containers";
+import { CenterContent, Spinner, DocHead, LoginRerouter } from "@/components";
 
 const Play = (): ReactElement => {
   const { userId: userIsAuthorized, isLoading: isLoadingAuth } =
@@ -20,9 +14,7 @@ const Play = (): ReactElement => {
   ) : (
     <>
       <DocHead />
-      <Page.Page>
-        {userIsAuthorized ? <GameContainer /> : <LoginRerouter />}
-      </Page.Page>
+      <Page>{userIsAuthorized ? <GameContainer /> : <LoginRerouter />}</Page>
     </>
   );
 };

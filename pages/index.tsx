@@ -1,17 +1,17 @@
+import { ReactElement } from "react";
 import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { Box } from "@chakra-ui/react";
 import { getStoriesCount } from "@/lib/db-admin";
 import { useAuthContext } from "@/context/auth";
+import { Page } from "@/containers";
 import {
   DocHead,
-  Page,
   Home,
   CountUp,
   FiftyWordStoriesLink,
   GoogleIcon,
 } from "@/components";
-import { ReactElement } from "react";
 
 interface IndexProps {
   readonly storiesCount: number;
@@ -33,7 +33,7 @@ const Index = ({ storiesCount }: IndexProps): ReactElement => {
   return (
     <>
       <DocHead />
-      <Page.Page>
+      <Page>
         <Home.Home>
           <Home.Brand />
 
@@ -80,7 +80,7 @@ const Index = ({ storiesCount }: IndexProps): ReactElement => {
             </Home.Features>
           </Home.FeaturesWrapper>
         </Home.Home>
-      </Page.Page>
+      </Page>
     </>
   );
 };

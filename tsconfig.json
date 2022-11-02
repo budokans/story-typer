@@ -9,6 +9,7 @@
       "@/components/*": ["components/*"],
       "@/components": ["components/index.ts"],
       "@/containers/*": ["containers/*"],
+      "@/containers": ["containers/index.ts"],
       "@/context/*": ["context/*"],
     },
     "esModuleInterop": true,

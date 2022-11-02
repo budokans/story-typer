@@ -10,5 +10,4 @@ export { GoogleIcon } from "./GoogleIcon";
 export * as Header from "./Header";
 export * as Home from "./Home";
 export { LoginRerouter } from "./LoginRerouter";
-export * as Page from "./Page";
 export { Spinner } from "./Spinner";

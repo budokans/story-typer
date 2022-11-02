@@ -5,12 +5,10 @@ import {
   CenterContent,
   Spinner,
   DocHead,
-  Page,
   Archive,
   LoginRerouter,
 } from "@/components";
-import { PrevGamesContainer } from "@/containers/prevGames";
-import { FavoritesContainer } from "@/containers/favorites";
+import { Page, FavoritesContainer, PrevGamesContainer } from "@/containers";
 
 const Previous = (): ReactElement => {
   const { userId: userIsAuthorized, isLoading: isLoadingAuth } =
@@ -33,7 +31,7 @@ const Previous = (): ReactElement => {
   ) : (
     <>
       <DocHead />
-      <Page.Page>
+      <Page>
         {userIsAuthorized ? (
           <Archive.Archive>
             <Archive.BackToGameButton />
@@ -51,7 +49,7 @@ const Previous = (): ReactElement => {
         ) : (
           <LoginRerouter />
         )}
-      </Page.Page>
+      </Page>
     </>
   );
 };
