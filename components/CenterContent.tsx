@@ -1,9 +1,15 @@
 import { Center } from "@chakra-ui/react";
+import { ChildrenProps } from "interfaces";
+import { ReactElement } from "react";
 
-export const CenterContent: React.FC<{ observeLayout?: boolean }> = ({
+interface CenterContentProps {
+  readonly observeLayout?: boolean;
+}
+
+export const CenterContent = ({
   observeLayout,
   children,
-}) => {
+}: CenterContentProps & ChildrenProps): ReactElement => {
   // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
   return (
     <Center

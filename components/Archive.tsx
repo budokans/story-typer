@@ -1,4 +1,12 @@
-import { Context, createContext, FC, useContext, useState } from "react";
+import {
+  Context,
+  createContext,
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 import {
   Container as ChakraContainer,
   Heading,
@@ -24,18 +32,58 @@ import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
 import { useStories } from "@/context/stories";
 import { useFavorite } from "@/hooks/useFavorite";
-import { ArchiveCompound, ExpandedContext } from "./types/Archive.types";
+import { ChildrenProps, FavoriteBase } from "interfaces";
+
+type ArchiveFilter = "all" | "favorites";
+
+interface TogglesProps {
+  readonly filter: ArchiveFilter;
+  readonly onSetFilter: (filter: ArchiveFilter) => void;
+}
+
+interface CardHeaderProps {
+  readonly id: number;
+}
+
+interface CardExpandedSectionProps {
+  readonly id: number;
+}
+
+interface CloseCardIconProps {
+  readonly id: number;
+}
+
+interface CardDateProps {
+  readonly dateString: string;
+}
+
+interface StoryProps {
+  readonly story: string;
+}
+
+interface PlayAgainButtonProps {
+  readonly storyId: string;
+}
+
+interface DeleteFavoriteButtonProps {
+  readonly storyDetails: FavoriteBase;
+}
+
+interface ExpandedContext {
+  readonly expandedIdx: number | null;
+  readonly setExpandedIdx: Dispatch<SetStateAction<number | null>>;
+}
 
 const expandedContext = createContext<ExpandedContext | null>(null);
 
 const useExpandedContext = (): ExpandedContext =>
   useContext(expandedContext as Context<ExpandedContext>);
 
-export const Archive: ArchiveCompound = ({ children }) => {
+export const Archive = ({ children }: ChildrenProps): ReactElement => {
   return <Container>{children}</Container>;
 };
 
-const Container: FC = ({ children }) => {
+const Container = ({ children }: ChildrenProps): ReactElement => {
   return (
     <ChakraContainer px={[0, 2, 6]}>
       <VStack spacing={4}>{children}</VStack>
@@ -43,35 +91,34 @@ const Container: FC = ({ children }) => {
   );
 };
 
-Archive.PageTitle = function ArchiveHeader({ children }) {
-  return (
-    <Heading as="h1" fontSize="clamp(2rem, 6vw, 4rem)">
-      {children}
-    </Heading>
-  );
-};
+export const Header = ({ children }: ChildrenProps): ReactElement => (
+  <Heading as="h1" fontSize="clamp(2rem, 6vw, 4rem)">
+    {children}
+  </Heading>
+);
 
-Archive.Toggles = function ArchiveToggles({ value, onSetValue }) {
-  return (
-    <RadioGroup
-      onChange={onSetValue}
-      value={value}
-      alignSelf="flex-start"
-      pl={[1, 4, 6]}
-    >
-      <Stack direction="row">
-        <Radio value="all" cursor="pointer">
-          All
-        </Radio>
-        <Radio value="favorites" cursor="pointer">
-          Favorites
-        </Radio>
-      </Stack>
-    </RadioGroup>
-  );
-};
+export const Toggles = ({
+  filter,
+  onSetFilter,
+}: TogglesProps): ReactElement => (
+  <RadioGroup
+    onChange={onSetFilter}
+    value={filter}
+    alignSelf="flex-start"
+    pl={[1, 4, 6]}
+  >
+    <Stack direction="row">
+      <Radio value="all" cursor="pointer">
+        All
+      </Radio>
+      <Radio value="favorites" cursor="pointer">
+        Favorites
+      </Radio>
+    </Stack>
+  </RadioGroup>
+);
 
-Archive.Card = function ArchiveCard({ children }) {
+export const Card = ({ children }: ChildrenProps): ReactElement => {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
   return (
@@ -90,7 +137,10 @@ Archive.Card = function ArchiveCard({ children }) {
   );
 };
 
-Archive.CardHeader = function ArchiveCardHeader({ id, children }) {
+export const CardHeader = ({
+  id,
+  children,
+}: CardHeaderProps & ChildrenProps): ReactElement => {
   const { expandedIdx, setExpandedIdx } = useExpandedContext();
   const isExpanded = expandedIdx === id;
 
@@ -106,19 +156,17 @@ Archive.CardHeader = function ArchiveCardHeader({ id, children }) {
   );
 };
 
-Archive.CardTitle = function ArchiveCardTitle({ children }) {
-  return (
-    <Heading as="h2" fontSize="clamp(1rem, 3.5vw, 1.5rem)" noOfLines={1}>
-      {children}
-    </Heading>
-  );
-};
+export const CardTitle = ({ children }: ChildrenProps): ReactElement => (
+  <Heading as="h2" fontSize="clamp(1rem, 3.5vw, 1.5rem)" noOfLines={1}>
+    {children}
+  </Heading>
+);
 
-Archive.CardScore = function ArchiveCardScore({ children }) {
-  return <Text fontSize="sm">Score: {children} WPM</Text>;
-};
+export const CardScore = ({ children }: ChildrenProps): ReactElement => (
+  <Text fontSize="sm">Score: {children} WPM</Text>
+);
 
-Archive.CardDate = function ArchiveCardDate({ dateString }) {
+export const CardDate = ({ dateString }: CardDateProps): ReactElement => {
   const iso = parseISO(dateString);
   return (
     <time dateTime={dateString} style={{ fontSize: ".75rem" }}>
@@ -127,7 +175,9 @@ Archive.CardDate = function ArchiveCardDate({ dateString }) {
   );
 };
 
-Archive.CloseCardIcon = function ArchiveCloseCardIcon({ id }) {
+export const CloseCardIcon = ({
+  id,
+}: CloseCardIconProps): ReactElement | null => {
   const { expandedIdx } = useExpandedContext();
   const isExpanded = expandedIdx === id;
 
@@ -144,17 +194,17 @@ Archive.CloseCardIcon = function ArchiveCloseCardIcon({ id }) {
   ) : null;
 };
 
-Archive.CardExpandedSection = function ArchiveCardExpandedSection({
+export const CardExpandedSection = ({
   id,
   children,
-}) {
+}: CardExpandedSectionProps & ChildrenProps): ReactElement | null => {
   const { expandedIdx } = useExpandedContext();
   const isExpanded = expandedIdx === id;
 
   return isExpanded ? <Box>{children}</Box> : null;
 };
 
-Archive.FullStory = function ArchiveFullStroy({ story }) {
+export const Story = ({ story }: StoryProps): ReactElement => {
   const storyWithPMargins = story.replace(
     /<p/g,
     '<p style="margin-bottom: 1rem"'
@@ -163,15 +213,15 @@ Archive.FullStory = function ArchiveFullStroy({ story }) {
   return <Box mt={4}>{parse(storyWithPMargins)}</Box>;
 };
 
-Archive.Buttons = function ArchiveButtons({ children }) {
-  return (
-    <HStack spacing={6} justify="center">
-      {children}
-    </HStack>
-  );
-};
+export const Buttons = ({ children }: ChildrenProps): ReactElement => (
+  <HStack spacing={6} justify="center">
+    {children}
+  </HStack>
+);
 
-Archive.PlayAgainButton = function ArchivePlayAgainButton({ storyId }) {
+export const PlayAgainButton = ({
+  storyId,
+}: PlayAgainButtonProps): ReactElement => {
   const { handlePlayArchiveStoryClick } = useStories();
 
   return (
@@ -191,7 +241,9 @@ Archive.PlayAgainButton = function ArchivePlayAgainButton({ storyId }) {
   );
 };
 
-Archive.DeleteFavoriteButton = function DeleteFavoriteButton({ storyDetails }) {
+export const DeleteFavoriteButton = ({
+  storyDetails,
+}: DeleteFavoriteButtonProps): ReactElement => {
   const { handleFavoriteClick } = useFavorite(storyDetails);
   const { setExpandedIdx } = useExpandedContext();
 
@@ -212,14 +264,12 @@ Archive.DeleteFavoriteButton = function DeleteFavoriteButton({ storyDetails }) {
   );
 };
 
-Archive.BackToGameButton = function ArchiveBackToGameButton() {
-  return (
-    <Box alignSelf="flex-start" fontSize={["14px", "16px"]}>
-      <Link href="/play" passHref>
-        <a>
-          <Icon as={RiArrowLeftSLine} h="1rem" w="1rem" /> Back to Game
-        </a>
-      </Link>
-    </Box>
-  );
-};
+export const BackToGameButton = (): ReactElement => (
+  <Box alignSelf="flex-start" fontSize={["14px", "16px"]}>
+    <Link href="/play" passHref>
+      <a>
+        <Icon as={RiArrowLeftSLine} h="1rem" w="1rem" /> Back to Game
+      </a>
+    </Link>
+  </Box>
+);

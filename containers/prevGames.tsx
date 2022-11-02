@@ -1,14 +1,12 @@
-import { Fragment, useRef, FC } from "react";
+import { Fragment, useRef, ReactElement } from "react";
 import { useInfiniteQuery } from "react-query";
 import { Divider, Text } from "@chakra-ui/react";
-import { Archive } from "@/components/Archive";
-import { Spinner } from "@/components/Spinner";
-import { FavoriteButton } from "@/components/FavoriteButton";
+import { Archive, FavoriteButton, Spinner } from "@/components";
 import { queryPrevGames } from "@/lib/db";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { useAuth } from "@/context/auth";
 
-export const PrevGamesContainer: FC = () => {
+export const PrevGamesContainer = (): ReactElement => {
   const { userId } = useAuth();
 
   const {
@@ -54,7 +52,7 @@ export const PrevGamesContainer: FC = () => {
                 </Archive.CardHeader>
                 <Archive.CardExpandedSection id={idx}>
                   <Divider mt={4} />
-                  <Archive.FullStory story={prevGame.storyHtml} />
+                  <Archive.Story story={prevGame.storyHtml} />
                   <Divider my={4} />
                   <Archive.Buttons>
                     <Archive.PlayAgainButton storyId={prevGame.storyId} />

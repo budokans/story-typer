@@ -1,4 +1,5 @@
 import { FieldValue } from "@firebase/firestore-types";
+import { ReactNode } from "react";
 
 export interface UserAuth {
   readonly uid: string;
@@ -58,4 +59,8 @@ export interface FavoriteBase {
 export interface Favorite extends FavoriteBase {
   readonly userId: User["uid"];
   readonly dateFavorited: string;
+}
+
+export interface ChildrenProps {
+  readonly children: ReactNode;
 }

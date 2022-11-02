@@ -1,16 +1,16 @@
-import { FC } from "react";
+import { ReactElement } from "react";
 import {
   Box,
   Flex,
   Link as ChakraLink,
-  Text,
+  Text as ChakraText,
   Icon,
   VisuallyHidden,
 } from "@chakra-ui/react";
 import { RiGithubFill } from "react-icons/ri";
-import { FooterCompound } from "./types/Footer.types";
+import { ChildrenProps } from "interfaces";
 
-export const Footer: FooterCompound = ({ children }) => {
+export const Footer = ({ children }: ChildrenProps): ReactElement => {
   return (
     <Container>
       <Inner>{children}</Inner>
@@ -18,7 +18,7 @@ export const Footer: FooterCompound = ({ children }) => {
   );
 };
 
-const Container: FC = ({ children }) => {
+const Container = ({ children }: ChildrenProps): ReactElement => {
   return (
     <Box as="footer" bg="white" w="full" position="absolute" bottom={0}>
       {children}
@@ -26,7 +26,7 @@ const Container: FC = ({ children }) => {
   );
 };
 
-const Inner: FC = ({ children }) => {
+const Inner = ({ children }: ChildrenProps): ReactElement => {
   return (
     <Flex
       h={[9, 9, 14]}
@@ -41,43 +41,33 @@ const Inner: FC = ({ children }) => {
   );
 };
 
-Footer.Text = function FooterText({ children }) {
-  return (
-    <Text color="blackAlpha.800" fontSize="clamp(0.75rem, 2vw, 1rem)">
-      {children}
-    </Text>
-  );
-};
+export const Text = ({ children }: ChildrenProps): ReactElement => (
+  <ChakraText color="blackAlpha.800" fontSize="clamp(0.75rem, 2vw, 1rem)">
+    {children}
+  </ChakraText>
+);
 
-Footer.NameLink = function FooterNameLink({ children }) {
-  return (
-    <ChakraLink
-      href="https://stevenwebster.co/"
-      isExternal
+export const NameLink = ({ children }: ChildrenProps): ReactElement => (
+  <ChakraLink
+    href="https://stevenwebster.co/"
+    isExternal
+    color="blackAlpha.800"
+    ml={1}
+    fontSize="clamp(0.75rem, 2vw, 1rem)"
+    fontWeight="semibold"
+  >
+    {children}
+  </ChakraLink>
+);
+
+export const GitHubLink = (): ReactElement => (
+  <ChakraLink href="https://github.com/budokans/story-typer" isExternal ml={2}>
+    <VisuallyHidden>Visit Steven&apos;s GitHub</VisuallyHidden>
+    <Icon
+      as={RiGithubFill}
+      h={[6, 6, 8]}
+      w={[6, 6, 8]}
       color="blackAlpha.800"
-      ml={1}
-      fontSize="clamp(0.75rem, 2vw, 1rem)"
-      fontWeight="semibold"
-    >
-      {children}
-    </ChakraLink>
-  );
-};
-
-Footer.GitHub = function FooterGitHub() {
-  return (
-    <ChakraLink
-      href="https://github.com/budokans/story-typer"
-      isExternal
-      ml={2}
-    >
-      <VisuallyHidden>Visit Steven&apos;s GitHub</VisuallyHidden>
-      <Icon
-        as={RiGithubFill}
-        h={[6, 6, 8]}
-        w={[6, 6, 8]}
-        color="blackAlpha.800"
-      />
-    </ChakraLink>
-  );
-};
+    />
+  </ChakraLink>
+);

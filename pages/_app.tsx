@@ -9,8 +9,9 @@ import "@fontsource/inter/700.css";
 import { theme } from "../theme";
 import { AuthProvider } from "@/context/auth";
 import { StoriesProvider } from "@/context/stories";
+import { ReactElement } from "react";
 
-const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
+const MyApp = ({ Component, pageProps }: AppProps): ReactElement => {
   const queryClient = new QueryClient();
 
   return (

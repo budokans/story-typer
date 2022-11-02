@@ -2,12 +2,12 @@ import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
 import { useAuth } from "@/context/auth";
 import { useUser } from "@/hooks/useUser";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { GoogleIcon } from "@/components/GoogleIcon";
+import { Header, Footer, GoogleIcon } from "@/components";
 import { getUserAverageScoresDisplay } from "@/lib/manageUser";
+import { ReactElement } from "react";
+import { ChildrenProps } from "interfaces";
 
-export const Page: React.FC = ({ children }) => {
+export const Page = ({ children }: ChildrenProps): ReactElement => {
   const { signOut, signInWithGoogle } = useAuth();
   const { data: user } = useUser();
   const userMenuItemStateStyles = {
@@ -18,7 +18,7 @@ export const Page: React.FC = ({ children }) => {
 
   return (
     <Box position="relative" minH="100vh" pb={[9, 9, 14]} bg="gray.100">
-      <Header>
+      <Header.Header>
         {user && (
           <>
             <Header.StatsContainer>
@@ -54,17 +54,17 @@ export const Page: React.FC = ({ children }) => {
             </MenuItem>
           )}
         </Header.UserMenu>
-      </Header>
+      </Header.Header>
 
       <Box as="main" maxW="930px" margin="0 auto" py={[4, 8]} px={[1, 4, 4, 0]}>
         {children}
       </Box>
 
-      <Footer>
+      <Footer.Footer>
         <Footer.Text>Created by</Footer.Text>
         <Footer.NameLink>Steven Webster</Footer.NameLink>
-        <Footer.GitHub />
-      </Footer>
+        <Footer.GitHubLink />
+      </Footer.Footer>
     </Box>
   );
 };

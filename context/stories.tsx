@@ -6,10 +6,10 @@ import {
   Dispatch,
   SetStateAction,
   useEffect,
-  FC,
+  ReactElement,
 } from "react";
 import { useProvideStories } from "@/hooks/useProvideStories";
-import { StoryWithId } from "interfaces";
+import { ChildrenProps, StoryWithId } from "interfaces";
 import { useUser } from "@/hooks/useUser";
 
 interface StoryContext {
@@ -22,7 +22,7 @@ interface StoryContext {
 
 const storiesContext = createContext<StoryContext | null>(null);
 
-export const StoriesProvider: FC = ({ children }) => {
+export const StoriesProvider = ({ children }: ChildrenProps): ReactElement => {
   const [gameCount, setGameCount] = useState(1);
   const { stories, isLoading, handlePlayArchiveStoryClick } =
     useProvideStories(gameCount);

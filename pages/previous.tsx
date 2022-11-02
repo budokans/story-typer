@@ -1,16 +1,18 @@
-import { useState, useEffect, FC } from "react";
+import { useState, useEffect, ReactElement } from "react";
 import { useRouter } from "next/router";
-import { DocHead } from "@/components/DocHead";
 import { useAuth } from "@/context/auth";
-import { Page } from "@/components/Page";
-import { Archive } from "@/components/Archive";
+import {
+  CenterContent,
+  Spinner,
+  DocHead,
+  Page,
+  Archive,
+  LoginRerouter,
+} from "@/components";
 import { PrevGamesContainer } from "@/containers/prevGames";
 import { FavoritesContainer } from "@/containers/favorites";
-import { LoginRerouter } from "@/components/LoginRerouter";
-import { Spinner } from "@/components/Spinner";
-import { CenterContent } from "@/components/CenterContent";
 
-const Previous: FC = () => {
+const Previous = (): ReactElement => {
   const { userId: userIsAuthorized, isLoading: isLoadingAuth } = useAuth();
   const [listType, setListType] = useState<"all" | "favorites">("all");
   const { query } = useRouter();
@@ -30,22 +32,25 @@ const Previous: FC = () => {
   ) : (
     <>
       <DocHead />
-      <Page>
+      <Page.Page>
         {userIsAuthorized ? (
-          <Archive>
+          <Archive.Archive>
             <Archive.BackToGameButton />
-            <Archive.PageTitle>Previously...</Archive.PageTitle>
-            <Archive.Toggles value={listType} onSetValue={handleToggleValue} />
+            <Archive.Header>Previously...</Archive.Header>
+            <Archive.Toggles
+              filter={listType}
+              onSetFilter={handleToggleValue}
+            />
             {listType === "all" ? (
               <PrevGamesContainer />
             ) : (
               <FavoritesContainer />
             )}
-          </Archive>
+          </Archive.Archive>
         ) : (
           <LoginRerouter />
         )}
-      </Page>
+      </Page.Page>
     </>
   );
 };

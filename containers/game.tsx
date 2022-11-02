@@ -1,12 +1,10 @@
-import { useEffect, useState, FC } from "react";
+import { useEffect, useState, ReactElement } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
-import { Game } from "@/components/Game";
-import { FavoriteButton } from "@/components/FavoriteButton";
+import { Game, FavoriteButton, CenterContent } from "@/components";
 import { useGame } from "@/hooks/useGame";
 import { useUser } from "@/hooks/useUser";
-import { CenterContent } from "@/components/CenterContent";
 
-export const GameContainer: FC = () => {
+export const GameContainer = (): ReactElement => {
   const {
     currentStory,
     onInitCountdown,
@@ -39,7 +37,7 @@ export const GameContainer: FC = () => {
 
   return (
     <CenterContent observeLayout>
-      <Game>
+      <Game.Game>
         {status === "pending" || !user ? (
           <Game.Skeleton isLargeViewport={isLargeViewport} />
         ) : (
@@ -84,10 +82,12 @@ export const GameContainer: FC = () => {
               />
             </Game.Pad>
 
-            {status === "idle" && <Game.Countdown>Ready</Game.Countdown>}
+            {status === "idle" && (
+              <Game.Countdown isActive={false}>Ready</Game.Countdown>
+            )}
 
             {status === "countdown" && (
-              <Game.Countdown active>{CountDown[countdown]}</Game.Countdown>
+              <Game.Countdown isActive>{CountDown[countdown]}</Game.Countdown>
             )}
 
             {(status === "inGame" || status === "complete") && (
@@ -98,7 +98,7 @@ export const GameContainer: FC = () => {
             )}
           </>
         )}
-      </Game>
+      </Game.Game>
     </CenterContent>
   );
 };

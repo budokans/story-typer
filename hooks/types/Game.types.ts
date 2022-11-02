@@ -2,14 +2,16 @@ import { StoryWithId } from "interfaces";
 import { ChangeEvent } from "react";
 import { Timer } from "./Timer.types";
 
+export type GameStatus =
+  | "pending"
+  | "idle"
+  | "countdown"
+  | "inGame"
+  | "complete"
+  | "outOfTime";
+
 export interface GameState {
-  readonly status:
-    | "pending"
-    | "idle"
-    | "countdown"
-    | "inGame"
-    | "complete"
-    | "outOfTime";
+  readonly status: GameStatus;
   readonly userError: boolean;
   readonly userInput: string;
   readonly wpm: number;

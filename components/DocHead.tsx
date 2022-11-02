@@ -1,6 +1,7 @@
 import Head from "next/head";
+import { ReactElement } from "react";
 
-export const DocHead: React.FC = () => {
+export const DocHead = (): ReactElement => {
   return (
     <Head>
       <title>Story Typer</title>

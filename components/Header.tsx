@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { ReactElement } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../public/story-typer-logo.png";
@@ -14,69 +14,61 @@ import {
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
 import { useUser } from "@/hooks/useUser";
-import { HeaderCompound } from "./types/Header.types";
+import { ChildrenProps } from "interfaces";
 
-export const Header: HeaderCompound = ({ children }) => {
-  return (
-    <Container>
-      <Inner>
-        <Logo />
-        {children}
-      </Inner>
-    </Container>
-  );
-};
-
-const Container: FC = ({ children }) => {
-  return (
-    <Box
-      as="nav"
-      position="relative"
-      zIndex="2"
-      bg="white"
-      borderTop="5px solid"
-      borderColor="brand.500"
-    >
+export const Header = ({ children }: ChildrenProps): ReactElement => (
+  <Container>
+    <Inner>
+      <Logo />
       {children}
-    </Box>
-  );
-};
+    </Inner>
+  </Container>
+);
 
-const Inner: FC = ({ children }) => {
-  return (
-    <Flex
-      as="ul"
-      align="center"
-      justify="space-between"
-      h={[9, 9, 14]}
-      px={[2, 4, 4, 0]}
-      maxW="930px"
-      margin="0 auto"
-    >
-      {children}
-    </Flex>
-  );
-};
+const Container = ({ children }: ChildrenProps): ReactElement => (
+  <Box
+    as="nav"
+    position="relative"
+    zIndex="2"
+    bg="white"
+    borderTop="5px solid"
+    borderColor="brand.500"
+  >
+    {children}
+  </Box>
+);
 
-const Logo: FC = () => {
-  return (
-    <Box
-      as="li"
-      mr="auto"
-      h={["1.85rem", "1.85rem", "3rem"]}
-      w={["1.85rem", "1.85rem", "3rem"]}
-      alignSelf="flex-start"
-    >
-      <Link href="/">
-        <a>
-          <Image src={logo} alt="Story Typer Logo" priority />
-        </a>
-      </Link>
-    </Box>
-  );
-};
+const Inner = ({ children }: ChildrenProps): ReactElement => (
+  <Flex
+    as="ul"
+    align="center"
+    justify="space-between"
+    h={[9, 9, 14]}
+    px={[2, 4, 4, 0]}
+    maxW="930px"
+    margin="0 auto"
+  >
+    {children}
+  </Flex>
+);
 
-Header.UserMenu = function HeaderUserMenu({ children }) {
+const Logo = (): ReactElement => (
+  <Box
+    as="li"
+    mr="auto"
+    h={["1.85rem", "1.85rem", "3rem"]}
+    w={["1.85rem", "1.85rem", "3rem"]}
+    alignSelf="flex-start"
+  >
+    <Link href="/">
+      <a>
+        <Image src={logo} alt="Story Typer Logo" priority />
+      </a>
+    </Link>
+  </Box>
+);
+
+export const UserMenu = ({ children }: ChildrenProps): ReactElement => {
   const { data: user } = useUser();
 
   return (
@@ -95,62 +87,52 @@ Header.UserMenu = function HeaderUserMenu({ children }) {
   );
 };
 
-Header.StatsContainer = function HeaderStatsContainer({ children }) {
-  return (
-    <Flex as="li" mr={[3, 3, 5]}>
-      {children}
-    </Flex>
-  );
-};
+export const StatsContainer = ({ children }: ChildrenProps): ReactElement => (
+  <Flex as="li" mr={[3, 3, 5]}>
+    {children}
+  </Flex>
+);
 
-Header.StatsType = function HeaderStatsType({ children }) {
-  return (
-    <Text
-      as="h3"
-      mr={2}
-      fontSize="clamp(0.75rem, 2.5vw, 1rem)"
-      fontWeight="medium"
+export const StatsType = ({ children }: ChildrenProps): ReactElement => (
+  <Text
+    as="h3"
+    mr={2}
+    fontSize="clamp(0.75rem, 2.5vw, 1rem)"
+    fontWeight="medium"
+  >
+    {children}
+  </Text>
+);
+
+export const Stat = ({ children }: ChildrenProps): ReactElement => (
+  <Text fontSize="clamp(0.75rem, 2.5vw, 1rem)" fontWeight="semibold">
+    {children}
+  </Text>
+);
+
+export const Archive = (): ReactElement => (
+  <Box
+    as="li"
+    mr={[3, 3, 5]}
+    fontSize="clamp(0.75rem, 2.5vw, 1rem)"
+    fontWeight="medium"
+  >
+    <Link href="/previous">Previous</Link>
+  </Box>
+);
+
+export const Favorites = (): ReactElement => (
+  <Box as="li" mr={[3, 3, 5]}>
+    <Link
+      href={{
+        pathname: "/previous",
+        query: { favorites: true },
+      }}
+      passHref
     >
-      {children}
-    </Text>
-  );
-};
-
-Header.Stat = function HeaderStat({ children }) {
-  return (
-    <Text fontSize="clamp(0.75rem, 2.5vw, 1rem)" fontWeight="semibold">
-      {children}
-    </Text>
-  );
-};
-
-Header.Archive = function HeaderArchive() {
-  return (
-    <Box
-      as="li"
-      mr={[3, 3, 5]}
-      fontSize="clamp(0.75rem, 2.5vw, 1rem)"
-      fontWeight="medium"
-    >
-      <Link href="/previous">Previous</Link>
-    </Box>
-  );
-};
-
-Header.Favorites = function HeaderFavorites() {
-  return (
-    <Box as="li" mr={[3, 3, 5]}>
-      <Link
-        href={{
-          pathname: "/previous",
-          query: { favorites: true },
-        }}
-        passHref
-      >
-        <a>
-          <Icon as={RiStarFill} h={[7, 7, 8]} w={[7, 7, 8]} />
-        </a>
-      </Link>
-    </Box>
-  );
-};
+      <a>
+        <Icon as={RiStarFill} h={[7, 7, 8]} w={[7, 7, 8]} />
+      </a>
+    </Link>
+  </Box>
+);

@@ -3,12 +3,19 @@ import { useRouter } from "next/router";
 import { Box } from "@chakra-ui/react";
 import { getStoriesCount } from "@/lib/db-admin";
 import { useAuth } from "@/context/auth";
-import { DocHead } from "@/components/DocHead";
-import { Page } from "@/components/Page";
-import { Home } from "@/components/Home";
-import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
-import { CountUp } from "@/components/CountUp";
-import { GoogleIcon } from "@/components/GoogleIcon";
+import {
+  DocHead,
+  Page,
+  Home,
+  CountUp,
+  FiftyWordStoriesLink,
+  GoogleIcon,
+} from "@/components";
+import { ReactElement } from "react";
+
+interface IndexProps {
+  readonly storiesCount: number;
+}
 
 export const getStaticProps: GetStaticProps = async () => {
   const storiesCount = await getStoriesCount();
@@ -18,7 +25,7 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
+const Index = ({ storiesCount }: IndexProps): ReactElement => {
   const { userId, signInWithGoogle } = useAuth();
   const userIsLoggedIn = !!userId;
   const router = useRouter();
@@ -26,8 +33,8 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
   return (
     <>
       <DocHead />
-      <Page>
-        <Home>
+      <Page.Page>
+        <Home.Home>
           <Home.Brand />
 
           <Home.HeadlinesWrapper>
@@ -52,14 +59,14 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
 
           <Box pt={2} pb={4}>
             {!userIsLoggedIn ? (
-              <Home.PlayBtn onClick={() => signInWithGoogle()}>
+              <Home.PlayButton onClick={() => signInWithGoogle()}>
                 <GoogleIcon />
                 Continue with Google
-              </Home.PlayBtn>
+              </Home.PlayButton>
             ) : (
-              <Home.PlayBtn onClick={() => router.push("/play")}>
+              <Home.PlayButton onClick={() => router.push("/play")}>
                 Play Now
-              </Home.PlayBtn>
+              </Home.PlayButton>
             )}
           </Box>
 
@@ -72,8 +79,8 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
               <Home.Feature>Keep track of your top scores</Home.Feature>
             </Home.Features>
           </Home.FeaturesWrapper>
-        </Home>
-      </Page>
+        </Home.Home>
+      </Page.Page>
     </>
   );
 };
