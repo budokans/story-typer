@@ -1,6 +1,6 @@
 import { useState, useEffect, ReactElement } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "@/context/auth";
+import { useAuthContext } from "@/context/auth";
 import {
   CenterContent,
   Spinner,
@@ -13,7 +13,8 @@ import { PrevGamesContainer } from "@/containers/prevGames";
 import { FavoritesContainer } from "@/containers/favorites";
 
 const Previous = (): ReactElement => {
-  const { userId: userIsAuthorized, isLoading: isLoadingAuth } = useAuth();
+  const { userId: userIsAuthorized, isLoading: isLoadingAuth } =
+    useAuthContext();
   const [listType, setListType] = useState<"all" | "favorites">("all");
   const { query } = useRouter();
 

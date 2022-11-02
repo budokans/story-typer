@@ -6,8 +6,10 @@ import { User } from "../interfaces";
 import { AuthReducer, initialAuthState } from "./reducers/AuthReducer";
 import { ProvideAuth } from "./types/ProvideAuth.types";
 
-// This hook is called in @context/auth. Its value is then passed to the authProvider and thereby accessible via the useAuth() hook.
-
+/**
+ *  This hook is called in AuthProvider. Its value is then passed
+ *  to down via authContext and thereby accessible with the useAuthContext() hook.
+ */
 export const useProvideAuth = (): ProvideAuth => {
   const [state, dispatch] = useReducer(AuthReducer, initialAuthState);
 
@@ -21,7 +23,9 @@ export const useProvideAuth = (): ProvideAuth => {
     }
   }, []);
 
-  // If the user already exists, merge the auth data returned from signInWithGoogle() with the stored non-auth user data, otherwise return a new user object with those non-auth data fields initialised.
+  // If the user already exists, merge the auth data returned from
+  // signInWithGoogle() with the stored non-auth user data, otherwise
+  // return a new user object with those non-auth data fields initialised.
   const formatUser = async (user: FirebaseUser): Promise<User> => {
     const storedUserData = await queryUser(user.uid);
     const userInitFields = {

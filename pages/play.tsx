@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/auth";
+import { useAuthContext } from "@/context/auth";
 import { GameContainer } from "@/containers/game";
 import {
   CenterContent,
@@ -10,7 +10,8 @@ import {
 import { ReactElement } from "react";
 
 const Play = (): ReactElement => {
-  const { userId: userIsAuthorized, isLoading: isLoadingAuth } = useAuth();
+  const { userId: userIsAuthorized, isLoading: isLoadingAuth } =
+    useAuthContext();
 
   return isLoadingAuth ? (
     <CenterContent>

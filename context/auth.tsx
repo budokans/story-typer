@@ -1,17 +1,30 @@
-import { Context, createContext, useContext, ReactElement } from "react";
+import { createContext, useContext, ReactElement } from "react";
+import { option as O, function as F } from "fp-ts";
 import { useProvideAuth } from "@/hooks/useProvideAuth";
 import { ProvideAuth } from "@/hooks/types/ProvideAuth.types";
 import { ChildrenProps } from "interfaces";
 
-export type AuthContext = ProvideAuth | null;
-
-const authContext = createContext<ProvideAuth | null>(null);
+const authContext = createContext<O.Option<ProvideAuth>>(O.none);
 
 export const AuthProvider = ({ children }: ChildrenProps): ReactElement => {
   const auth = useProvideAuth();
-  return <authContext.Provider value={auth}>{children}</authContext.Provider>;
+  return (
+    <authContext.Provider value={O.some(auth)}>{children}</authContext.Provider>
+  );
 };
 
-export const useAuth = (): ProvideAuth => {
-  return useContext(authContext as Context<ProvideAuth>);
+export const useAuthContext = (): ProvideAuth => {
+  const context = useContext(authContext);
+
+  return F.pipe(
+    context,
+    O.match(
+      () => {
+        throw new Error(
+          "useAuthContext called where authContext does not exist"
+        );
+      },
+      (context) => context
+    )
+  );
 };

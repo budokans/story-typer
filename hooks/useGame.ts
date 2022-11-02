@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { UseGame } from "./types/Game.types";
 import { GameReducer, initialGameState } from "./reducers/GameReducer";
 import { useUser } from "@/hooks/useUser";
-import { useStories } from "@/context/stories";
+import { useStoriesContext } from "@/context/stories";
 import { useCountdown } from "./useCountdown";
 import { useTimer } from "./useTimer";
 import { PrevGame, StoryWithId, User } from "interfaces";
@@ -29,7 +29,7 @@ export const useGame = (): UseGame => {
     isLoading: storiesAreLoading,
     gameCount,
     setGameCount,
-  } = useStories();
+  } = useStoriesContext();
   const count = useCountdown(state.status);
   const timer = useTimer(state.status, TIME_LIMIT);
   const currentStory = stories[gameCount - 1];

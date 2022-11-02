@@ -2,7 +2,7 @@ import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { Box } from "@chakra-ui/react";
 import { getStoriesCount } from "@/lib/db-admin";
-import { useAuth } from "@/context/auth";
+import { useAuthContext } from "@/context/auth";
 import {
   DocHead,
   Page,
@@ -26,7 +26,7 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Index = ({ storiesCount }: IndexProps): ReactElement => {
-  const { userId, signInWithGoogle } = useAuth();
+  const { userId, signInWithGoogle } = useAuthContext();
   const userIsLoggedIn = !!userId;
   const router = useRouter();
 

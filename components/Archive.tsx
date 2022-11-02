@@ -1,12 +1,4 @@
-import {
-  Context,
-  createContext,
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  useContext,
-  useState,
-} from "react";
+import { ReactElement } from "react";
 import {
   Container as ChakraContainer,
   Heading,
@@ -30,27 +22,19 @@ import {
 } from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
-import { useStories } from "@/context/stories";
+import { useStoriesContext } from "@/context/stories";
 import { useFavorite } from "@/hooks/useFavorite";
 import { ChildrenProps, FavoriteBase } from "interfaces";
+import {
+  CardIsExpandedProvider,
+  useCardIsExpandedContext,
+} from "@/context/cardIsExpanded";
 
 type ArchiveFilter = "all" | "favorites";
 
 interface TogglesProps {
   readonly filter: ArchiveFilter;
   readonly onSetFilter: (filter: ArchiveFilter) => void;
-}
-
-interface CardHeaderProps {
-  readonly id: number;
-}
-
-interface CardExpandedSectionProps {
-  readonly id: number;
-}
-
-interface CloseCardIconProps {
-  readonly id: number;
 }
 
 interface CardDateProps {
@@ -68,16 +52,6 @@ interface PlayAgainButtonProps {
 interface DeleteFavoriteButtonProps {
   readonly storyDetails: FavoriteBase;
 }
-
-interface ExpandedContext {
-  readonly expandedIdx: number | null;
-  readonly setExpandedIdx: Dispatch<SetStateAction<number | null>>;
-}
-
-const expandedContext = createContext<ExpandedContext | null>(null);
-
-const useExpandedContext = (): ExpandedContext =>
-  useContext(expandedContext as Context<ExpandedContext>);
 
 export const Archive = ({ children }: ChildrenProps): ReactElement => {
   return <Container>{children}</Container>;
@@ -119,10 +93,8 @@ export const Toggles = ({
 );
 
 export const Card = ({ children }: ChildrenProps): ReactElement => {
-  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
-
   return (
-    <expandedContext.Provider value={{ expandedIdx, setExpandedIdx }}>
+    <CardIsExpandedProvider>
       <Box
         w={["100vw", "100%"]}
         bg="white"
@@ -133,22 +105,18 @@ export const Card = ({ children }: ChildrenProps): ReactElement => {
       >
         {children}
       </Box>
-    </expandedContext.Provider>
+    </CardIsExpandedProvider>
   );
 };
 
-export const CardHeader = ({
-  id,
-  children,
-}: CardHeaderProps & ChildrenProps): ReactElement => {
-  const { expandedIdx, setExpandedIdx } = useExpandedContext();
-  const isExpanded = expandedIdx === id;
+export const CardHeader = ({ children }: ChildrenProps): ReactElement => {
+  const { isExpanded, setIsExpanded } = useCardIsExpandedContext();
 
   return (
     <Box
       role="button"
       aria-role={`${isExpanded ? "Hide" : "Show"} game details`}
-      onClick={() => (isExpanded ? setExpandedIdx(null) : setExpandedIdx(id))}
+      onClick={() => (isExpanded ? setIsExpanded(false) : setIsExpanded(true))}
       position="relative"
     >
       <header>{children}</header>
@@ -175,11 +143,8 @@ export const CardDate = ({ dateString }: CardDateProps): ReactElement => {
   );
 };
 
-export const CloseCardIcon = ({
-  id,
-}: CloseCardIconProps): ReactElement | null => {
-  const { expandedIdx } = useExpandedContext();
-  const isExpanded = expandedIdx === id;
+export const CloseCardIcon = (): ReactElement | null => {
+  const { isExpanded } = useCardIsExpandedContext();
 
   return isExpanded ? (
     <Icon
@@ -195,11 +160,9 @@ export const CloseCardIcon = ({
 };
 
 export const CardExpandedSection = ({
-  id,
   children,
-}: CardExpandedSectionProps & ChildrenProps): ReactElement | null => {
-  const { expandedIdx } = useExpandedContext();
-  const isExpanded = expandedIdx === id;
+}: ChildrenProps): ReactElement | null => {
+  const { isExpanded } = useCardIsExpandedContext();
 
   return isExpanded ? <Box>{children}</Box> : null;
 };
@@ -222,7 +185,7 @@ export const Buttons = ({ children }: ChildrenProps): ReactElement => (
 export const PlayAgainButton = ({
   storyId,
 }: PlayAgainButtonProps): ReactElement => {
-  const { handlePlayArchiveStoryClick } = useStories();
+  const { handlePlayArchiveStoryClick } = useStoriesContext();
 
   return (
     <IconButton
@@ -245,7 +208,7 @@ export const DeleteFavoriteButton = ({
   storyDetails,
 }: DeleteFavoriteButtonProps): ReactElement => {
   const { handleFavoriteClick } = useFavorite(storyDetails);
-  const { setExpandedIdx } = useExpandedContext();
+  const { setIsExpanded } = useCardIsExpandedContext();
 
   return (
     <IconButton
@@ -258,7 +221,7 @@ export const DeleteFavoriteButton = ({
       color="blackAlpha.800"
       onClick={() => {
         handleFavoriteClick();
-        setExpandedIdx(null);
+        setIsExpanded(false);
       }}
     />
   );

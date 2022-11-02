@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
-import { useAuth } from "@/context/auth";
+import { useAuthContext } from "@/context/auth";
 import { useUser } from "@/hooks/useUser";
 import { Header, Footer, GoogleIcon } from "@/components";
 import { getUserAverageScoresDisplay } from "@/lib/manageUser";
@@ -8,7 +8,7 @@ import { ReactElement } from "react";
 import { ChildrenProps } from "interfaces";
 
 export const Page = ({ children }: ChildrenProps): ReactElement => {
-  const { signOut, signInWithGoogle } = useAuth();
+  const { signOut, signInWithGoogle } = useAuthContext();
   const { data: user } = useUser();
   const userMenuItemStateStyles = {
     _hover: { bg: "blackAlpha.600" },

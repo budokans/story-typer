@@ -1,5 +1,4 @@
 import {
-  Context,
   createContext,
   useContext,
   useState,
@@ -8,6 +7,7 @@ import {
   useEffect,
   ReactElement,
 } from "react";
+import { option as O, function as F } from "fp-ts";
 import { useProvideStories } from "@/hooks/useProvideStories";
 import { ChildrenProps, StoryWithId } from "interfaces";
 import { useUser } from "@/hooks/useUser";
@@ -20,7 +20,7 @@ interface StoryContext {
   readonly handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
 }
 
-const storiesContext = createContext<StoryContext | null>(null);
+const storiesContext = createContext<O.Option<StoryContext>>(O.none);
 
 export const StoriesProvider = ({ children }: ChildrenProps): ReactElement => {
   const [gameCount, setGameCount] = useState(1);
@@ -37,19 +37,31 @@ export const StoriesProvider = ({ children }: ChildrenProps): ReactElement => {
 
   return (
     <storiesContext.Provider
-      value={{
+      value={O.some({
         stories,
         isLoading,
         gameCount,
         setGameCount,
         handlePlayArchiveStoryClick,
-      }}
+      })}
     >
       {children}
     </storiesContext.Provider>
   );
 };
 
-export const useStories = (): StoryContext => {
-  return useContext(storiesContext as Context<StoryContext>);
+export const useStoriesContext = (): StoryContext => {
+  const context = useContext(storiesContext);
+
+  return F.pipe(
+    context,
+    O.match(
+      () => {
+        throw new Error(
+          "useStoriesContext was called where storiesContext does not exist."
+        );
+      },
+      (context) => context
+    )
+  );
 };

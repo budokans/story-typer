@@ -4,10 +4,10 @@ import { Divider, Text } from "@chakra-ui/react";
 import { Archive, Spinner } from "@/components";
 import { queryFavorites } from "@/lib/db";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import { useAuth } from "@/context/auth";
+import { useAuthContext } from "@/context/auth";
 
 export const FavoritesContainer = (): ReactElement => {
-  const { userId } = useAuth();
+  const { userId } = useAuthContext();
   const {
     data,
     error,
@@ -43,12 +43,12 @@ export const FavoritesContainer = (): ReactElement => {
           <Fragment key={pageIdx}>
             {page.favorites.map((favorite, idx) => (
               <Archive.Card key={idx}>
-                <Archive.CardHeader id={idx}>
+                <Archive.CardHeader>
                   <Archive.CardTitle>{favorite.storyTitle}</Archive.CardTitle>
                   <Archive.CardDate dateString={favorite.dateFavorited} />
-                  <Archive.CloseCardIcon id={idx} />
+                  <Archive.CloseCardIcon />
                 </Archive.CardHeader>
-                <Archive.CardExpandedSection id={idx}>
+                <Archive.CardExpandedSection>
                   <Divider mt={4} />
                   <Archive.Story story={favorite.storyHtml} />
                   <Divider my={4} />

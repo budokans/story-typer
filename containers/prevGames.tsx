@@ -4,10 +4,10 @@ import { Divider, Text } from "@chakra-ui/react";
 import { Archive, FavoriteButton, Spinner } from "@/components";
 import { queryPrevGames } from "@/lib/db";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import { useAuth } from "@/context/auth";
+import { useAuthContext } from "@/context/auth";
 
 export const PrevGamesContainer = (): ReactElement => {
-  const { userId } = useAuth();
+  const { userId } = useAuthContext();
 
   const {
     data,
@@ -42,15 +42,15 @@ export const PrevGamesContainer = (): ReactElement => {
       {data ? (
         data.pages.map((page, pageIdx) => (
           <Fragment key={pageIdx}>
-            {page.prevGames.map((prevGame, idx) => (
-              <Archive.Card key={idx}>
-                <Archive.CardHeader id={idx}>
+            {page.prevGames.map((prevGame) => (
+              <Archive.Card key={prevGame.storyId}>
+                <Archive.CardHeader>
                   <Archive.CardTitle>{prevGame.storyTitle}</Archive.CardTitle>
                   <Archive.CardScore>{prevGame.score}</Archive.CardScore>
                   <Archive.CardDate dateString={prevGame.datePlayed} />
-                  <Archive.CloseCardIcon id={idx} />
+                  <Archive.CloseCardIcon />
                 </Archive.CardHeader>
-                <Archive.CardExpandedSection id={idx}>
+                <Archive.CardExpandedSection>
                   <Divider mt={4} />
                   <Archive.Story story={prevGame.storyHtml} />
                   <Divider my={4} />
