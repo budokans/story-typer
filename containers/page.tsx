@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
 import { useAuthContext } from "@/context/auth";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks";
 import { Header, Footer, GoogleIcon } from "@/components";
 import { getUserAverageScoresDisplay } from "@/lib/manageUser";
 import { ReactElement } from "react";

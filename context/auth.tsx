@@ -1,19 +1,18 @@
 import { createContext, useContext, ReactElement } from "react";
 import { option as O, function as F } from "fp-ts";
-import { useProvideAuth } from "@/hooks/useProvideAuth";
-import { ProvideAuth } from "@/hooks/types/ProvideAuth.types";
+import { ProvideAuth } from "@/hooks";
 import { ChildrenProps } from "interfaces";
 
-const authContext = createContext<O.Option<ProvideAuth>>(O.none);
+const authContext = createContext<O.Option<ProvideAuth.ProvideAuth>>(O.none);
 
 export const AuthProvider = ({ children }: ChildrenProps): ReactElement => {
-  const auth = useProvideAuth();
+  const auth = ProvideAuth.useProvideAuth();
   return (
     <authContext.Provider value={O.some(auth)}>{children}</authContext.Provider>
   );
 };
 
-export const useAuthContext = (): ProvideAuth => {
+export const useAuthContext = (): ProvideAuth.ProvideAuth => {
   const context = useContext(authContext);
 
   return F.pipe(

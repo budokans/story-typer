@@ -1,6 +1,6 @@
 import { IconButton } from "@chakra-ui/button";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
-import { useFavorite } from "@/hooks/useFavorite";
+import { useFavorite } from "@/hooks";
 import { FavoriteBase } from "interfaces";
 import { ReactElement } from "react";
 

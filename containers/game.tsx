@@ -1,8 +1,7 @@
 import { useEffect, useState, ReactElement } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { Game, FavoriteButton, CenterContent } from "@/components";
-import { useGame } from "@/hooks/useGame";
-import { useUser } from "@/hooks/useUser";
+import { useGame, useUser } from "@/hooks";
 
 export const GameContainer = (): ReactElement => {
   const {

@@ -1,10 +1,9 @@
-import { GameState } from "@/hooks/types/Game.types";
 import { User, StoryWithId } from "interfaces";
 
 export const createPostWinUser = (
   user: User,
   story: StoryWithId,
-  score: GameState["wpm"]
+  score: number
 ): User => {
   const updatedPersonalBest =
     !user.personalBest || score > user.personalBest ? score : user.personalBest;
@@ -72,7 +71,7 @@ const getOldestDate = (
 
 const updateUserLastTenScores = (
   scores: User["lastTenScores"],
-  newScore: GameState["wpm"]
+  newScore: number
 ) => {
   return scores.length < 10
     ? [newScore, ...scores]

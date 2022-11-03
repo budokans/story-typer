@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { queryStories, queryStory } from "@/lib/db";
-import { useUser } from "@/hooks/useUser";
 import { StoryWithId, User } from "interfaces";
-import { ProvideStories } from "./types/ProvideStories.types";
+import { useUser } from "@/hooks";
+
+interface ProvideStories {
+  readonly stories: readonly StoryWithId[];
+  readonly isLoading: boolean;
+  readonly handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
+}
 
 export const useProvideStories = (gameCount: number): ProvideStories => {
   const { data: user } = useUser();

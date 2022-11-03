@@ -5,10 +5,9 @@
     "baseUrl": ".",
     "paths": {
       "@/lib/*": ["lib/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/components/*": ["components/*"],
+      "@/hooks": ["hooks/index.ts"],
+      "@/reducers": ["hooks/reducers/index.ts"],
       "@/components": ["components/index.ts"],
-      "@/containers/*": ["containers/*"],
       "@/containers": ["containers/index.ts"],
       "@/context/*": ["context/*"],
     },

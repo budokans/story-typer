@@ -8,9 +8,8 @@ import {
   ReactElement,
 } from "react";
 import { option as O, function as F } from "fp-ts";
-import { useProvideStories } from "@/hooks/useProvideStories";
+import { useProvideStories, useUser } from "@/hooks";
 import { ChildrenProps, StoryWithId } from "interfaces";
-import { useUser } from "@/hooks/useUser";
 
 interface StoryContext {
   readonly stories: readonly StoryWithId[];

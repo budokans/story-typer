@@ -1,6 +1,33 @@
-import { GameAction, GameState } from "../types/Game.types";
+export type GameStatus =
+  | "pending"
+  | "idle"
+  | "countdown"
+  | "inGame"
+  | "complete"
+  | "outOfTime";
 
-export const initialGameState: GameState = {
+export interface GameState {
+  readonly status: GameStatus;
+  readonly userError: boolean;
+  readonly userInput: string;
+  readonly wpm: number;
+}
+
+export type GameAction =
+  | { readonly type: "storiesLoading" }
+  | { readonly type: "storiesLoaded" }
+  | { readonly type: "startCountdown" }
+  | { readonly type: "countdownTick" }
+  | { readonly type: "countdownComplete" }
+  | { readonly type: "inputValueChange"; readonly inputValue: string }
+  | { readonly type: "errorFree" }
+  | { readonly type: "userTypingError" }
+  | { readonly type: "win"; readonly wpm: number }
+  | { readonly type: "reset" }
+  | { readonly type: "next" }
+  | { readonly type: "outOfTime" };
+
+export const initialState: GameState = {
   status: "pending",
   userError: false,
   userInput: "",
@@ -79,7 +106,7 @@ export const GameReducer = (
     }
     case "next": {
       return {
-        ...initialGameState,
+        ...initialState,
         status: "idle",
       };
     }

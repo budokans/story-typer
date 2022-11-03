@@ -1,19 +1,34 @@
 import { ChangeEvent, useCallback, useEffect, useReducer } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { UseGame } from "./types/Game.types";
-import { GameReducer, initialGameState } from "./reducers/GameReducer";
-import { useUser } from "@/hooks/useUser";
+import { GameState } from "@/reducers";
+import { useUser, useCountdown, Timer } from "@/hooks";
 import { useStoriesContext } from "@/context/stories";
-import { useCountdown } from "./useCountdown";
-import { useTimer } from "./useTimer";
 import { PrevGame, StoryWithId, User } from "interfaces";
 import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
 import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
 
+export interface UseGame {
+  readonly currentStory: StoryWithId;
+  readonly status: GameState.GameStatus;
+  readonly inputValue: string;
+  readonly userError: boolean;
+  readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  readonly onInitCountdown: () => void;
+  readonly countdown: number;
+  readonly timer: Timer.Timer;
+  readonly wpm: number;
+  readonly onResetClick: () => void;
+  readonly onSkipClick: () => void;
+  readonly onNextClick: () => void;
+}
+
 const TIME_LIMIT = 120;
 
 export const useGame = (): UseGame => {
-  const [state, dispatch] = useReducer(GameReducer, initialGameState);
+  const [state, dispatch] = useReducer(
+    GameState.GameReducer,
+    GameState.initialState
+  );
   const { data: user } = useUser();
   const queryClient = useQueryClient();
   const userWinMutation = useMutation(
@@ -31,7 +46,7 @@ export const useGame = (): UseGame => {
     setGameCount,
   } = useStoriesContext();
   const count = useCountdown(state.status);
-  const timer = useTimer(state.status, TIME_LIMIT);
+  const timer = Timer.useTimer(state.status, TIME_LIMIT);
   const currentStory = stories[gameCount - 1];
 
   // Listen for when stories have been loaded into game state and initialise idle state.

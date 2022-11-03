@@ -3,7 +3,7 @@ import { useInfiniteQuery } from "react-query";
 import { Divider, Text } from "@chakra-ui/react";
 import { Archive, Spinner } from "@/components";
 import { queryFavorites } from "@/lib/db";
-import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { useIntersectionObserver } from "@/hooks";
 import { useAuthContext } from "@/context/auth";
 
 export const FavoritesContainer = (): ReactElement => {

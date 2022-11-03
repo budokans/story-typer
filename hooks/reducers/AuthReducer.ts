@@ -1,6 +1,15 @@
-import { AuthAction, AuthState } from "../types/ProvideAuth.types";
+import { User } from "interfaces";
 
-export const initialAuthState: AuthState = {
+interface AuthState {
+  readonly status: "idle" | "pending" | "resolved" | "rejected";
+  readonly userId: User["uid"] | null;
+}
+
+type AuthAction =
+  | { readonly type: "success"; readonly userId: User["uid"] | null }
+  | { readonly type: "started" };
+
+export const initialState: AuthState = {
   status: "idle",
   userId: null,
 };

@@ -23,7 +23,7 @@ import {
 import { parseISO, formatDistance } from "date-fns";
 import parse from "html-react-parser";
 import { useStoriesContext } from "@/context/stories";
-import { useFavorite } from "@/hooks/useFavorite";
+import { useFavorite } from "@/hooks";
 import { ChildrenProps, FavoriteBase } from "interfaces";
 import {
   CardIsExpandedProvider,

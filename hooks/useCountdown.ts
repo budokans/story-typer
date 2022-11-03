@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { GameState } from "./types/Game.types";
+import { GameState } from "@/reducers";
 
-export const useCountdown = (status: GameState["status"]): number => {
+export const useCountdown = (status: GameState.GameStatus): number => {
   const [count, setCount] = useState(2);
 
   // Listen for countdown state and initiate countdown

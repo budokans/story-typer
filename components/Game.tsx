@@ -18,8 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
-import { GameStatus } from "@/hooks/types/Game.types";
 import { ChildrenProps } from "interfaces";
+import { GameState } from "@/reducers";
 
 interface SkeletonProps {
   readonly isLargeViewport: boolean;
@@ -34,7 +34,7 @@ interface InputProps {
   readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   readonly value: string;
   readonly error: boolean;
-  readonly gameStatus: GameStatus;
+  readonly gameStatus: GameState.GameStatus;
 }
 
 interface BtnSmProps {
@@ -47,7 +47,7 @@ interface CountdownProps {
 }
 
 interface StopWatchProps {
-  readonly gameStatus: GameStatus;
+  readonly gameStatus: GameState.GameStatus;
 }
 
 export const Game = ({ children }: ChildrenProps): ReactElement => {
