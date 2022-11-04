@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactElement } from "react";
+import { ReactElement } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { Game, FavoriteButton, CenterContent } from "@/components";
 import { useGame, useUser } from "@/hooks";
@@ -20,13 +20,6 @@ export const GameContainer = (): ReactElement => {
   } = useGame();
   const { data: user } = useUser();
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
-  const [isLargeViewport, setIsLargeViewport] = useState(false);
-
-  useEffect(() => {
-    viewportIsWiderThan768
-      ? setIsLargeViewport(true)
-      : setIsLargeViewport(false);
-  }, [viewportIsWiderThan768]);
 
   enum CountDown {
     "Go!",
@@ -38,10 +31,10 @@ export const GameContainer = (): ReactElement => {
     <CenterContent observeLayout>
       <Game.Game>
         {status === "pending" || !user ? (
-          <Game.Skeleton isLargeViewport={isLargeViewport} />
+          <Game.Skeleton isLargeViewport={viewportIsWiderThan768} />
         ) : (
           <>
-            <Game.StoryHeader isLargeViewport={isLargeViewport}>
+            <Game.StoryHeader isLargeViewport={viewportIsWiderThan768}>
               {currentStory.title}
             </Game.StoryHeader>
 
@@ -74,8 +67,8 @@ export const GameContainer = (): ReactElement => {
                 />
               )}
 
-              <Game.BtnSm type="restart" onClick={onResetClick} />
-              <Game.BtnSm
+              <Game.NewGameButton type="restart" onClick={onResetClick} />
+              <Game.NewGameButton
                 type="new"
                 onClick={status === "complete" ? onNextClick : onSkipClick}
               />

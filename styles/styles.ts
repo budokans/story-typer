@@ -23,3 +23,9 @@ export const mainPaddingYDesktop = 32;
 
 export const totalMainPaddingY = (isWideViewport: boolean): number =>
   isWideViewport ? mainPaddingYDesktop * 2 : mainPaddingYMobile * 2;
+
+export const userMenuItemStateStyles = {
+  _hover: { bg: "blackAlpha.600" },
+  _active: { bg: "blackAlpha.300" },
+  _focus: { bg: "blackAlpha.300" },
+};

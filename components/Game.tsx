@@ -1,10 +1,4 @@
-import {
-  MutableRefObject,
-  useEffect,
-  useRef,
-  ReactElement,
-  ChangeEvent,
-} from "react";
+import { useEffect, useRef, ReactElement, ChangeEvent } from "react";
 import {
   Container as ChakraContainer,
   Flex,
@@ -21,46 +15,19 @@ import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 import { ChildrenProps } from "interfaces";
 import { GameState } from "@/reducers";
 
+export const Game = ({ children }: ChildrenProps): ReactElement => (
+  <Container>{children}</Container>
+);
+
+const Container = ({ children }: ChildrenProps) => (
+  <ChakraContainer px={[2, 6]}>
+    <VStack spacing={[4, 6, 8]}>{children}</VStack>
+  </ChakraContainer>
+);
+
 interface SkeletonProps {
   readonly isLargeViewport: boolean;
 }
-
-interface StoryHeaderProps {
-  readonly isLargeViewport: boolean;
-}
-
-interface InputProps {
-  readonly onInputClick: () => void;
-  readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  readonly value: string;
-  readonly error: boolean;
-  readonly gameStatus: GameState.GameStatus;
-}
-
-interface BtnSmProps {
-  readonly type: "restart" | "new";
-  readonly onClick: () => void;
-}
-
-interface CountdownProps {
-  readonly isActive: boolean;
-}
-
-interface StopWatchProps {
-  readonly gameStatus: GameState.GameStatus;
-}
-
-export const Game = ({ children }: ChildrenProps): ReactElement => {
-  return <Container>{children}</Container>;
-};
-
-const Container = ({ children }: ChildrenProps) => {
-  return (
-    <ChakraContainer px={[2, 6]}>
-      <VStack spacing={[4, 6, 8]}>{children}</VStack>
-    </ChakraContainer>
-  );
-};
 
 export const Skeleton = ({ isLargeViewport }: SkeletonProps): ReactElement => (
   <>
@@ -94,6 +61,10 @@ export const Skeleton = ({ isLargeViewport }: SkeletonProps): ReactElement => (
   </>
 );
 
+interface StoryHeaderProps {
+  readonly isLargeViewport: boolean;
+}
+
 export const StoryHeader = ({
   isLargeViewport,
   children,
@@ -121,6 +92,14 @@ export const Pad = ({ children }: ChildrenProps): ReactElement => (
   </Flex>
 );
 
+interface InputProps {
+  readonly onInputClick: () => void;
+  readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  readonly value: string;
+  readonly error: boolean;
+  readonly gameStatus: GameState.GameStatus;
+}
+
 export const Input = ({
   onInputClick,
   onInputChange,
@@ -131,8 +110,7 @@ export const Input = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    const input = inputRef as MutableRefObject<HTMLInputElement>;
-    gameStatus === "inGame" && input.current.focus();
+    gameStatus === "inGame" && inputRef?.current?.focus();
   }, [gameStatus]);
 
   return (
@@ -164,7 +142,15 @@ export const ErrorAlert = (): ReactElement => (
   />
 );
 
-export const BtnSm = ({ type, onClick }: BtnSmProps): ReactElement => (
+interface NewGameButtonProps {
+  readonly type: "restart" | "new";
+  readonly onClick: () => void;
+}
+
+export const NewGameButton = ({
+  type,
+  onClick,
+}: NewGameButtonProps): ReactElement => (
   <IconButton
     icon={type === "restart" ? <RiRestartFill /> : <RiSkipForwardFill />}
     aria-label={type === "restart" ? "Restart game" : "Next story"}
@@ -178,6 +164,10 @@ export const BtnSm = ({ type, onClick }: BtnSmProps): ReactElement => (
   />
 );
 
+interface CountdownProps {
+  readonly isActive: boolean;
+}
+
 export const Countdown = ({
   isActive,
   children,
@@ -186,6 +176,10 @@ export const Countdown = ({
     {children}
   </Heading>
 );
+
+interface StopWatchProps {
+  readonly gameStatus: GameState.GameStatus;
+}
 
 export const StopWatch = ({
   gameStatus,

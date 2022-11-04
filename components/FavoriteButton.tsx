@@ -1,8 +1,8 @@
+import { ReactElement } from "react";
 import { IconButton } from "@chakra-ui/button";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { useFavorite } from "@/hooks";
 import { FavoriteBase } from "interfaces";
-import { ReactElement } from "react";
 
 interface FavoriteButtonProps {
   readonly storyDetails: FavoriteBase;

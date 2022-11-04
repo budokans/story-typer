@@ -11,47 +11,41 @@ import { RiGithubFill } from "react-icons/ri";
 import { ChildrenProps } from "interfaces";
 import { Styles } from "@/styles";
 
-export const Footer = ({ children }: ChildrenProps): ReactElement => {
-  return (
-    <Container>
-      <Inner>{children}</Inner>
-    </Container>
-  );
-};
+export const Footer = ({ children }: ChildrenProps): ReactElement => (
+  <Container>
+    <Inner>{children}</Inner>
+  </Container>
+);
 
-const Container = ({ children }: ChildrenProps): ReactElement => {
-  return (
-    <Box
-      as="footer"
-      bg="white"
-      w="full"
-      position="absolute"
-      bottom={0}
-      h={[
-        Styles.headerHeightMobile,
-        Styles.headerHeightMobile,
-        Styles.headerHeightDesktop,
-      ]}
-    >
-      {children}
-    </Box>
-  );
-};
+const Container = ({ children }: ChildrenProps): ReactElement => (
+  <Box
+    as="footer"
+    bg="white"
+    w="full"
+    position="absolute"
+    bottom={0}
+    h={[
+      Styles.headerHeightMobile,
+      Styles.headerHeightMobile,
+      Styles.headerHeightDesktop,
+    ]}
+  >
+    {children}
+  </Box>
+);
 
-const Inner = ({ children }: ChildrenProps): ReactElement => {
-  return (
-    <Flex
-      h="100%"
-      maxW="930px"
-      margin="0 auto"
-      align="center"
-      justify={["center", "center", "flex-end"]}
-      pr={[0, 0, 4, 0]}
-    >
-      {children}
-    </Flex>
-  );
-};
+const Inner = ({ children }: ChildrenProps): ReactElement => (
+  <Flex
+    h="100%"
+    maxW="930px"
+    margin="0 auto"
+    align="center"
+    justify={["center", "center", "flex-end"]}
+    pr={[0, 0, 4, 0]}
+  >
+    {children}
+  </Flex>
+);
 
 export const Text = ({ children }: ChildrenProps): ReactElement => (
   <ChakraText color="blackAlpha.800" fontSize="clamp(0.75rem, 2vw, 1rem)">

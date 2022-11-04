@@ -89,6 +89,8 @@ export const UserMenu = ({ children }: ChildrenProps): ReactElement => {
           as={Avatar}
           h={[7, 7, 10]}
           w={[7, 7, 10]}
+          // This will default to a generic avatar image if user.photoURL is
+          // nullish
           src={user?.photoURL}
           cursor="pointer"
         />

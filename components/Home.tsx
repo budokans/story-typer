@@ -16,10 +16,6 @@ import { RiThumbUpFill } from "react-icons/ri";
 import logo from "../public/story-typer-logo.png";
 import { ChildrenProps } from "interfaces";
 
-interface PlayButtonProps {
-  readonly onClick: () => void;
-}
-
 export const Home = ({ children }: ChildrenProps): ReactElement => (
   <Container>{children}</Container>
 );
@@ -100,6 +96,10 @@ export const Feature = ({ children }: ChildrenProps): ReactElement => (
     {children}
   </ListItem>
 );
+
+interface PlayButtonProps {
+  readonly onClick: () => void;
+}
 
 export const PlayButton = ({
   onClick,

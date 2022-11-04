@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import router from "next/router";
+import { function as F, string as String } from "fp-ts";
 import {
   RiArrowLeftSLine,
   RiArrowUpSLine,
@@ -21,7 +22,7 @@ import {
   RiPlayFill,
 } from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
-import parse from "html-react-parser";
+import domToReact from "html-react-parser";
 import { useStoriesContext } from "@/context/stories";
 import { useFavorite } from "@/hooks";
 import { ChildrenProps, FavoriteBase } from "interfaces";
@@ -134,14 +135,17 @@ export const CardScore = ({ children }: ChildrenProps): ReactElement => (
   <Text fontSize="sm">Score: {children} WPM</Text>
 );
 
-export const CardDate = ({ dateString }: CardDateProps): ReactElement => {
-  const iso = parseISO(dateString);
-  return (
-    <time dateTime={dateString} style={{ fontSize: ".75rem" }}>
-      {formatDistance(iso, new Date())} ago
-    </time>
+export const CardDate = ({ dateString }: CardDateProps): ReactElement =>
+  F.pipe(
+    dateString,
+    // Force new line
+    parseISO,
+    (iso) => (
+      <time dateTime={dateString} style={{ fontSize: ".75rem" }}>
+        {formatDistance(iso, new Date())} ago
+      </time>
+    )
   );
-};
 
 export const CloseCardIcon = (): ReactElement | null => {
   const { isExpanded } = useCardIsExpandedContext();
@@ -167,14 +171,13 @@ export const CardExpandedSection = ({
   return isExpanded ? <Box>{children}</Box> : null;
 };
 
-export const Story = ({ story }: StoryProps): ReactElement => {
-  const storyWithPMargins = story.replace(
-    /<p/g,
-    '<p style="margin-bottom: 1rem"'
+export const Story = ({ story }: StoryProps): ReactElement =>
+  F.pipe(
+    story,
+    String.replace(/<p/g, '<p style="margin-bottom: 1rem"'),
+    domToReact,
+    (parsedStory) => <Box mt={4}>{parsedStory}</Box>
   );
-
-  return <Box mt={4}>{parse(storyWithPMargins)}</Box>;
-};
 
 export const Buttons = ({ children }: ChildrenProps): ReactElement => (
   <HStack spacing={6} justify="center">

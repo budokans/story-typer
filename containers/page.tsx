@@ -11,11 +11,6 @@ import { Styles } from "@/styles";
 export const Page = ({ children }: ChildrenProps): ReactElement => {
   const { signOut, signInWithGoogle } = useAuthContext();
   const { data: user } = useUser();
-  const userMenuItemStateStyles = {
-    _hover: { bg: "blackAlpha.600" },
-    _active: { bg: "blackAlpha.300" },
-    _focus: { bg: "blackAlpha.300" },
-  };
 
   return (
     <Box position="relative" minH="100vh" pb={[9, 9, 14]} bg="gray.100">
@@ -40,15 +35,20 @@ export const Page = ({ children }: ChildrenProps): ReactElement => {
           {user ? (
             <>
               <Link href="#" passHref>
-                <MenuItem sx={userMenuItemStateStyles}>My Account</MenuItem>
+                <MenuItem sx={Styles.userMenuItemStateStyles}>
+                  My Account
+                </MenuItem>
               </Link>
-              <MenuItem sx={userMenuItemStateStyles} onClick={() => signOut()}>
+              <MenuItem
+                sx={Styles.userMenuItemStateStyles}
+                onClick={() => signOut()}
+              >
                 Sign out
               </MenuItem>
             </>
           ) : (
             <MenuItem
-              sx={userMenuItemStateStyles}
+              sx={Styles.userMenuItemStateStyles}
               onClick={() => signInWithGoogle()}
             >
               <GoogleIcon /> Sign in with Google
@@ -61,7 +61,10 @@ export const Page = ({ children }: ChildrenProps): ReactElement => {
         as="main"
         maxW="930px"
         margin="0 auto"
-        py={[Styles.mainPaddingYMobile, Styles.mainPaddingYDesktop]}
+        py={[
+          `${Styles.mainPaddingYMobile}px`,
+          `${Styles.mainPaddingYDesktop}px`,
+        ]}
         px={[1, 4, 4, 0]}
       >
         {children}

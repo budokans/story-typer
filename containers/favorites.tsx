@@ -39,7 +39,7 @@ export const FavoritesContainer = (): ReactElement => {
   return (
     <>
       {data ? (
-        data.pages.map((page, pageIdx) => (
+        data?.pages.map((page, pageIdx) => (
           <Fragment key={pageIdx}>
             {page.favorites.map((favorite, idx) => (
               <Archive.Card key={idx}>
