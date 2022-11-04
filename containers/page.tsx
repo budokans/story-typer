@@ -6,6 +6,7 @@ import { Header, Footer, GoogleIcon } from "@/components";
 import { getUserAverageScoresDisplay } from "@/lib/manageUser";
 import { ReactElement } from "react";
 import { ChildrenProps } from "interfaces";
+import { Styles } from "@/styles";
 
 export const Page = ({ children }: ChildrenProps): ReactElement => {
   const { signOut, signInWithGoogle } = useAuthContext();
@@ -56,7 +57,13 @@ export const Page = ({ children }: ChildrenProps): ReactElement => {
         </Header.UserMenu>
       </Header.Header>
 
-      <Box as="main" maxW="930px" margin="0 auto" py={[4, 8]} px={[1, 4, 4, 0]}>
+      <Box
+        as="main"
+        maxW="930px"
+        margin="0 auto"
+        py={[Styles.mainPaddingYMobile, Styles.mainPaddingYDesktop]}
+        px={[1, 4, 4, 0]}
+      >
         {children}
       </Box>
 

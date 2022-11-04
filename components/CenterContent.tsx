@@ -1,6 +1,7 @@
-import { Center } from "@chakra-ui/react";
+import { Center, useMediaQuery } from "@chakra-ui/react";
 import { ChildrenProps } from "interfaces";
 import { ReactElement } from "react";
+import { Styles } from "@/styles";
 
 interface CenterContentProps {
   readonly observeLayout?: boolean;
@@ -10,11 +11,26 @@ export const CenterContent = ({
   observeLayout,
   children,
 }: CenterContentProps & ChildrenProps): ReactElement => {
-  // 100vh - Header - Footer - <main> paddingY in <LayoutContainer />.
+  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
+
+  const headerHeight = Styles.headerFooterTotalHeight(
+    viewportIsWiderThan768 ? "desktop" : "mobile",
+    true
+  );
+
+  const footerHeight = Styles.headerFooterTotalHeight(
+    viewportIsWiderThan768 ? "desktop" : "mobile",
+    false
+  );
+
+  const mainYPadding = Styles.totalMainPaddingY(viewportIsWiderThan768);
+
   return (
     <Center
       minH={
-        observeLayout ? ["auto", "calc(100vh - 61px - 56px - 64px)"] : "100vh"
+        observeLayout
+          ? `calc(100vh - ${headerHeight}px - ${footerHeight}px - ${mainYPadding}px)`
+          : "100vh"
       }
     >
       {children}

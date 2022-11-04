@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { RiGithubFill } from "react-icons/ri";
 import { ChildrenProps } from "interfaces";
+import { Styles } from "@/styles";
 
 export const Footer = ({ children }: ChildrenProps): ReactElement => {
   return (
@@ -20,7 +21,18 @@ export const Footer = ({ children }: ChildrenProps): ReactElement => {
 
 const Container = ({ children }: ChildrenProps): ReactElement => {
   return (
-    <Box as="footer" bg="white" w="full" position="absolute" bottom={0}>
+    <Box
+      as="footer"
+      bg="white"
+      w="full"
+      position="absolute"
+      bottom={0}
+      h={[
+        Styles.headerHeightMobile,
+        Styles.headerHeightMobile,
+        Styles.headerHeightDesktop,
+      ]}
+    >
       {children}
     </Box>
   );
@@ -29,7 +41,7 @@ const Container = ({ children }: ChildrenProps): ReactElement => {
 const Inner = ({ children }: ChildrenProps): ReactElement => {
   return (
     <Flex
-      h={[9, 9, 14]}
+      h="100%"
       maxW="930px"
       margin="0 auto"
       align="center"

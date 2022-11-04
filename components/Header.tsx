@@ -15,6 +15,7 @@ import {
 import { RiStarFill } from "react-icons/ri";
 import { useUser } from "@/hooks";
 import { ChildrenProps } from "interfaces";
+import { Styles } from "@/styles";
 
 export const Header = ({ children }: ChildrenProps): ReactElement => (
   <Container>
@@ -27,14 +28,24 @@ export const Header = ({ children }: ChildrenProps): ReactElement => (
 
 const Container = ({ children }: ChildrenProps): ReactElement => (
   <Box
-    as="nav"
-    position="relative"
-    zIndex="2"
-    bg="white"
-    borderTop="5px solid"
-    borderColor="brand.500"
+    as="header"
+    h={[
+      `${Styles.headerHeightMobile}px`,
+      `${Styles.headerHeightMobile}px`,
+      `${Styles.headerHeightDesktop}px`,
+    ]}
   >
-    {children}
+    <Box
+      as="nav"
+      position="relative"
+      zIndex="2"
+      bg="white"
+      borderTop={`${Styles.headerBorderHeight}px solid`}
+      borderColor="brand.500"
+      h="100%"
+    >
+      {children}
+    </Box>
   </Box>
 );
 
@@ -43,7 +54,7 @@ const Inner = ({ children }: ChildrenProps): ReactElement => (
     as="ul"
     align="center"
     justify="space-between"
-    h={[9, 9, 14]}
+    h="100%"
     px={[2, 4, 4, 0]}
     maxW="930px"
     margin="0 auto"

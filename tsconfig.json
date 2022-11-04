@@ -10,6 +10,7 @@
       "@/components": ["components/index.ts"],
       "@/containers": ["containers/index.ts"],
       "@/context/*": ["context/*"],
+      "@/styles": ["styles/index.ts"]
     },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
