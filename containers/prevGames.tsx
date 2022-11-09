@@ -8,7 +8,6 @@ import { useAuthContext } from "@/context/auth";
 
 export const PrevGamesContainer = (): ReactElement => {
   const { userId } = useAuthContext();
-
   const {
     data,
     error,
@@ -37,46 +36,47 @@ export const PrevGamesContainer = (): ReactElement => {
     enabled: hasNextPage,
   });
 
+  if (error) {
+    console.error(error);
+    return (
+      <Text>Sorry, that didn&apos;t quite work. Please refresh the page.</Text>
+    );
+  }
+
   return (
     <>
-      {data ? (
-        data.pages.map((page, pageIdx) => (
-          <Fragment key={pageIdx}>
-            {page.prevGames.map((prevGame) => (
-              <Archive.Card key={prevGame.storyId}>
-                <Archive.CardHeader>
-                  <Archive.CardTitle>{prevGame.storyTitle}</Archive.CardTitle>
-                  <Archive.CardScore>{prevGame.score}</Archive.CardScore>
-                  <Archive.CardDate dateString={prevGame.datePlayed} />
-                  <Archive.CloseCardIcon />
-                </Archive.CardHeader>
-                <Archive.CardExpandedSection>
-                  <Divider mt={4} />
-                  <Archive.Story story={prevGame.storyHtml} />
-                  <Divider my={4} />
-                  <Archive.Buttons>
-                    <Archive.PlayAgainButton storyId={prevGame.storyId} />
-                    <FavoriteButton
-                      storyDetails={{
-                        storyId: prevGame.storyId,
-                        storyTitle: prevGame.storyTitle,
-                        storyHtml: prevGame.storyHtml,
-                      }}
-                    />
-                  </Archive.Buttons>
-                </Archive.CardExpandedSection>
-              </Archive.Card>
-            ))}
-          </Fragment>
-        ))
-      ) : error ? (
-        <Text>
-          Sorry, that didn&apos;t quite work. Please refresh the page.
-        </Text>
-      ) : null}
+      {data?.pages.map((page, pageIdx) => (
+        <Fragment key={pageIdx}>
+          {page.prevGames.map((prevGame) => (
+            <Archive.Card key={prevGame.storyId}>
+              <Archive.CardHeader>
+                <Archive.CardTitle>{prevGame.storyTitle}</Archive.CardTitle>
+                <Archive.CardScore>{prevGame.score}</Archive.CardScore>
+                <Archive.CardDate dateString={prevGame.datePlayed} />
+                <Archive.CloseCardIcon />
+              </Archive.CardHeader>
+              <Archive.CardExpandedSection>
+                <Divider mt={4} />
+                <Archive.Story story={prevGame.storyHtml} />
+                <Divider my={4} />
+                <Archive.Buttons>
+                  <Archive.PlayAgainButton storyId={prevGame.storyId} />
+                  <FavoriteButton
+                    storyDetails={{
+                      storyId: prevGame.storyId,
+                      storyTitle: prevGame.storyTitle,
+                      storyHtml: prevGame.storyHtml,
+                    }}
+                  />
+                </Archive.Buttons>
+              </Archive.CardExpandedSection>
+            </Archive.Card>
+          ))}
+        </Fragment>
+      ))}
 
       <div ref={loadMoreRef} style={{ margin: "4rem 0 2rem" }}>
-        {isFetchingNextPage || isFetching ? (
+        {isFetching || isFetchingNextPage ? (
           <Spinner />
         ) : hasNextPage ? (
           <Text>Load more</Text>
