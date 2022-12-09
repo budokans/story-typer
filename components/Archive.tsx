@@ -93,22 +93,20 @@ export const Toggles = ({
   </RadioGroup>
 );
 
-export const Card = ({ children }: ChildrenProps): ReactElement => {
-  return (
-    <CardIsExpandedProvider>
-      <Box
-        w={["100vw", "100%"]}
-        bg="white"
-        px={[2, 4, 6]}
-        py={[4, 6]}
-        borderRadius={["none", "lg"]}
-        boxShadow="2px 2px 4px rgba(0, 0, 0, 0.1)"
-      >
-        {children}
-      </Box>
-    </CardIsExpandedProvider>
-  );
-};
+export const Card = ({ children }: ChildrenProps): ReactElement => (
+  <CardIsExpandedProvider>
+    <Box
+      w={["100vw", "100%"]}
+      bg="white"
+      px={[2, 4, 6]}
+      py={[4, 6]}
+      borderRadius={["none", "lg"]}
+      boxShadow="2px 2px 4px rgba(0, 0, 0, 0.1)"
+    >
+      {children}
+    </Box>
+  </CardIsExpandedProvider>
+);
 
 export const CardHeader = ({ children }: ChildrenProps): ReactElement => {
   const { isExpanded, setIsExpanded } = useCardIsExpandedContext();
