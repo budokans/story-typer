@@ -1,4 +1,4 @@
-import { FieldValue } from "@firebase/firestore-types";
+import { FieldValue } from "firebase/firestore";
 import { ReactNode } from "react";
 
 export interface UserAuth {

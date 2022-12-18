@@ -1,118 +1,126 @@
-import { firebase } from "./firebase";
 import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  addDoc,
+  serverTimestamp,
+  increment,
+  updateDoc,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  where,
+  deleteDoc,
+  Query,
+  DocumentData,
+  DocumentReference,
   QuerySnapshot,
   QueryDocumentSnapshot,
-  DocumentData,
-} from "@firebase/firestore-types";
+} from "firebase/firestore";
+import { firebaseApp } from "./firebase";
 import { Favorite, PrevGame, Story, StoryWithId, User } from "../interfaces";
 
-const db = firebase.firestore();
-
-export const queryUser = async (uid: string): Promise<User | undefined> => {
-  const userRef = db.collection("users").doc(uid);
-  const doc = await userRef.get();
-  return doc.exists ? (doc.data() as User) : undefined;
-};
+const db = getFirestore(firebaseApp);
 
 export const getUser = async (uid: string): Promise<User> => {
-  const userRef = db.collection("users").doc(uid);
-  const doc = await userRef.get();
-  return doc.data() as User;
+  const docSnap = await getDoc(doc(db, "users", uid));
+  return docSnap.data() as User;
 };
 
-export const createUser = async (uid: string, user: User): Promise<void> => {
-  db.collection("users").doc(uid).set(user, { merge: true });
-};
+export const createUser = async (uid: string, user: User): Promise<void> =>
+  setDoc(doc(db, "users", uid), user, { merge: true });
 
-export const createStory = async (story: Story): Promise<void> => {
-  await db
-    .collection("stories")
-    .doc()
-    .set({
-      ...story,
-      dateScraped: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-};
+export const createStory = async (
+  story: Story
+): Promise<DocumentReference<DocumentData>> =>
+  addDoc(collection(db, "stories"), {
+    ...story,
+    dateScraped: serverTimestamp(),
+  });
 
-const incrementByVal = (val: number) =>
-  firebase.firestore.FieldValue.increment(val);
+const incrementByVal = (val: number) => increment(val);
 
-export const incrementStoriesCount = async (
-  changeVal: number
-): Promise<void> => {
-  const metadataRef = db.collection("metadata").doc("data");
-  await metadataRef.update({
+export const incrementStoriesCount = async (changeVal: number): Promise<void> =>
+  updateDoc(doc(db, "metadata", "data"), {
     storiesCount: incrementByVal(changeVal),
   });
-};
 
 export const getLatestTimestamp = async (): Promise<string> => {
-  const snapshot = await db
-    .collection("stories")
-    .orderBy("datePublished", "desc")
-    .limit(1)
-    .get();
-
-  return snapshot.docs[0].data().datePublished;
+  const storiesCollRef = collection(db, "stories");
+  const q: Query<DocumentData> = query(
+    storiesCollRef,
+    orderBy("datePublished", "desc"),
+    limit(1)
+  );
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs[0].data().dataPublished;
 };
 
-const processStories = (snapshot: QuerySnapshot) => {
-  return snapshot.docs.map((doc) => {
+const storiesWithIds = (snapshot: QuerySnapshot) =>
+  snapshot.docs.map((doc) => {
     const story = doc.data() as Story;
     return {
       uid: doc.id,
       ...story,
     } as StoryWithId;
   });
-};
 
-export const queryStories = async (
-  latest: User["newestPlayedStoryPublishedDate"],
-  oldest: User["oldestPlayedStoryPublishedDate"]
+const initialStoryQueryLimit = 10;
+
+export const getStories = async (
+  latest: string | null,
+  oldest: string | null
 ): Promise<StoryWithId[]> => {
-  let limit = 10;
+  let localLimit = initialStoryQueryLimit;
   let batch: StoryWithId[] = [];
-  let snapshot;
+  let snapshot: QuerySnapshot;
+
+  const storiesCollRef = collection(db, "stories");
 
   if (!latest) {
-    snapshot = await db
-      .collection("stories")
-      .orderBy("datePublished", "desc")
-      .limit(limit)
-      .get();
+    const q = query(
+      storiesCollRef,
+      orderBy("datePublished", "desc"),
+      limit(localLimit)
+    );
+    snapshot = await getDocs(q);
   } else {
-    snapshot = await db
-      .collection("stories")
-      .orderBy("datePublished", "asc")
-      .startAfter(latest)
-      .limit(limit)
-      .get();
+    const q = query(
+      storiesCollRef,
+      orderBy("datePublished", "desc"),
+      startAfter(latest),
+      limit(localLimit)
+    );
+    snapshot = await getDocs(q);
   }
 
   if (snapshot.docs.length > 0) {
-    const processedStories = processStories(snapshot);
+    const processedStories = storiesWithIds(snapshot);
     batch = [...batch, ...processedStories];
   }
 
   if (batch.length < 10) {
-    limit -= batch.length;
-    snapshot = await db
-      .collection("stories")
-      .orderBy("datePublished", "desc")
-      .startAfter(oldest)
-      .limit(limit)
-      .get();
-    const processedStories = processStories(snapshot);
+    localLimit -= batch.length;
+    const q = query(
+      storiesCollRef,
+      orderBy("datePublished", "desc"),
+      startAfter(oldest),
+      limit(localLimit)
+    );
+    snapshot = await getDocs(q);
+    const processedStories = storiesWithIds(snapshot);
     batch = [...batch, ...processedStories];
   }
 
   return batch;
 };
 
-export const queryStory = async (
-  id: StoryWithId["uid"]
-): Promise<StoryWithId> => {
-  const snapshot = await db.collection("stories").doc(id).get();
+export const getStory = async (id: string): Promise<StoryWithId> => {
+  const snapshot = await getDoc(doc(db, "stories", id));
   const withId = {
     ...(snapshot.data() as Story),
     uid: snapshot.id,
@@ -120,104 +128,114 @@ export const queryStory = async (
   return withId;
 };
 
-export const createPrevGame = async (game: PrevGame): Promise<void> => {
-  await db.collection("prevGames").add(game);
+export const createPrevGame = async (
+  game: PrevGame
+): Promise<DocumentReference<DocumentData>> =>
+  addDoc(collection(db, "prevGames"), game);
+
+export const updateUserDataOnWin = async (user: User): Promise<void> =>
+  updateDoc(doc(db, "users", user.uid), { ...user });
+
+export const createFavorite = async (
+  favorite: Favorite
+): Promise<DocumentReference<DocumentData>> =>
+  addDoc(collection(db, "favorites"), favorite);
+
+export const getFavorite = async (
+  userId: string,
+  storyId: string
+): Promise<string> => {
+  const favoritesRef = collection(db, "favorites");
+  const querySnapshot = await getDocs(
+    query(
+      favoritesRef,
+      where("userId", "==", userId),
+      where("storyId", "==", storyId)
+    )
+  );
+  return querySnapshot.docs[0].id;
 };
 
-export const updateUserDataOnWin = async (user: User): Promise<void> => {
-  const userRef = db.collection("users").doc(user.uid);
-  await userRef.update(user);
-};
+export const deleteFavorite = async (id: string): Promise<void> =>
+  deleteDoc(doc(db, "favorites", id));
 
-export const createFavorite = async (favorite: Favorite): Promise<void> => {
-  db.collection("favorites").add(favorite);
-};
+const prevGamesQueryLimit = 10;
 
-export const queryFavorite = async (
-  userId: User["uid"],
-  storyId: StoryWithId["uid"]
-): Promise<string | null> => {
-  const favoritesRef = db.collection("favorites");
-  const queryRef = favoritesRef
-    .where("userId", "==", userId)
-    .where("storyId", "==", storyId);
-
-  const doc = await queryRef.get();
-  return doc.docs.length > 0 ? doc.docs[0].id : null;
-};
-
-export const deleteFavorite = async (id: string): Promise<void> => {
-  return await db.collection("favorites").doc(id).delete();
-};
-
-export const queryPrevGames = async (
-  userId: User["uid"],
+export const getPrevGames = async (
+  userId: string,
   last: QueryDocumentSnapshot<DocumentData>
 ): Promise<{
   prevGames: PrevGame[];
   cursor: QueryDocumentSnapshot<DocumentData> | null;
 }> => {
-  let queryRef;
+  let queryRef: Query<DocumentData>;
+  const prevGamesCollRef = collection(db, "prevGames");
 
   if (!last) {
-    queryRef = db
-      .collection("prevGames")
-      .where("userId", "==", userId)
-      .orderBy("datePlayed", "desc")
-      .limit(10);
+    queryRef = query(
+      prevGamesCollRef,
+      orderBy("datePlayed", "desc"),
+      where("userId", "==", userId),
+      limit(prevGamesQueryLimit)
+    );
   } else {
-    queryRef = db
-      .collection("prevGames")
-      .where("userId", "==", userId)
-      .orderBy("datePlayed", "desc")
-      .startAfter(last.data().datePlayed)
-      .limit(10);
+    queryRef = query(
+      prevGamesCollRef,
+      orderBy("datePlayed", "desc"),
+      where("userId", "==", userId),
+      startAfter(last.data().datePlayed),
+      limit(prevGamesQueryLimit)
+    );
   }
 
-  const snapshot = await queryRef.get();
-  const prevGames = snapshot.docs.map(
+  const querySnapshot = await getDocs(query(queryRef));
+  const prevGames = querySnapshot.docs.map(
     (prevGame) => prevGame.data() as PrevGame
   );
 
   const cursor =
-    snapshot.docs.length === 10
-      ? snapshot.docs[snapshot.docs.length - 1]
+    querySnapshot.docs.length === 10
+      ? querySnapshot.docs[querySnapshot.docs.length - 1]
       : null;
 
   return { prevGames, cursor };
 };
 
-export const queryFavorites = async (
-  userId: User["uid"],
+export const getFavorites = async (
+  userId: string,
   last: QueryDocumentSnapshot<DocumentData>
 ): Promise<{
   favorites: Favorite[];
   cursor: QueryDocumentSnapshot<DocumentData> | null;
 }> => {
-  let queryRef;
+  let queryRef: Query<DocumentData>;
+  const favoritesCollRef = collection(db, "favorites");
 
   if (!last) {
-    queryRef = db
-      .collection("favorites")
-      .where("userId", "==", userId)
-      .orderBy("dateFavorited", "desc")
-      .limit(10);
+    queryRef = query(
+      favoritesCollRef,
+      orderBy("dateFavorited", "desc"),
+      where("userId", "==", userId),
+      limit(prevGamesQueryLimit)
+    );
   } else {
-    queryRef = db
-      .collection("favorites")
-      .where("userId", "==", userId)
-      .orderBy("dateFavorited", "desc")
-      .startAfter(last.data().dateFavorited)
-      .limit(10);
+    queryRef = query(
+      favoritesCollRef,
+      orderBy("dateFavorited", "desc"),
+      where("userId", "==", userId),
+      startAfter(last.data().dateFavorited),
+      limit(prevGamesQueryLimit)
+    );
   }
 
-  const snapshot = await queryRef.get();
-  const favorites = snapshot.docs.map(
+  const querySnapshot = await getDocs(query(queryRef));
+  const favorites = querySnapshot.docs.map(
     (favorite) => favorite.data() as Favorite
   );
+
   const cursor =
-    snapshot.docs.length === 10
-      ? snapshot.docs[snapshot.docs.length - 1]
+    querySnapshot.docs.length === 10
+      ? querySnapshot.docs[querySnapshot.docs.length - 1]
       : null;
 
   return { favorites, cursor };

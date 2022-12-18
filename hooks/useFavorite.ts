@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { createFavorite, deleteFavorite, queryFavorite } from "@/lib/db";
+import { createFavorite, deleteFavorite, getFavorite } from "@/lib/db";
 import { FavoriteBase, Favorite } from "interfaces";
 import { useUser } from "./useUser";
 
@@ -12,7 +12,7 @@ export const useFavorite = (
 
   const { data: favoriteId } = useQuery(
     ["isFavorite", userId, storyDetails.storyId],
-    () => queryFavorite(userId!, storyDetails.storyId)
+    () => getFavorite(userId!, storyDetails.storyId)
   );
 
   const addFavoriteMutation = useMutation(

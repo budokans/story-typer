@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useReducer } from "react";
-import { firebase } from "@/lib/firebase";
-import { User as FirebaseUser } from "@firebase/auth-types";
-import { createUser, queryUser } from "@/lib/db";
+import {
+  User as AuthUser,
+  GoogleAuthProvider,
+  signInWithPopup,
+  getAuth,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { serverTimestamp } from "firebase/firestore";
+import { firebaseApp } from "@/lib/firebase";
+import { createUser, getUser } from "@/lib/db";
 import { User } from "../interfaces";
 import { AuthState } from "@/reducers";
 
@@ -22,9 +30,9 @@ export const useProvideAuth = (): ProvideAuth => {
     AuthState.initialState
   );
 
-  const handleUser = useCallback(async (rawUser: FirebaseUser | null) => {
-    if (rawUser) {
-      const user = await formatUser(rawUser);
+  const handleUser = useCallback(async (authUser: AuthUser | null) => {
+    if (authUser) {
+      const user = await formatUser(authUser);
       await createUser(user.uid, user);
       dispatch({ type: "success", userId: user.uid });
     } else {
@@ -35,10 +43,10 @@ export const useProvideAuth = (): ProvideAuth => {
   // If the user already exists, merge the auth data returned from
   // signInWithGoogle() with the stored non-auth user data, otherwise
   // return a new user object with those non-auth data fields initialised.
-  const formatUser = async (user: FirebaseUser): Promise<User> => {
-    const storedUserData = await queryUser(user.uid);
+  const formatUser = async (user: AuthUser): Promise<User> => {
+    const storedUserData = await getUser(user.uid);
     const userInitFields = {
-      registeredDate: firebase.firestore.FieldValue.serverTimestamp(),
+      registeredDate: serverTimestamp(),
       personalBest: null,
       lastTenScores: [],
       gamesPlayed: 0,
@@ -60,8 +68,9 @@ export const useProvideAuth = (): ProvideAuth => {
 
   const signInWithGoogle = async () => {
     try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      const { user } = await firebase.auth().signInWithPopup(provider);
+      const provider = new GoogleAuthProvider();
+      const auth = getAuth(firebaseApp);
+      const { user } = await signInWithPopup(auth, provider);
       handleUser(user);
     } catch (error) {
       console.error(error);
@@ -70,15 +79,16 @@ export const useProvideAuth = (): ProvideAuth => {
 
   const signOut = async () => {
     try {
-      await firebase.auth().signOut();
-      handleUser(null);
+      const auth = getAuth();
+      firebaseSignOut(auth).then(() => handleUser(null));
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       dispatch({ type: "started" });
       handleUser(user);
     });
