@@ -159,7 +159,7 @@ export const createFavorite = async (
 export const getFavorite = async (
   userId: string,
   storyId: string
-): Promise<string> => {
+): Promise<string | undefined> => {
   const favoritesRef = collection(db, "favorites");
   const querySnapshot = await getDocs(
     query(
@@ -168,6 +168,11 @@ export const getFavorite = async (
       where("storyId", "==", storyId)
     )
   );
+
+  if (querySnapshot.docs.length === 0) {
+    return undefined;
+  }
+
   return querySnapshot.docs[0].id;
 };
 
