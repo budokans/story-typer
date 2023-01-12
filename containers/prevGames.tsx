@@ -48,8 +48,8 @@ export const PrevGamesContainer = (): ReactElement => {
     <>
       {data?.pages.map((page, pageIdx) => (
         <Fragment key={pageIdx}>
-          {page.prevGames.map((prevGame) => (
-            <Archive.Card key={prevGame.storyId}>
+          {page.prevGames.map((prevGame, idx) => (
+            <Archive.Card key={idx}>
               <Archive.CardHeader>
                 <Archive.CardTitle>{prevGame.storyTitle}</Archive.CardTitle>
                 <Archive.CardScore>{prevGame.score}</Archive.CardScore>
