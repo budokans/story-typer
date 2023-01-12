@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GameState } from "@/reducers";
+import { GameStatus } from "@/reducers/GameReducer";
 
 export interface Timer {
   readonly minutes: number;
@@ -7,10 +7,7 @@ export interface Timer {
   readonly totalSeconds: number;
 }
 
-export const useTimer = (
-  status: GameState.GameStatus,
-  limit: number
-): Timer => {
+export const useTimer = (status: GameStatus, limit: number): Timer => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {

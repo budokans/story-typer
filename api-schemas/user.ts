@@ -11,7 +11,8 @@ export type AuthUser = IoTs.TypeOf<typeof AuthUser>;
 export const User = IoTs.intersection([
   AuthUser,
   IoTs.type({
-    registeredDate: IoTs.string,
+    registeredDate: IoTs.union([IoTs.string, IoTs.undefined]),
+    lastSignInTime: IoTs.union([IoTs.string, IoTs.undefined]),
     personalBest: IoTs.union([IoTs.number, IoTs.null]),
     lastTenScores: IoTs.readonlyArray(IoTs.number),
     gamesPlayed: IoTs.number,

@@ -1,7 +1,8 @@
 import { ReactElement } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { Game, FavoriteButton, CenterContent } from "@/components";
-import { useGame, useUser } from "@/hooks";
+import { useGame } from "@/hooks";
+import { useUserContext } from "@/context/user";
 
 export const GameContainer = (): ReactElement => {
   const {
@@ -18,7 +19,7 @@ export const GameContainer = (): ReactElement => {
     onSkipClick,
     wpm,
   } = useGame();
-  const { data: user } = useUser();
+  const user = useUserContext();
   const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
 
   enum CountDown {

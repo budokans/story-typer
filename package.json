@@ -38,6 +38,7 @@
     "ramda": "^0.27.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-firebase-hooks": "^5.1.1",
     "react-icons": "^4.2.0",
     "react-query": "^3.22.0",
     "unidecode": "^0.1.8",

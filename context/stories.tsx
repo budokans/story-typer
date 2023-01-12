@@ -8,7 +8,8 @@ import {
   ReactElement,
 } from "react";
 import { option as O, function as F } from "fp-ts";
-import { useProvideStories, useUser } from "@/hooks";
+import { useProvideStories } from "@/hooks";
+import { useUserContext } from "./user";
 import { ChildrenProps, StoryWithId } from "interfaces";
 
 interface StoryContext {
@@ -25,7 +26,7 @@ export const StoriesProvider = ({ children }: ChildrenProps): ReactElement => {
   const [gameCount, setGameCount] = useState(1);
   const { stories, isLoading, handlePlayArchiveStoryClick } =
     useProvideStories(gameCount);
-  const { data: user } = useUser();
+  const user = useUserContext();
 
   // Listen for no user (signed out) and reset gameCount
   useEffect(() => {

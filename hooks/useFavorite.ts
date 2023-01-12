@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { createFavorite, deleteFavorite, getFavorite } from "@/lib/db";
+import { useUserContext } from "@/context/user";
 import { FavoriteBase, Favorite } from "interfaces";
-import { useUser } from "./useUser";
 
 export const useFavorite = (
   storyDetails: FavoriteBase
 ): { isFavorited: boolean; handleFavoriteClick: () => void } => {
-  const { data: user } = useUser();
-  const userId = user && user.uid;
+  const user = useUserContext();
+  const userId = user?.uid;
   const queryClient = useQueryClient();
 
   const { data: favoriteId } = useQuery(

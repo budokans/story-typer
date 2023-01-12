@@ -1,7 +1,8 @@
 import { ChangeEvent, useCallback, useEffect, useReducer } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { GameState } from "@/reducers";
-import { useUser, useCountdown, Timer } from "@/hooks";
+import * as GameState from "./reducers/GameReducer";
+import { useCountdown, Timer } from "@/hooks";
+import { useUserContext } from "@/context/user";
 import { useStoriesContext } from "@/context/stories";
 import { PrevGame, StoryWithId, User } from "interfaces";
 import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
@@ -29,7 +30,7 @@ export const useGame = (): UseGame => {
     GameState.GameReducer,
     GameState.initialState
   );
-  const { data: user } = useUser();
+  const user = useUserContext();
   const queryClient = useQueryClient();
   const userWinMutation = useMutation(
     (newUserData: User) => updateUserDataOnWin(newUserData),

@@ -13,9 +13,9 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
-import { useUser } from "@/hooks";
 import { ChildrenProps } from "interfaces";
 import { Styles } from "@/styles";
+import { useUserContext } from "@/context/user";
 
 export const Header = ({ children }: ChildrenProps): ReactElement => (
   <Container>
@@ -80,7 +80,7 @@ const Logo = (): ReactElement => (
 );
 
 export const UserMenu = ({ children }: ChildrenProps): ReactElement => {
-  const { data: user } = useUser();
+  const user = useUserContext();
 
   return (
     <Box as="li">

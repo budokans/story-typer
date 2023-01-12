@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getStories, getStory } from "@/lib/db";
 import { StoryWithId, User } from "interfaces";
-import { useUser } from "@/hooks";
+import { useUserContext } from "@/context/user";
 
 interface ProvideStories {
   readonly stories: readonly StoryWithId[];
@@ -10,7 +10,7 @@ interface ProvideStories {
 }
 
 export const useProvideStories = (gameCount: number): ProvideStories => {
-  const { data: user } = useUser();
+  const user = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<StoryWithId[]>([]);
 

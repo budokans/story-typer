@@ -21,6 +21,7 @@ import {
   QuerySnapshot,
   QueryDocumentSnapshot,
 } from "firebase/firestore";
+import { User as FirebaseUser } from "firebase/auth";
 import { firebaseApp } from "./firebase";
 import { Favorite, PrevGame, Story, StoryWithId, User } from "../interfaces";
 
@@ -31,8 +32,22 @@ export const getUser = async (uid: string): Promise<User> => {
   return docSnap.data() as User;
 };
 
-export const createUser = async (uid: string, user: User): Promise<void> =>
-  setDoc(doc(db, "users", uid), user, { merge: true });
+export const buildNewUser = (user: FirebaseUser): User => ({
+  uid: user.uid,
+  name: user.displayName,
+  email: user.email,
+  photoURL: user.photoURL,
+  registeredDate: user.metadata.creationTime,
+  lastSignInTime: user.metadata.lastSignInTime,
+  personalBest: 0,
+  lastTenScores: [],
+  gamesPlayed: 0,
+  newestPlayedStoryPublishedDate: null,
+  oldestPlayedStoryPublishedDate: null,
+});
+
+export const setUser = async (user: User): Promise<void> =>
+  setDoc(doc(db, "users", user.uid), user, { merge: true });
 
 export const createStory = async (
   story: Story

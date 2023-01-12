@@ -6,7 +6,7 @@
     "paths": {
       "@/lib/*": ["lib/*"],
       "@/hooks": ["hooks/index.ts"],
-      "@/reducers": ["hooks/reducers/index.ts"],
+      "@/reducers/*": ["hooks/reducers/*"],
       "@/components": ["components/index.ts"],
       "@/containers": ["containers/index.ts"],
       "@/context/*": ["context/*"],

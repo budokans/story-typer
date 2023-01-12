@@ -11,8 +11,7 @@ import {
 import { Page, FavoritesContainer, PrevGamesContainer } from "@/containers";
 
 const Previous = (): ReactElement => {
-  const { userId: userIsAuthorized, isLoading: isLoadingAuth } =
-    useAuthContext();
+  const { authUser, authStateIsLoading } = useAuthContext();
   const [listType, setListType] = useState<"all" | "favorites">("all");
   const { query } = useRouter();
 
@@ -24,7 +23,7 @@ const Previous = (): ReactElement => {
     setListType(nextValue);
   };
 
-  return isLoadingAuth ? (
+  return authStateIsLoading ? (
     <CenterContent>
       <Spinner />
     </CenterContent>
@@ -32,7 +31,7 @@ const Previous = (): ReactElement => {
     <>
       <DocHead />
       <Page>
-        {userIsAuthorized ? (
+        {authUser ? (
           <Archive.Archive>
             <Archive.BackToGameButton />
             <Archive.Header>Previously...</Archive.Header>

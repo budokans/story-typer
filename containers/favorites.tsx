@@ -4,10 +4,11 @@ import { Divider, Text } from "@chakra-ui/react";
 import { Archive, Spinner } from "@/components";
 import { getFavorites } from "@/lib/db";
 import { useIntersectionObserver } from "@/hooks";
-import { useAuthContext } from "@/context/auth";
+import { useUserContext } from "@/context/user";
 
 export const FavoritesContainer = (): ReactElement => {
-  const { userId } = useAuthContext();
+  const user = useUserContext();
+  const userId = user?.uid;
   const {
     data,
     error,

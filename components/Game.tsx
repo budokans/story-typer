@@ -13,7 +13,7 @@ import {
 import { WarningIcon } from "@chakra-ui/icons";
 import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 import { ChildrenProps } from "interfaces";
-import { GameState } from "@/reducers";
+import { GameStatus } from "@/reducers/GameReducer";
 
 export const Game = ({ children }: ChildrenProps): ReactElement => (
   <Container>{children}</Container>
@@ -97,7 +97,7 @@ interface InputProps {
   readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   readonly value: string;
   readonly error: boolean;
-  readonly gameStatus: GameState.GameStatus;
+  readonly gameStatus: GameStatus;
 }
 
 export const Input = ({
@@ -178,7 +178,7 @@ export const Countdown = ({
 );
 
 interface StopWatchProps {
-  readonly gameStatus: GameState.GameStatus;
+  readonly gameStatus: GameStatus;
 }
 
 export const StopWatch = ({

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { Box } from "@chakra-ui/react";
 import { getStoriesCount } from "@/lib/db-admin";
 import { useAuthContext } from "@/context/auth";
+import { useUserContext } from "@/context/user";
 import { Page } from "@/containers";
 import {
   DocHead,
@@ -26,8 +27,8 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Index = ({ storiesCount }: IndexProps): ReactElement => {
-  const { userId, signInWithGoogle } = useAuthContext();
-  const userIsLoggedIn = !!userId;
+  const { signIn } = useAuthContext();
+  const user = useUserContext();
   const router = useRouter();
 
   return (
@@ -58,8 +59,8 @@ const Index = ({ storiesCount }: IndexProps): ReactElement => {
           </Home.HeadlinesWrapper>
 
           <Box pt={2} pb={4}>
-            {!userIsLoggedIn ? (
-              <Home.PlayButton onClick={() => signInWithGoogle()}>
+            {!user ? (
+              <Home.PlayButton onClick={() => signIn()}>
                 <GoogleIcon />
                 Continue with Google
               </Home.PlayButton>

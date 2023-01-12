@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
-import { useAuthContext } from "@/context/auth";
-import { useUser } from "@/hooks";
+import { ReactElement } from "react";
+import { useUserContext } from "@/context/user";
 import { Header, Footer, GoogleIcon } from "@/components";
 import { getUserAverageScoresDisplay } from "@/lib/manageUser";
-import { ReactElement } from "react";
 import { ChildrenProps } from "interfaces";
 import { Styles } from "@/styles";
+import { useAuthContext } from "@/context/auth";
 
 export const Page = ({ children }: ChildrenProps): ReactElement => {
-  const { signOut, signInWithGoogle } = useAuthContext();
-  const { data: user } = useUser();
+  const { signIn, signOut } = useAuthContext();
+  const user = useUserContext();
 
   return (
     <Box position="relative" minH="100vh" pb={[9, 9, 14]} bg="gray.100">
@@ -49,7 +49,7 @@ export const Page = ({ children }: ChildrenProps): ReactElement => {
           ) : (
             <MenuItem
               sx={Styles.userMenuItemStateStyles}
-              onClick={() => signInWithGoogle()}
+              onClick={() => signIn()}
             >
               <GoogleIcon /> Sign in with Google
             </MenuItem>

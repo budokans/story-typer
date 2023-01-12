@@ -1,4 +1,3 @@
-import { FieldValue } from "firebase/firestore";
 import { ReactNode } from "react";
 
 export interface UserAuth {
@@ -9,7 +8,8 @@ export interface UserAuth {
 }
 
 export interface User extends UserAuth {
-  readonly registeredDate: FieldValue;
+  readonly registeredDate: string | undefined;
+  readonly lastSignInTime: string | undefined;
   readonly personalBest: number | null;
   readonly lastTenScores: readonly number[];
   readonly gamesPlayed: number;
