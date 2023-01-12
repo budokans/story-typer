@@ -39,7 +39,7 @@ export const buildNewUser = (user: FirebaseUser): User => ({
   photoURL: user.photoURL,
   registeredDate: user.metadata.creationTime,
   lastSignInTime: user.metadata.lastSignInTime,
-  personalBest: 0,
+  personalBest: null,
   lastTenScores: [],
   gamesPlayed: 0,
   newestPlayedStoryPublishedDate: null,
