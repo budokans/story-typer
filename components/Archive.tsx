@@ -114,7 +114,7 @@ export const CardHeader = ({ children }: ChildrenProps): ReactElement => {
   return (
     <Box
       role="button"
-      aria-role={`${isExpanded ? "Hide" : "Show"} game details`}
+      aria-label={`${isExpanded ? "Hide" : "Show"} game details`}
       onClick={() => (isExpanded ? setIsExpanded(false) : setIsExpanded(true))}
       position="relative"
     >
