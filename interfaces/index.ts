@@ -28,17 +28,18 @@ export interface Post {
   };
 }
 
-export interface Story {
+export interface ScrapedStory {
   readonly title: string;
   readonly authorBio: string;
   readonly storyHtml: string;
   readonly storyText: string;
   readonly url: string;
   readonly datePublished: string;
+  readonly dateScraped: string;
 }
 
-export interface StoryWithId extends Story {
-  readonly uid: string;
+export interface Story extends ScrapedStory {
+  readonly id: string;
 }
 
 export interface PrevGame {

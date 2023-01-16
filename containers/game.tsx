@@ -61,7 +61,7 @@ export const GameContainer = (): ReactElement => {
               {status === "complete" && (
                 <FavoriteButton
                   storyDetails={{
-                    storyId: currentStory.uid,
+                    storyId: currentStory.id,
                     storyTitle: currentStory.title,
                     storyHtml: currentStory.storyHtml,
                   }}

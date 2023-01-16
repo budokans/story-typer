@@ -1,8 +1,8 @@
-import { User, StoryWithId } from "interfaces";
+import { User, Story } from "interfaces";
 
 export const createPostWinUser = (
   user: User,
-  story: StoryWithId,
+  story: Story,
   score: number
 ): User => {
   const updatedPersonalBest =
@@ -31,7 +31,7 @@ export const createPostWinUser = (
   };
 };
 
-export const createPostSkipUser = (user: User, story: StoryWithId): User => ({
+export const createPostSkipUser = (user: User, story: Story): User => ({
   ...user,
   newestPlayedStoryPublishedDate: getMostRecentDate(
     user.newestPlayedStoryPublishedDate,
@@ -45,7 +45,7 @@ export const createPostSkipUser = (user: User, story: StoryWithId): User => ({
 
 const getMostRecentDate = (
   storedDate: User["newestPlayedStoryPublishedDate"],
-  currentStoryDate: StoryWithId["datePublished"]
+  currentStoryDate: Story["datePublished"]
 ) => {
   if (!storedDate) return currentStoryDate;
   const parsedStoredDate = Date.parse(storedDate);
@@ -58,7 +58,7 @@ const getMostRecentDate = (
 
 const getOldestDate = (
   storedDate: User["oldestPlayedStoryPublishedDate"],
-  currentStoryDate: StoryWithId["datePublished"]
+  currentStoryDate: Story["datePublished"]
 ) => {
   if (!storedDate) return currentStoryDate;
   const parsedStoredDate = Date.parse(storedDate);

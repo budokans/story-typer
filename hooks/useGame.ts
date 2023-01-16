@@ -4,12 +4,12 @@ import * as GameState from "./reducers/GameReducer";
 import { useCountdown, Timer } from "@/hooks";
 import { useUserContext } from "@/context/user";
 import { useStoriesContext } from "@/context/stories";
-import { PrevGame, StoryWithId, User } from "interfaces";
+import { PrevGame, Story, User } from "interfaces";
 import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
 import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
 
 export interface UseGame {
-  readonly currentStory: StoryWithId;
+  readonly currentStory: Story;
   readonly status: GameState.GameStatus;
   readonly inputValue: string;
   readonly userError: boolean;
@@ -107,11 +107,11 @@ export const useGame = (): UseGame => {
 
   const constructGame = (
     userId: string,
-    story: StoryWithId,
+    story: Story,
     wpm: number
   ): PrevGame => ({
     userId: userId,
-    storyId: story.uid,
+    storyId: story.id,
     storyTitle: story.title,
     storyHtml: story.storyHtml,
     datePlayed: new Date().toISOString(),

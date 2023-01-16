@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import * as entities from "entities";
 import unidecode from "unidecode";
-import { Post, Story } from "../interfaces";
+import { Post, ScrapedStory } from "../interfaces";
 
 const checkBioExists = (text: string): boolean => text.includes("<hr");
 
@@ -27,16 +27,17 @@ const getStory = (text: string): string => {
     : text.slice(0, text.indexOf("<div"));
 };
 
-const prune = (post: Post): Story => ({
+const prune = (post: Post): ScrapedStory => ({
   title: post.title.rendered,
   authorBio: getBio(post.content.rendered),
   storyHtml: getStory(post.content.rendered),
   storyText: getStory(post.content.rendered),
   url: post.link,
   datePublished: post.date,
+  dateScraped: new Date().toISOString(),
 });
 
-const prunePosts = (posts: Post[]): Story[] => {
+const prunePosts = (posts: Post[]): ScrapedStory[] => {
   return posts.map(prune);
 };
 
@@ -52,16 +53,17 @@ const formatText = R.pipe(
   removeDoubleDashes
 );
 
-const formatStory = (story: Story): Story => ({
+const formatStory = (story: ScrapedStory): ScrapedStory => ({
   title: formatText(story.title),
   authorBio: formatText(story.authorBio),
   storyHtml: formatText(story.storyHtml),
   storyText: formatText(removeHtmlTags(story.storyText)),
   url: story.url,
   datePublished: story.datePublished,
+  dateScraped: story.dateScraped,
 });
 
-const formatPosts = (stories: Story[]): Story[] => {
+const formatPosts = (stories: ScrapedStory[]): ScrapedStory[] => {
   return stories.map(formatStory);
 };
 

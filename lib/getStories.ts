@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Post, Story } from "../interfaces";
+import { Post, ScrapedStory } from "../interfaces";
 import { createStory, getLatestTimestamp, incrementStoriesCount } from "./db";
 import { formatStories } from "./format";
 import {
@@ -68,7 +68,7 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
   getPostsOverPagesRecursive
 );
 
-const getLatestStories = (): Promise<Story[] | void> => {
+const getLatestStories = (): Promise<ScrapedStory[] | void> => {
   return getLatestTimestamp()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)

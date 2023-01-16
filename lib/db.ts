@@ -6,7 +6,6 @@ import {
   getDocs,
   setDoc,
   addDoc,
-  serverTimestamp,
   increment,
   updateDoc,
   query,
@@ -23,7 +22,7 @@ import {
 } from "firebase/firestore";
 import { User as FirebaseUser } from "firebase/auth";
 import { firebaseApp } from "./firebase";
-import { Favorite, PrevGame, Story, StoryWithId, User } from "../interfaces";
+import { Favorite, PrevGame, ScrapedStory, Story, User } from "../interfaces";
 
 const db = getFirestore(firebaseApp);
 
@@ -50,12 +49,9 @@ export const setUser = async (user: User): Promise<void> =>
   setDoc(doc(db, "users", user.uid), user, { merge: true });
 
 export const createStory = async (
-  story: Story
+  story: ScrapedStory
 ): Promise<DocumentReference<DocumentData>> =>
-  addDoc(collection(db, "stories"), {
-    ...story,
-    dateScraped: serverTimestamp(),
-  });
+  addDoc(collection(db, "stories"), story);
 
 const incrementByVal = (val: number) => increment(val);
 
@@ -75,23 +71,17 @@ export const getLatestTimestamp = async (): Promise<string> => {
   return querySnapshot.docs[0].data().dataPublished;
 };
 
-const storiesWithIds = (snapshot: QuerySnapshot) =>
-  snapshot.docs.map((doc) => {
-    const story = doc.data() as Story;
-    return {
-      uid: doc.id,
-      ...story,
-    } as StoryWithId;
-  });
-
 const initialStoryQueryLimit = 10;
+
+const withId = (doc: QueryDocumentSnapshot<DocumentData>) =>
+  ({ id: doc.id, ...doc.data() } as Story);
 
 export const getStories = async (
   latest: string | null,
   oldest: string | null
-): Promise<StoryWithId[]> => {
+): Promise<Story[]> => {
   let localLimit = initialStoryQueryLimit;
-  let batch: StoryWithId[] = [];
+  let batch: Story[] = [];
   let snapshot: QuerySnapshot;
 
   const storiesCollRef = collection(db, "stories");
@@ -114,8 +104,7 @@ export const getStories = async (
   }
 
   if (snapshot.docs.length > 0) {
-    const processedStories = storiesWithIds(snapshot);
-    batch = [...batch, ...processedStories];
+    batch = snapshot.docs.map(withId);
   }
 
   if (batch.length < 10) {
@@ -127,14 +116,13 @@ export const getStories = async (
       limit(localLimit)
     );
     snapshot = await getDocs(q);
-    const processedStories = storiesWithIds(snapshot);
-    batch = [...batch, ...processedStories];
+    batch = snapshot.docs.map(withId);
   }
 
   return batch;
 };
 
-export const getStory = async (id: string): Promise<StoryWithId> => {
+export const getStory = async (id: string): Promise<Story> => {
   const snapshot = await getDoc(doc(db, "stories", id));
   const withId = {
     ...(snapshot.data() as Story),

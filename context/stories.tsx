@@ -10,14 +10,14 @@ import {
 import { option as O, function as F } from "fp-ts";
 import { useProvideStories } from "@/hooks";
 import { useUserContext } from "./user";
-import { ChildrenProps, StoryWithId } from "interfaces";
+import { ChildrenProps, Story } from "interfaces";
 
 interface StoryContext {
-  readonly stories: readonly StoryWithId[];
+  readonly stories: readonly Story[];
   readonly isLoading: boolean;
   readonly gameCount: number;
   readonly setGameCount: Dispatch<SetStateAction<number>>;
-  readonly handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
+  readonly handlePlayArchiveStoryClick: (id: string) => void;
 }
 
 const storiesContext = createContext<O.Option<StoryContext>>(O.none);
