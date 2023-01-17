@@ -6,7 +6,7 @@ import { useUserContext } from "@/context/user";
 import { useStoriesContext } from "@/context/stories";
 import { PrevGame, Story, User } from "interfaces";
 import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
-import { createPrevGame, updateUserDataOnWin } from "@/lib/db";
+import { PrevGame as DBPrevGame, User as DBUser } from "db";
 
 export interface UseGame {
   readonly currentStory: Story;
@@ -33,7 +33,7 @@ export const useGame = (): UseGame => {
   const user = useUserContext();
   const queryClient = useQueryClient();
   const userWinMutation = useMutation(
-    (newUserData: User) => updateUserDataOnWin(newUserData),
+    (newUserData: User) => DBUser.updateUserDataOnWin(newUserData),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("user");
@@ -86,7 +86,7 @@ export const useGame = (): UseGame => {
   const handleSkipClick = () => {
     if (user) {
       const game = constructGame(user.uid, currentStory, 0);
-      createPrevGame(game);
+      DBPrevGame.createPrevGame(game);
       const updatedUser = createPostSkipUser(user, currentStory);
       userWinMutation.mutate(updatedUser);
     }
@@ -140,7 +140,7 @@ export const useGame = (): UseGame => {
       const game = constructGame(user.uid, currentStory, wpm);
       const updatedUser = createPostWinUser(user, currentStory, wpm);
       userWinMutation.mutate(updatedUser);
-      createPrevGame(game);
+      DBPrevGame.createPrevGame(game);
     }
     dispatch({ type: "win", wpm: wpm });
   }, [currentStory, timer.totalSeconds, user, userWinMutation]);

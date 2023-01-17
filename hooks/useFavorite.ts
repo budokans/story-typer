@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { createFavorite, deleteFavorite, getFavorite } from "@/lib/db";
+import { Favorite as DBFavorite } from "db";
 import { useUserContext } from "@/context/user";
 import { FavoriteBase, Favorite } from "interfaces";
 
@@ -12,18 +12,18 @@ export const useFavorite = (
 
   const { data: favoriteId } = useQuery(
     ["isFavorite", userId, storyDetails.storyId],
-    () => getFavorite(userId!, storyDetails.storyId)
+    () => DBFavorite.getFavorite(userId!, storyDetails.storyId)
   );
 
   const addFavoriteMutation = useMutation(
-    (favorite: Favorite) => createFavorite(favorite),
+    (favorite: Favorite) => DBFavorite.createFavorite(favorite),
     {
       onSuccess: () => queryClient.invalidateQueries("isFavorite"),
     }
   );
 
   const deleteFavoriteMutation = useMutation(
-    (id: string) => deleteFavorite(id),
+    (id: string) => DBFavorite.deleteFavorite(id),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("isFavorite");

@@ -2,7 +2,7 @@ import { Fragment, useRef, ReactElement } from "react";
 import { useInfiniteQuery } from "react-query";
 import { Divider, Text } from "@chakra-ui/react";
 import { Archive, FavoriteButton, Spinner } from "@/components";
-import { getPrevGames } from "@/lib/db";
+import { PrevGame as DBPrevGame } from "db";
 import { useIntersectionObserver } from "@/hooks";
 import { useUserContext } from "@/context/user";
 
@@ -19,7 +19,7 @@ export const PrevGamesContainer = (): ReactElement => {
   } = useInfiniteQuery(
     "prevGames",
     async ({ pageParam = null }) => {
-      const res = await getPrevGames(userId!, pageParam);
+      const res = await DBPrevGame.getPrevGames(userId!, pageParam);
       return res;
     },
     {

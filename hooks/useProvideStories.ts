@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getStories, getStory } from "@/lib/db";
+import { Story as DBStory } from "db";
 import { Story, User } from "interfaces";
 import { useUserContext } from "@/context/user";
 
@@ -15,7 +15,7 @@ export const useProvideStories = (gameCount: number): ProvideStories => {
   const [stories, setStories] = useState<readonly Story[]>([]);
 
   const loadStories = async (user: User) => {
-    const batch = await getStories(
+    const batch = await DBStory.getStories(
       user!.newestPlayedStoryPublishedDate,
       user!.oldestPlayedStoryPublishedDate
     );
@@ -46,7 +46,7 @@ export const useProvideStories = (gameCount: number): ProvideStories => {
 
   // Add selected story to current position in array if user chooses play again from Archive
   const handlePlayArchiveStoryClick = async (id: Story["id"]) => {
-    const story = await getStory(id);
+    const story = await DBStory.getStory(id);
     const destinationIdx = gameCount - 1;
     setStories([
       ...stories.slice(0, destinationIdx),

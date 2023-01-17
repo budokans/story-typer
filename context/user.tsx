@@ -5,7 +5,7 @@ import { User } from "api-schemas";
 import { ChildrenProps } from "interfaces";
 import { CenterContent } from "components/CenterContent";
 import { Spinner } from "components/Spinner";
-import { getUser } from "@/lib/db";
+import { User as DBUser } from "db";
 import { useAuthContext } from "./auth";
 import { LoginRerouter } from "components/LoginRerouter";
 
@@ -19,7 +19,7 @@ export const UserProvider = ({ children }: ChildrenProps): ReactElement => {
     data: user,
     isLoading: userQueryIsLoading,
     isError: userQueryIsError,
-  } = useQuery(["user", userId], () => getUser(userId!), {
+  } = useQuery(["user", userId], () => DBUser.getUser(userId!), {
     enabled: !!userId,
   });
 

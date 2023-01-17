@@ -6,10 +6,9 @@ import {
   useSignInWithGoogle,
   useSignOut,
 } from "react-firebase-hooks/auth";
-import { firebaseApp } from "@/lib/firebase";
+import { firebaseApp, User as DBUser } from "db";
 import { ChildrenProps } from "interfaces";
 import { AuthUser } from "api-schemas/user";
-import { buildNewUser, getUser, setUser } from "@/lib/db";
 
 const authContext = createContext<O.Option<Auth>>(O.none);
 
@@ -43,12 +42,17 @@ export const AuthProvider = ({ children }: ChildrenProps): ReactElement => {
           email: userCred.user.email,
           photoURL: userCred.user.photoURL,
         };
-        const storedUserData = await getUser(userCred.user.uid);
+        const storedUserData = await DBUser.getUser(userCred.user.uid);
 
         if (storedUserData) {
-          return setUser({ ...storedUserData, ...authUserData });
+          return DBUser.setUser({ ...storedUserData, ...authUserData });
         } else {
-          return F.pipe(userCred, ({ user }) => user, buildNewUser, setUser);
+          return F.pipe(
+            userCred,
+            ({ user }) => user,
+            DBUser.buildNewUser,
+            DBUser.setUser
+          );
         }
       }
     } catch (e: unknown) {

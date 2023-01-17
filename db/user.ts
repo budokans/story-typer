@@ -1,6 +1,29 @@
-import { taskEither as TE, function as F } from "fp-ts";
-import { db } from "./";
+import { User as FirebaseUser } from "firebase/auth";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { db } from "db";
+import { User } from "interfaces";
 
-export const createUser = async (user: User): Promise<void> => {
-  db.collection("users").doc(user.uid).set(user, { merge: true });
+export const getUser = async (id: string): Promise<User> => {
+  const docSnap = await getDoc(doc(db, "users", id));
+  return docSnap.data() as User;
 };
+
+export const buildNewUser = (user: FirebaseUser): User => ({
+  uid: user.uid,
+  name: user.displayName,
+  email: user.email,
+  photoURL: user.photoURL,
+  registeredDate: user.metadata.creationTime,
+  lastSignInTime: user.metadata.lastSignInTime,
+  personalBest: null,
+  lastTenScores: [],
+  gamesPlayed: 0,
+  newestPlayedStoryPublishedDate: null,
+  oldestPlayedStoryPublishedDate: null,
+});
+
+export const setUser = async (user: User): Promise<void> =>
+  setDoc(doc(db, "users", user.uid), user, { merge: true });
+
+export const updateUserDataOnWin = async (user: User): Promise<void> =>
+  updateDoc(doc(db, "users", user.uid), { ...user });

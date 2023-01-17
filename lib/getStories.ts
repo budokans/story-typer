@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Post, ScrapedStory } from "../interfaces";
-import { createStory, getLatestTimestamp, incrementStoriesCount } from "./db";
+import { Story as DBStory, Metadata as DBMetadata } from "db";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
@@ -69,7 +69,7 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
 );
 
 const getLatestStories = (): Promise<ScrapedStory[] | void> => {
-  return getLatestTimestamp()
+  return DBStory.lastStoryTimestamp()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
     )
@@ -82,9 +82,9 @@ export const addLatestStories = (): Promise<number | void> => {
   return getLatestStories()
     .then((stories) => {
       if (stories) {
-        stories.forEach(createStory);
+        stories.forEach(DBStory.createStory);
         const storiesCount = stories.length;
-        incrementStoriesCount(storiesCount);
+        DBMetadata.incrementStoriesCount(storiesCount);
         return storiesCount;
       }
       return;
@@ -97,8 +97,8 @@ export const seed = (): Promise<void> => {
   return getPostsOverPages(url, STARTING_PAGE, PAGE_LIMIT)
     .then((posts) => formatStories(posts))
     .then((stories) => {
-      stories.forEach(createStory);
-      incrementStoriesCount(stories.length);
+      stories.forEach(DBStory.createStory);
+      DBMetadata.incrementStoriesCount(stories.length);
     })
     .catch((e) => console.error(e));
 };

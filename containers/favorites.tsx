@@ -2,7 +2,7 @@ import { Fragment, useRef, ReactElement } from "react";
 import { useInfiniteQuery } from "react-query";
 import { Divider, Text } from "@chakra-ui/react";
 import { Archive, Spinner } from "@/components";
-import { getFavorites } from "@/lib/db";
+import { Favorite as DBFavorite } from "db";
 import { useIntersectionObserver } from "@/hooks";
 import { useUserContext } from "@/context/user";
 
@@ -19,7 +19,7 @@ export const FavoritesContainer = (): ReactElement => {
   } = useInfiniteQuery(
     "favorites",
     async ({ pageParam = null }) => {
-      const res = await getFavorites(userId!, pageParam);
+      const res = await DBFavorite.getFavorites(userId!, pageParam);
       return res;
     },
     {

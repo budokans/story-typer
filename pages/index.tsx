@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import { GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { Box } from "@chakra-ui/react";
-import { getStoriesCount } from "@/lib/db-admin";
+import { getStoriesCount } from "@/db/admin";
 import { useAuthContext } from "@/context/auth";
 import { useUserContext } from "@/context/user";
 import { Page } from "@/containers";
