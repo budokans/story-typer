@@ -9,7 +9,7 @@ export type StoryData = IoTs.TypeOf<typeof StoryData>;
 
 export const Favorite = IoTs.intersection([
   StoryData,
-  IoTs.partial({
+  IoTs.type({
     userId: IoTs.string,
     dateFavorited: IoTs.string,
   }),

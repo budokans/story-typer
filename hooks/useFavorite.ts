@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Favorite as DBFavorite } from "db";
 import { useUserContext } from "@/context/user";
-import { FavoriteBase, Favorite } from "interfaces";
+import { Favorite } from "api-schemas";
 
 export const useFavorite = (
-  storyDetails: FavoriteBase
+  storyDetails: Favorite.StoryData
 ): { isFavorited: boolean; handleFavoriteClick: () => void } => {
   const user = useUserContext();
   const userId = user?.uid;
@@ -16,7 +16,7 @@ export const useFavorite = (
   );
 
   const addFavoriteMutation = useMutation(
-    (favorite: Favorite) => DBFavorite.createFavorite(favorite),
+    (favorite: Favorite.Favorite) => DBFavorite.createFavorite(favorite),
     {
       onSuccess: () => queryClient.invalidateQueries("isFavorite"),
     }

@@ -1,4 +1,7 @@
-import { User, Story } from "interfaces";
+import { User, Story } from "api-schemas";
+
+type User = User.User;
+type Story = Story.Story;
 
 export const createPostWinUser = (
   user: User,

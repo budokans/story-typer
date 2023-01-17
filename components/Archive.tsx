@@ -25,7 +25,8 @@ import { parseISO, formatDistance } from "date-fns";
 import domToReact from "html-react-parser";
 import { useStoriesContext } from "@/context/stories";
 import { useFavorite } from "@/hooks";
-import { ChildrenProps, FavoriteBase } from "interfaces";
+import { ChildrenProps } from "@/components";
+import { Favorite } from "api-schemas";
 import {
   CardIsExpandedProvider,
   useCardIsExpandedContext,
@@ -51,7 +52,7 @@ interface PlayAgainButtonProps {
 }
 
 interface DeleteFavoriteButtonProps {
-  readonly storyDetails: FavoriteBase;
+  readonly storyDetails: Favorite.StoryData;
 }
 
 export const Archive = ({ children }: ChildrenProps): ReactElement => {

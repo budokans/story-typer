@@ -1,14 +1,14 @@
-import { Post } from "../interfaces";
+import { Story } from "api-schemas";
 
 export type GetPostsOverPagesRecursive = (
   self: GetPostsOverPagesRecursive,
   url: string,
   pageNum: number,
   pageLimit: number
-) => Promise<Post[]>;
+) => Promise<Story.Post[]>;
 
 export type GetPostsOverPages = (
   url: string,
   pageNum: number,
   pageLimit: number
-) => Promise<Post[]>;
+) => Promise<Story.Post[]>;

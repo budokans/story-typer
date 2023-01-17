@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { Link as ChakraLink } from "@chakra-ui/react";
-import { ChildrenProps } from "interfaces";
+import { ChildrenProps } from "components";
 
 interface FiftyWordStoriesLinkProps {
   readonly hoverColor: string;

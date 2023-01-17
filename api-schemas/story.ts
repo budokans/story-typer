@@ -1,5 +1,17 @@
 import * as IoTs from "io-ts";
 
+export const Post = IoTs.type({
+  date: IoTs.string,
+  link: IoTs.string,
+  title: IoTs.type({
+    rendered: IoTs.string,
+  }),
+  content: IoTs.type({
+    rendered: IoTs.string,
+  }),
+});
+export type Post = IoTs.TypeOf<typeof Post>;
+
 export const ScrapedStory = IoTs.type({
   title: IoTs.string,
   authorBio: IoTs.string,
@@ -12,7 +24,7 @@ export const ScrapedStory = IoTs.type({
 export type ScrapedStory = IoTs.TypeOf<typeof ScrapedStory>;
 
 export const Story = IoTs.intersection([
-  IoTs.type({ uid: IoTs.string }),
+  IoTs.type({ id: IoTs.string }),
   ScrapedStory,
 ]);
 export type Story = IoTs.TypeOf<typeof Story>;

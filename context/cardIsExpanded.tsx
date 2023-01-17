@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { option as O, function as F } from "fp-ts";
-import { ChildrenProps } from "interfaces";
+import { ChildrenProps } from "components";
 
 interface CardIsExpandedContext {
   readonly isExpanded: boolean;

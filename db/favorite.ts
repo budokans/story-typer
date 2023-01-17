@@ -15,12 +15,12 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "db";
-import { Favorite } from "interfaces";
+import { Favorite } from "api-schemas";
 
 const favoritesQueryLimit = 10;
 
 export const createFavorite = async (
-  favorite: Favorite
+  favorite: Favorite.Favorite
 ): Promise<DocumentReference<DocumentData>> =>
   addDoc(collection(db, "favorites"), favorite);
 
@@ -48,7 +48,7 @@ export const getFavorites = async (
   userId: string,
   last: QueryDocumentSnapshot<DocumentData>
 ): Promise<{
-  favorites: Favorite[];
+  favorites: Favorite.Favorite[];
   cursor: QueryDocumentSnapshot<DocumentData> | null;
 }> => {
   let queryRef: Query<DocumentData>;
@@ -73,7 +73,7 @@ export const getFavorites = async (
 
   const querySnapshot = await getDocs(query(queryRef));
   const favorites = querySnapshot.docs.map(
-    (favorite) => favorite.data() as Favorite
+    (favorite) => favorite.data() as Favorite.Favorite
   );
 
   const cursor =

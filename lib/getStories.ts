@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Post, ScrapedStory } from "../interfaces";
+import { Story } from "api-schemas";
 import { Story as DBStory, Metadata as DBMetadata } from "db";
 import { formatStories } from "./format";
 import {
@@ -39,7 +39,7 @@ const getPageUrl = (
   return encodeURI(`${endpoint}?${defaultParamsStr}&page=${pageNum}`);
 };
 
-const getPosts = async (url: string): Promise<Post[]> => {
+const getPosts = async (url: string): Promise<Story.Post[]> => {
   const { data: posts } = await axios.get(url);
   return posts;
 };
@@ -49,7 +49,7 @@ const getPostsOverPagesRecursive = async (
   url: string,
   pageNum: number,
   pageLimit: number
-): Promise<Post[]> => {
+): Promise<Story.Post[]> => {
   const onePage = await getPosts(url);
   if (pageNum < pageLimit) {
     const nextPageUrl = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum + 1);
@@ -68,7 +68,7 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
   getPostsOverPagesRecursive
 );
 
-const getLatestStories = (): Promise<ScrapedStory[] | void> => {
+const getLatestStories = (): Promise<Story.ScrapedStory[] | void> => {
   return DBStory.lastStoryTimestamp()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)

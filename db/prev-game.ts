@@ -13,10 +13,10 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "db";
-import { PrevGame } from "interfaces";
+import { PrevGame } from "api-schemas";
 
 export const createPrevGame = async (
-  game: PrevGame
+  game: PrevGame.PrevGame
 ): Promise<DocumentReference<DocumentData>> =>
   addDoc(collection(db, "prevGames"), game);
 
@@ -26,7 +26,7 @@ export const getPrevGames = async (
   userId: string,
   last: QueryDocumentSnapshot<DocumentData>
 ): Promise<{
-  prevGames: PrevGame[];
+  prevGames: PrevGame.PrevGame[];
   cursor: QueryDocumentSnapshot<DocumentData> | null;
 }> => {
   let queryRef: Query<DocumentData>;
@@ -51,7 +51,7 @@ export const getPrevGames = async (
 
   const querySnapshot = await getDocs(query(queryRef));
   const prevGames = querySnapshot.docs.map(
-    (prevGame) => prevGame.data() as PrevGame
+    (prevGame) => prevGame.data() as PrevGame.PrevGame
   );
 
   const cursor =

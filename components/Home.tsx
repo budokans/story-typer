@@ -14,7 +14,7 @@ import {
 import Image from "next/image";
 import { RiThumbUpFill } from "react-icons/ri";
 import logo from "../public/story-typer-logo.png";
-import { ChildrenProps } from "interfaces";
+import { ChildrenProps } from "components";
 
 export const Home = ({ children }: ChildrenProps): ReactElement => (
   <Container>{children}</Container>

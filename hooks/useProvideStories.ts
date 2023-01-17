@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Story as DBStory } from "db";
-import { Story, User } from "interfaces";
+import { Story, User } from "api-schemas";
 import { useUserContext } from "@/context/user";
 
 interface ProvideStories {
-  readonly stories: readonly Story[];
+  readonly stories: readonly Story.Story[];
   readonly isLoading: boolean;
   readonly handlePlayArchiveStoryClick: (id: string) => void;
 }
@@ -12,9 +12,9 @@ interface ProvideStories {
 export const useProvideStories = (gameCount: number): ProvideStories => {
   const user = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
-  const [stories, setStories] = useState<readonly Story[]>([]);
+  const [stories, setStories] = useState<readonly Story.Story[]>([]);
 
-  const loadStories = async (user: User) => {
+  const loadStories = async (user: User.User) => {
     const batch = await DBStory.getStories(
       user!.newestPlayedStoryPublishedDate,
       user!.oldestPlayedStoryPublishedDate
@@ -45,7 +45,7 @@ export const useProvideStories = (gameCount: number): ProvideStories => {
   }, [user]);
 
   // Add selected story to current position in array if user chooses play again from Archive
-  const handlePlayArchiveStoryClick = async (id: Story["id"]) => {
+  const handlePlayArchiveStoryClick = async (id: Story.Story["id"]) => {
     const story = await DBStory.getStory(id);
     const destinationIdx = gameCount - 1;
     setStories([

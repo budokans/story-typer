@@ -10,10 +10,11 @@ import {
 import { option as O, function as F } from "fp-ts";
 import { useProvideStories } from "@/hooks";
 import { useUserContext } from "./user";
-import { ChildrenProps, Story } from "interfaces";
+import { Story } from "api-schemas";
+import { ChildrenProps } from "components";
 
 interface StoryContext {
-  readonly stories: readonly Story[];
+  readonly stories: readonly Story.Story[];
   readonly isLoading: boolean;
   readonly gameCount: number;
   readonly setGameCount: Dispatch<SetStateAction<number>>;

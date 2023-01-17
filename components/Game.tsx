@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
-import { ChildrenProps } from "interfaces";
+import { ChildrenProps } from "components";
 import { GameStatus } from "@/reducers/GameReducer";
 
 export const Game = ({ children }: ChildrenProps): ReactElement => (

@@ -2,10 +2,10 @@ import { ReactElement } from "react";
 import { IconButton } from "@chakra-ui/button";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { useFavorite } from "@/hooks";
-import { FavoriteBase } from "interfaces";
+import { Favorite } from "api-schemas";
 
 interface FavoriteButtonProps {
-  readonly storyDetails: FavoriteBase;
+  readonly storyDetails: Favorite.StoryData;
 }
 
 export const FavoriteButton = ({

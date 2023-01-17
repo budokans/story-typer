@@ -4,7 +4,7 @@ import { ReactElement } from "react";
 import { useUserContext } from "@/context/user";
 import { Header, Footer, GoogleIcon } from "@/components";
 import { getUserAverageScoresDisplay } from "@/lib/manageUser";
-import { ChildrenProps } from "interfaces";
+import { ChildrenProps } from "components";
 import { Styles } from "@/styles";
 import { useAuthContext } from "@/context/auth";
 

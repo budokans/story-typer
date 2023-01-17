@@ -1,6 +1,6 @@
 import { Center, useMediaQuery } from "@chakra-ui/react";
-import { ChildrenProps } from "interfaces";
 import { ReactElement } from "react";
+import { ChildrenProps } from "components";
 import { Styles } from "@/styles";
 
 interface CenterContentProps {

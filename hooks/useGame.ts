@@ -4,12 +4,12 @@ import * as GameState from "./reducers/GameReducer";
 import { useCountdown, Timer } from "@/hooks";
 import { useUserContext } from "@/context/user";
 import { useStoriesContext } from "@/context/stories";
-import { PrevGame, Story, User } from "interfaces";
+import { PrevGame, Story, User } from "api-schemas";
 import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
 import { PrevGame as DBPrevGame, User as DBUser } from "db";
 
 export interface UseGame {
-  readonly currentStory: Story;
+  readonly currentStory: Story.Story;
   readonly status: GameState.GameStatus;
   readonly inputValue: string;
   readonly userError: boolean;
@@ -33,7 +33,7 @@ export const useGame = (): UseGame => {
   const user = useUserContext();
   const queryClient = useQueryClient();
   const userWinMutation = useMutation(
-    (newUserData: User) => DBUser.updateUserDataOnWin(newUserData),
+    (newUserData: User.User) => DBUser.updateUserDataOnWin(newUserData),
     {
       onSuccess: () => {
         queryClient.invalidateQueries("user");
@@ -107,9 +107,9 @@ export const useGame = (): UseGame => {
 
   const constructGame = (
     userId: string,
-    story: Story,
+    story: Story.Story,
     wpm: number
-  ): PrevGame => ({
+  ): PrevGame.PrevGame => ({
     userId: userId,
     storyId: story.id,
     storyTitle: story.title,

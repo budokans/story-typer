@@ -13,7 +13,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
-import { ChildrenProps } from "interfaces";
+import { ChildrenProps } from "components";
 import { Styles } from "@/styles";
 import { useUserContext } from "@/context/user";
 

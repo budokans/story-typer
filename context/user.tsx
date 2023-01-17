@@ -2,12 +2,14 @@ import { createContext, useContext, ReactElement } from "react";
 import { useQuery } from "react-query";
 import { option as O, function as F } from "fp-ts";
 import { User } from "api-schemas";
-import { ChildrenProps } from "interfaces";
-import { CenterContent } from "components/CenterContent";
-import { Spinner } from "components/Spinner";
+import {
+  CenterContent,
+  LoginRerouter,
+  Spinner,
+  ChildrenProps,
+} from "components";
 import { User as DBUser } from "db";
 import { useAuthContext } from "./auth";
-import { LoginRerouter } from "components/LoginRerouter";
 
 const userContext = createContext<O.Option<User.User>>(O.none);
 

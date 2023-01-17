@@ -11,3 +11,4 @@ export * as Header from "./Header";
 export * as Home from "./Home";
 export { LoginRerouter } from "./LoginRerouter";
 export { Spinner } from "./Spinner";
+export type { ChildrenProps } from "./util.types";

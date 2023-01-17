@@ -7,7 +7,7 @@ import {
   useSignOut,
 } from "react-firebase-hooks/auth";
 import { firebaseApp, User as DBUser } from "db";
-import { ChildrenProps } from "interfaces";
+import { ChildrenProps } from "components";
 import { AuthUser } from "api-schemas/user";
 
 const authContext = createContext<O.Option<Auth>>(O.none);
