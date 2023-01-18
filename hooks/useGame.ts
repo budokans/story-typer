@@ -4,7 +4,7 @@ import * as GameState from "./reducers/GameReducer";
 import { useCountdown, Timer } from "@/hooks";
 import { useUserContext } from "@/context/user";
 import { useStoriesContext } from "@/context/stories";
-import { PrevGame, Story, User } from "api-schemas";
+import { Story, User } from "api-schemas";
 import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
 import { PrevGame as DBPrevGame, User as DBUser } from "db";
 
@@ -85,7 +85,7 @@ export const useGame = (): UseGame => {
 
   const handleSkipClick = () => {
     if (user) {
-      const game = constructGame(user.uid, currentStory, 0);
+      const game = DBPrevGame.buildGame(user.uid, currentStory, 0);
       DBPrevGame.createPrevGame(game);
       const updatedUser = createPostSkipUser(user, currentStory);
       userWinMutation.mutate(updatedUser);
@@ -104,19 +104,6 @@ export const useGame = (): UseGame => {
   };
 
   const getWpm = (time: number) => Math.round(50 * (60 / time));
-
-  const constructGame = (
-    userId: string,
-    story: Story.Story,
-    wpm: number
-  ): PrevGame.PrevGame => ({
-    userId: userId,
-    storyId: story.id,
-    storyTitle: story.title,
-    storyHtml: story.storyHtml,
-    datePlayed: new Date().toISOString(),
-    score: wpm,
-  });
 
   // Listen for user error
   useEffect(() => {
@@ -137,7 +124,7 @@ export const useGame = (): UseGame => {
   const winGame = useCallback(() => {
     const wpm = getWpm(timer.totalSeconds);
     if (user) {
-      const game = constructGame(user.uid, currentStory, wpm);
+      const game = DBPrevGame.buildGame(user.uid, currentStory, wpm);
       const updatedUser = createPostWinUser(user, currentStory, wpm);
       userWinMutation.mutate(updatedUser);
       DBPrevGame.createPrevGame(game);

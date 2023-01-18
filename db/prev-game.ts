@@ -13,7 +13,20 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "db";
-import { PrevGame } from "api-schemas";
+import { PrevGame, Story } from "api-schemas";
+
+export const buildGame = (
+  userId: string,
+  story: Story.Story,
+  wpm: number
+): PrevGame.PrevGame => ({
+  userId: userId,
+  storyId: story.id,
+  storyTitle: story.title,
+  storyHtml: story.storyHtml,
+  datePlayed: new Date().toISOString(),
+  score: wpm,
+});
 
 export const createPrevGame = async (
   game: PrevGame.PrevGame
