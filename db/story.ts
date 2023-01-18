@@ -4,6 +4,7 @@ import {
   doc,
   DocumentData,
   DocumentReference,
+  DocumentSnapshot,
   getDoc,
   getDocs,
   limit,
@@ -38,13 +39,15 @@ export const lastStoryTimestamp = async (): Promise<string> => {
   return querySnapshot.docs[0].data().dataPublished;
 };
 
+// TODO: This particular cast is very dangerous. Remove ASAP.
+const withId = (docSnapshot: DocumentSnapshot<DocumentData>): Story.Story => ({
+  ...(docSnapshot.data() as Story.Story),
+  id: docSnapshot.id,
+});
+
 export const getStory = async (id: string): Promise<Story.Story> => {
   const snapshot = await getDoc(doc(db, "stories", id));
-  const withId = {
-    ...(snapshot.data() as Story.Story),
-    uid: snapshot.id,
-  };
-  return withId;
+  return withId(snapshot);
 };
 
 export const getStories = async (
@@ -75,7 +78,7 @@ export const getStories = async (
   }
 
   if (snapshot.docs.length > 0) {
-    batch = snapshot.docs.map((doc) => doc.data() as Story.Story);
+    batch = snapshot.docs.map(withId);
   }
 
   if (batch.length < 10) {
@@ -87,7 +90,7 @@ export const getStories = async (
       limit(localLimit)
     );
     snapshot = await getDocs(q);
-    batch = snapshot.docs.map((doc) => doc.data() as Story.Story);
+    batch = snapshot.docs.map(withId);
   }
 
   return batch;
