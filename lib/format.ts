@@ -4,7 +4,7 @@ import unidecode from "unidecode";
 import { Story } from "api-schemas";
 
 type Post = Story.Post;
-type ScrapedStory = Story.ScrapedStory;
+type ScrapedStory = Story.StoryBody;
 
 const checkBioExists = (text: string): boolean => text.includes("<hr");
 
@@ -37,7 +37,6 @@ const prune = (post: Post): ScrapedStory => ({
   storyText: getStory(post.content.rendered),
   url: post.link,
   datePublished: post.date,
-  dateScraped: new Date().toISOString(),
 });
 
 const prunePosts = (posts: Post[]): ScrapedStory[] => {
@@ -63,7 +62,6 @@ const formatStory = (story: ScrapedStory): ScrapedStory => ({
   storyText: formatText(removeHtmlTags(story.storyText)),
   url: story.url,
   datePublished: story.datePublished,
-  dateScraped: story.dateScraped,
 });
 
 const formatPosts = (stories: ScrapedStory[]): ScrapedStory[] => {

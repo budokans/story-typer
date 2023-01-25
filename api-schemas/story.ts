@@ -12,19 +12,18 @@ export const Post = IoTs.type({
 });
 export type Post = IoTs.TypeOf<typeof Post>;
 
-export const ScrapedStory = IoTs.type({
+export const StoryBody = IoTs.type({
   title: IoTs.string,
   authorBio: IoTs.string,
   storyHtml: IoTs.string,
   storyText: IoTs.string,
   url: IoTs.string,
   datePublished: IoTs.string,
-  dateScraped: IoTs.string,
 });
-export type ScrapedStory = IoTs.TypeOf<typeof ScrapedStory>;
+export type StoryBody = IoTs.TypeOf<typeof StoryBody>;
 
-export const Story = IoTs.intersection([
-  IoTs.type({ id: IoTs.string }),
-  ScrapedStory,
+export const StoryResponse = IoTs.intersection([
+  IoTs.type({ id: IoTs.string, dateScraped: IoTs.string }),
+  StoryBody,
 ]);
-export type Story = IoTs.TypeOf<typeof Story>;
+export type StoryResponse = IoTs.TypeOf<typeof StoryResponse>;

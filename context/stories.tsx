@@ -14,7 +14,7 @@ import { Story } from "api-schemas";
 import { ChildrenProps } from "components";
 
 interface StoryContext {
-  readonly stories: readonly Story.Story[];
+  readonly stories: readonly Story.StoryResponse[];
   readonly isLoading: boolean;
   readonly gameCount: number;
   readonly setGameCount: Dispatch<SetStateAction<number>>;

@@ -9,7 +9,7 @@ import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
 import { PrevGame as DBPrevGame, User as DBUser } from "db";
 
 export interface UseGame {
-  readonly currentStory: Story.Story;
+  readonly currentStory: Story.StoryResponse;
   readonly status: GameState.GameStatus;
   readonly inputValue: string;
   readonly userError: boolean;

@@ -1,14 +1,12 @@
 import { Fragment, useRef, ReactElement } from "react";
-import { useInfiniteQuery } from "react-query";
 import { Divider, Text } from "@chakra-ui/react";
 import { Archive, Spinner } from "@/components";
-import { Favorite as DBFavorite } from "db";
 import { useIntersectionObserver } from "@/hooks";
 import { useUserContext } from "@/context/user";
+import { useFavoritesInfinite } from "api-client/favorite";
 
 export const FavoritesContainer = (): ReactElement => {
   const user = useUserContext();
-  const userId = user?.uid;
   const {
     data,
     error,
@@ -16,18 +14,7 @@ export const FavoritesContainer = (): ReactElement => {
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-  } = useInfiniteQuery(
-    "favorites",
-    async ({ pageParam = null }) => {
-      const res = await DBFavorite.getFavorites(userId!, pageParam);
-      return res;
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.cursor,
-      refetchOnWindowFocus: false,
-      enabled: !!userId,
-    }
-  );
+  } = useFavoritesInfinite(user?.uid);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -46,8 +33,8 @@ export const FavoritesContainer = (): ReactElement => {
 
   return (
     <>
-      {data?.pages.map((page, pageIdx) => (
-        <Fragment key={pageIdx}>
+      {data?.pages.map((page, idx) => (
+        <Fragment key={idx}>
           {page.favorites.map((favorite, idx) => (
             <Archive.Card key={idx}>
               <Archive.CardHeader>

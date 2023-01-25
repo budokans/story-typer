@@ -2,61 +2,95 @@ import {
   addDoc,
   collection,
   doc,
-  DocumentData,
   DocumentReference,
-  DocumentSnapshot,
+  FieldValue,
+  FirestoreDataConverter,
   getDoc,
   getDocs,
   limit,
   orderBy,
-  Query,
   query,
+  QueryDocumentSnapshot,
   QuerySnapshot,
   serverTimestamp,
   startAfter,
 } from "firebase/firestore";
+import { function as F } from "fp-ts";
 import { db } from "db";
 import { Story } from "api-schemas";
 
-const initialStoryQueryLimit = 10;
+export interface StoryDocument {
+  readonly id: string;
+  readonly title: string;
+  readonly authorBio: string;
+  readonly storyHtml: string;
+  readonly storyText: string;
+  readonly url: string;
+  readonly datePublished: string;
+  readonly dateScraped: FieldValue;
+}
+
+export const storyConverter: FirestoreDataConverter<StoryDocument> = {
+  toFirestore: (body: StoryDocument) => body,
+  fromFirestore: (snapshot: QueryDocumentSnapshot): StoryDocument =>
+    F.pipe(
+      // Force new line
+      snapshot,
+      (snapshot) => ({ id: snapshot.id, data: snapshot.data() }),
+      ({ id, data }): StoryDocument => ({
+        id: id,
+        title: data.title,
+        authorBio: data.authorBio,
+        storyHtml: data.storyHtml,
+        storyText: data.storyText,
+        url: data.url,
+        datePublished: data.datePublished,
+        dateScraped: data.dateScraped,
+      })
+    ),
+};
 
 export const createStory = async (
-  story: Story.ScrapedStory
-): Promise<DocumentReference<DocumentData>> =>
-  addDoc(collection(db, "stories"), {
-    ...story,
-    dateScraped: serverTimestamp(),
-  });
+  body: Story.StoryBody
+): Promise<DocumentReference<StoryDocument>> =>
+  F.pipe(
+    collection(db, "stories"),
+    (collRef) => collRef.withConverter(storyConverter),
+    (typedCollRef) =>
+      addDoc(typedCollRef, {
+        ...body,
+        // This is annoying, but in order to use our converter, we must supply an ID here
+        id: "This will be overwritten on the server",
+        dateScraped: serverTimestamp(),
+      })
+  );
 
 export const lastStoryTimestamp = async (): Promise<string> => {
-  const storiesCollRef = collection(db, "stories");
-  const q: Query<DocumentData> = query(
-    storiesCollRef,
-    orderBy("datePublished", "desc"),
-    limit(1)
+  const storiesCollRef = collection(db, "stories").withConverter(
+    storyConverter
   );
+  const q = query(storiesCollRef, orderBy("datePublished", "desc"), limit(1));
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs[0].data().dataPublished;
+  return querySnapshot.docs[0].data().datePublished;
 };
 
-// TODO: This particular cast is very dangerous. Remove ASAP.
-const withId = (docSnapshot: DocumentSnapshot<DocumentData>): Story.Story => ({
-  ...(docSnapshot.data() as Story.Story),
-  id: docSnapshot.id,
-});
-
-export const getStory = async (id: string): Promise<Story.Story> => {
-  const snapshot = await getDoc(doc(db, "stories", id));
-  return withId(snapshot);
+export const getStory = async (
+  id: string
+): Promise<StoryDocument | undefined> => {
+  const docRef = doc(db, "stories", id).withConverter(storyConverter);
+  const docSnap = await getDoc(docRef);
+  return docSnap.exists() ? docSnap.data() : undefined;
 };
+
+const initialStoryQueryLimit = 10;
 
 export const getStories = async (
   latest: string | null,
   oldest: string | null
-): Promise<Story.Story[]> => {
-  let localLimit = initialStoryQueryLimit;
-  let batch: Story.Story[] = [];
-  let snapshot: QuerySnapshot;
+): Promise<readonly StoryDocument[] | undefined> => {
+  let localLimit: number = initialStoryQueryLimit;
+  let batch: StoryDocument[] = [];
+  let snapshot: QuerySnapshot<StoryDocument>;
 
   const storiesCollRef = collection(db, "stories");
 
@@ -64,21 +98,21 @@ export const getStories = async (
     const q = query(
       storiesCollRef,
       orderBy("datePublished", "desc"),
-      limit(localLimit)
-    );
+      limit(initialStoryQueryLimit)
+    ).withConverter(storyConverter);
     snapshot = await getDocs(q);
   } else {
     const q = query(
       storiesCollRef,
       orderBy("datePublished", "desc"),
       startAfter(latest),
-      limit(localLimit)
-    );
+      limit(initialStoryQueryLimit)
+    ).withConverter(storyConverter);
     snapshot = await getDocs(q);
   }
 
   if (snapshot.docs.length > 0) {
-    batch = snapshot.docs.map(withId);
+    batch = snapshot.docs.map((doc) => doc.data());
   }
 
   if (batch.length < 10) {
@@ -88,10 +122,10 @@ export const getStories = async (
       orderBy("datePublished", "desc"),
       startAfter(oldest),
       limit(localLimit)
-    );
+    ).withConverter(storyConverter);
     snapshot = await getDocs(q);
-    batch = snapshot.docs.map(withId);
+    batch = snapshot.docs.map((doc) => doc.data());
   }
 
-  return batch;
+  return batch.length > 0 ? batch : undefined;
 };

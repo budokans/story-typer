@@ -1,14 +1,12 @@
 import { Fragment, useRef, ReactElement } from "react";
-import { useInfiniteQuery } from "react-query";
 import { Divider, Text } from "@chakra-ui/react";
 import { Archive, FavoriteButton, Spinner } from "@/components";
-import { PrevGame as DBPrevGame } from "db";
 import { useIntersectionObserver } from "@/hooks";
 import { useUserContext } from "@/context/user";
+import { usePrevGamesInfinite } from "api-client/prev-game";
 
 export const PrevGamesContainer = (): ReactElement => {
   const user = useUserContext();
-  const userId = user?.uid;
   const {
     data,
     error,
@@ -16,19 +14,7 @@ export const PrevGamesContainer = (): ReactElement => {
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-  } = useInfiniteQuery(
-    "prevGames",
-    async ({ pageParam = null }) => {
-      const res = await DBPrevGame.getPrevGames(userId!, pageParam);
-      return res;
-    },
-    {
-      enabled: !!userId,
-      getNextPageParam: (lastPage) => lastPage.cursor,
-      refetchOnWindowFocus: false,
-    }
-  );
-
+  } = usePrevGamesInfinite(user?.uid);
   const loadMoreRef = useRef(null);
 
   useIntersectionObserver({
@@ -46,8 +32,8 @@ export const PrevGamesContainer = (): ReactElement => {
 
   return (
     <>
-      {data?.pages.map((page, pageIdx) => (
-        <Fragment key={pageIdx}>
+      {data?.pages.map((page, idx) => (
+        <Fragment key={idx}>
           {page.prevGames.map((prevGame, idx) => (
             <Archive.Card key={idx}>
               <Archive.CardHeader>
@@ -76,14 +62,15 @@ export const PrevGamesContainer = (): ReactElement => {
         </Fragment>
       ))}
 
+      {/* Infinite Scroll */}
       <div ref={loadMoreRef} style={{ margin: "4rem 0 2rem" }}>
         {isFetching || isFetchingNextPage ? (
           <Spinner />
         ) : hasNextPage ? (
           <Text>Load more</Text>
         ) : data?.pages[0].prevGames.length === 0 ? (
-          <Text>No previous games found.</Text>
-        ) : data && data?.pages[0].prevGames.length < 10 ? null : (
+          <Text>No favorites found.</Text>
+        ) : data && data.pages[0].prevGames.length < 10 ? null : (
           <Text>No more results.</Text>
         )}
       </div>
