@@ -1,6 +1,6 @@
 import { Fragment, useRef, ReactElement } from "react";
 import { Divider, Text } from "@chakra-ui/react";
-import { Archive, FavoriteButton, Spinner } from "@/components";
+import { Archive, FavoriteButton, InfiniteScroll } from "@/components";
 import { useIntersectionObserver } from "@/hooks";
 import { useUserContext } from "@/context/user";
 import { usePrevGamesInfinite } from "api-client/prev-game";
@@ -15,7 +15,7 @@ export const PrevGamesContainer = (): ReactElement => {
     fetchNextPage,
     hasNextPage,
   } = usePrevGamesInfinite(user?.uid);
-  const loadMoreRef = useRef(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useIntersectionObserver({
     target: loadMoreRef,
@@ -62,18 +62,13 @@ export const PrevGamesContainer = (): ReactElement => {
         </Fragment>
       ))}
 
-      {/* Infinite Scroll */}
-      <div ref={loadMoreRef} style={{ margin: "4rem 0 2rem" }}>
-        {isFetching || isFetchingNextPage ? (
-          <Spinner />
-        ) : hasNextPage ? (
-          <Text>Load more</Text>
-        ) : data?.pages[0].prevGames.length === 0 ? (
-          <Text>No favorites found.</Text>
-        ) : data && data.pages[0].prevGames.length < 10 ? null : (
-          <Text>No more results.</Text>
-        )}
-      </div>
+      <InfiniteScroll
+        ref={loadMoreRef}
+        isFetching={isFetching}
+        isFetchingNext={isFetchingNextPage}
+        hasNext={hasNextPage}
+        data={data?.pages[0].prevGames}
+      />
     </>
   );
 };

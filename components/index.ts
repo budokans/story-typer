@@ -12,3 +12,4 @@ export * as Home from "./Home";
 export { LoginRerouter } from "./LoginRerouter";
 export { Spinner } from "./Spinner";
 export type { ChildrenProps } from "./util.types";
+export { InfiniteScroll } from "./InfiniteScroll";
