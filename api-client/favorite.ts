@@ -1,12 +1,29 @@
-import { QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
-import { useInfiniteQuery } from "react-query";
-import { function as F, array as AMut, readonlyArray as A } from "fp-ts";
+import {
+  DocumentReference,
+  QueryDocumentSnapshot,
+  Timestamp,
+} from "firebase/firestore";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "react-query";
+import {
+  function as F,
+  array as AMut,
+  readonlyArray as A,
+  either as E,
+  taskEither as TE,
+} from "fp-ts";
 import { Favorite as DBFavorite } from "db";
 import { Favorite as FavoriteSchema } from "api-schemas";
 import { UseInfiniteQuery } from "./util";
+import { useUserContext } from "@/context/user";
 
-type Document = DBFavorite.FavoriteDocument;
-type Response = FavoriteSchema.FavoriteResponse;
+export type Document = DBFavorite.FavoriteDocument;
+export type Body = FavoriteSchema.FavoriteBody;
+export type Response = FavoriteSchema.FavoriteResponse;
 
 export const serializeFavorite = (favoriteDoc: Document): Response => ({
   id: favoriteDoc.id,
@@ -19,6 +36,89 @@ export const serializeFavorite = (favoriteDoc: Document): Response => ({
     .toDate()
     .toISOString(),
 });
+
+export const useFavorite = (
+  storyId: string
+): {
+  readonly data: E.Either<unknown, Response>;
+  readonly isLoading: boolean;
+} => {
+  const user = useUserContext();
+  const userId = user?.uid;
+  const {
+    data: rawData,
+    error,
+    isLoading,
+  } = useQuery(
+    ["favorites", userId, storyId],
+    // userId will never be undefined when this runs as long as
+    // we only enable this query when userId is truthy
+    () => DBFavorite.getFavorite(userId!, storyId),
+    {
+      enabled: !!userId,
+    }
+  );
+
+  return {
+    data: F.pipe(
+      // Force new line
+      rawData,
+      E.fromNullable(error),
+      E.map(serializeFavorite)
+    ),
+    isLoading,
+  };
+};
+
+export const useAddFavorite = (): ((
+  storyDetails: FavoriteSchema.StoryData
+) => TE.TaskEither<unknown, DocumentReference<Document>>) => {
+  const user = useUserContext();
+  const queryClient = useQueryClient();
+
+  const addFavoriteMutation = useMutation(
+    (favorite: Body) => DBFavorite.createFavorite(favorite),
+    {
+      onSuccess: () => queryClient.invalidateQueries("favorites"),
+    }
+  );
+
+  return (storyDetails: FavoriteSchema.StoryData) =>
+    F.pipe(
+      user?.uid,
+      TE.fromNullable("User not found."),
+      TE.map((userId) => ({
+        userId,
+        ...storyDetails,
+      })),
+      TE.map(FavoriteSchema.FavoriteBody.encode),
+      TE.chain((encodedBody) =>
+        TE.tryCatch(
+          () => addFavoriteMutation.mutateAsync(encodedBody),
+          (error) => error
+        )
+      )
+    );
+};
+
+export const useDeleteFavorite = (): ((
+  id: string
+) => TE.TaskEither<unknown, void>) => {
+  const queryClient = useQueryClient();
+
+  const deleteFavoriteMutation = useMutation(
+    (id: string) => DBFavorite.deleteFavorite(id),
+    {
+      onSuccess: () => queryClient.invalidateQueries("favorites"),
+    }
+  );
+
+  return (id: string) =>
+    TE.tryCatch(
+      () => deleteFavoriteMutation.mutateAsync(id),
+      (error) => error
+    );
+};
 
 export const useFavoritesInfinite = (
   userId: string | undefined

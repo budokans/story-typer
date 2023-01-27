@@ -14,7 +14,12 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import router from "next/router";
-import { function as F, string as String } from "fp-ts";
+import {
+  function as F,
+  string as String,
+  taskEither as TE,
+  task as T,
+} from "fp-ts";
 import {
   RiArrowLeftSLine,
   RiArrowUpSLine,
@@ -24,9 +29,8 @@ import {
 import { parseISO, formatDistance } from "date-fns";
 import domToReact from "html-react-parser";
 import { useStoriesContext } from "@/context/stories";
-import { useFavorite } from "@/hooks";
+import { Favorite as FavoriteAPI } from "api-client";
 import { ChildrenProps } from "@/components";
-import { Favorite } from "api-schemas";
 import {
   CardIsExpandedProvider,
   useCardIsExpandedContext,
@@ -52,7 +56,7 @@ interface PlayAgainButtonProps {
 }
 
 interface DeleteFavoriteButtonProps {
-  readonly storyDetails: Favorite.StoryData;
+  readonly id: string;
 }
 
 export const Archive = ({ children }: ChildrenProps): ReactElement => {
@@ -207,9 +211,9 @@ export const PlayAgainButton = ({
 };
 
 export const DeleteFavoriteButton = ({
-  storyDetails,
-}: DeleteFavoriteButtonProps): ReactElement => {
-  const { handleFavoriteClick } = useFavorite(storyDetails);
+  id,
+}: DeleteFavoriteButtonProps): ReactElement | null => {
+  const deleteFavoriteMutation = FavoriteAPI.useDeleteFavorite();
   const { setIsExpanded } = useCardIsExpandedContext();
 
   return (
@@ -221,10 +225,23 @@ export const DeleteFavoriteButton = ({
       fontSize="1.75rem"
       bg="blackAlpha.400"
       color="blackAlpha.800"
-      onClick={() => {
-        handleFavoriteClick();
-        setIsExpanded(false);
-      }}
+      onClick={() =>
+        F.pipe(
+          deleteFavoriteMutation(id),
+          TE.fold(
+            (error) =>
+              F.pipe(
+                // Force new line
+                () => console.error(error),
+                T.fromIO
+              ),
+            () => {
+              setIsExpanded(false);
+              return T.of(undefined);
+            }
+          )
+        )()
+      }
     />
   );
 };

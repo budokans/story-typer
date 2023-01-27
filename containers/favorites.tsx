@@ -48,13 +48,7 @@ export const FavoritesContainer = (): ReactElement => {
                 <Divider my={4} />
                 <Archive.Buttons>
                   <Archive.PlayAgainButton storyId={favorite.storyId} />
-                  <Archive.DeleteFavoriteButton
-                    storyDetails={{
-                      storyId: favorite.storyId,
-                      storyTitle: favorite.storyTitle,
-                      storyHtml: favorite.storyHtml,
-                    }}
-                  />
+                  <Archive.DeleteFavoriteButton id={favorite.id} />
                 </Archive.Buttons>
               </Archive.CardExpandedSection>
             </Archive.Card>
