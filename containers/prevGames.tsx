@@ -6,7 +6,7 @@ import { useUserContext } from "@/context/user";
 import { usePrevGamesInfinite } from "api-client/prev-game";
 
 export const PrevGamesContainer = (): ReactElement => {
-  const user = useUserContext();
+  const { id: userId } = useUserContext();
   const {
     data,
     error,
@@ -14,7 +14,7 @@ export const PrevGamesContainer = (): ReactElement => {
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-  } = usePrevGamesInfinite(user?.uid);
+  } = usePrevGamesInfinite(userId);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useIntersectionObserver({

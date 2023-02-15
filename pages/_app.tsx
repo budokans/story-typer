@@ -9,8 +9,6 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/700.css";
 import { theme } from "@/styles";
 import { AuthProvider } from "@/context/auth";
-import { UserProvider } from "@/context/user";
-import { StoriesProvider } from "@/context/stories";
 
 const MyApp = ({ Component, pageProps }: AppProps): ReactElement => {
   const queryClient = new QueryClient();
@@ -19,11 +17,7 @@ const MyApp = ({ Component, pageProps }: AppProps): ReactElement => {
     <QueryClientProvider client={queryClient}>
       <ChakraProvider theme={theme}>
         <AuthProvider>
-          <UserProvider>
-            <StoriesProvider>
-              <Component {...pageProps} />
-            </StoriesProvider>
-          </UserProvider>
+          <Component {...pageProps} />
         </AuthProvider>
       </ChakraProvider>
     </QueryClientProvider>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Timestamp } from "firebase/firestore";
+import { function as F, readonlyArray as A } from "fp-ts";
 import { Story as DBStory } from "db";
-import { Story as StorySchema, User } from "api-schemas";
+import { Story as StorySchema, User as UserSchema } from "api-schemas";
 import { useUserContext } from "@/context/user";
 
 type Document = DBStory.StoryDocument;
@@ -18,6 +19,10 @@ const serializeStory = (storyDoc: Document): Response => ({
   dateScraped: (storyDoc.dateScraped as Timestamp).toDate().toISOString(),
 });
 
+const serializeStories: (
+  storyDocs: readonly Document[]
+) => readonly Response[] = F.flow(A.map(serializeStory));
+
 interface ProvideStories {
   readonly stories: readonly Response[];
   readonly isLoading: boolean;
@@ -29,14 +34,14 @@ export const useProvideStories = (gameCount: number): ProvideStories => {
   const [isLoading, setIsLoading] = useState(true);
   const [stories, setStories] = useState<readonly Response[]>([]);
 
-  const loadStories = async (user: User.User) => {
+  const loadStories = async (user: UserSchema.User) => {
     const batch = await DBStory.getStories(
-      user!.newestPlayedStoryPublishedDate,
-      user!.oldestPlayedStoryPublishedDate
+      user.newestPlayedStoryPublishedDate,
+      user.oldestPlayedStoryPublishedDate
     );
 
     if (batch) {
-      const serialized = batch.map(serializeStory);
+      const serialized = serializeStories(batch);
       setStories((prevStories) => {
         return [...prevStories, ...serialized];
       });
@@ -46,23 +51,17 @@ export const useProvideStories = (gameCount: number): ProvideStories => {
   };
 
   useEffect(() => {
-    if (user && stories.length === 0) {
+    if (stories.length === 0) {
       loadStories(user);
     }
-  }, [user, stories]);
+  }, [user, stories.length]);
 
   useEffect(() => {
-    if (user && gameCount === stories.length) {
+    if (gameCount === stories.length) {
       setIsLoading(true);
       loadStories(user);
     }
   }, [gameCount, stories.length, user]);
-
-  useEffect(() => {
-    if (!user) {
-      setStories([]);
-    }
-  }, [user]);
 
   // Add selected story to current position in array if user chooses play again from Archive
   const handlePlayArchiveStoryClick = async (id: string) => {

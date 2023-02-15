@@ -1,10 +1,8 @@
 import { ReactElement } from "react";
 import { GetStaticProps } from "next";
-import { useRouter } from "next/router";
-import { Box } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { getStoriesCount } from "@/db/admin";
 import { useAuthContext } from "@/context/auth";
-import { useUserContext } from "@/context/user";
 import { Page } from "@/containers";
 import {
   DocHead,
@@ -27,17 +25,14 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Index = ({ storiesCount }: IndexProps): ReactElement => {
-  const { signIn } = useAuthContext();
-  const user = useUserContext();
-  const router = useRouter();
+  const { signIn, signInError } = useAuthContext();
 
   return (
     <>
       <DocHead />
-      <Page>
+      <Page.Unauthenticated>
         <Home.Home>
           <Home.Brand />
-
           <Home.HeadlinesWrapper>
             <Home.Headline>
               The speed-typing game for lovers of short stories.
@@ -59,15 +54,13 @@ const Index = ({ storiesCount }: IndexProps): ReactElement => {
           </Home.HeadlinesWrapper>
 
           <Box pt={2} pb={4}>
-            {!user ? (
-              <Home.PlayButton onClick={() => signIn()}>
-                <GoogleIcon />
-                Continue with Google
-              </Home.PlayButton>
-            ) : (
-              <Home.PlayButton onClick={() => router.push("/play")}>
-                Play Now
-              </Home.PlayButton>
+            <Home.PlayButton onClick={() => signIn()}>
+              <GoogleIcon />
+              Continue with Google
+            </Home.PlayButton>
+
+            {signInError && (
+              <Text color={"red"}>Sign in failed. Please try again.</Text>
             )}
           </Box>
 
@@ -81,7 +74,7 @@ const Index = ({ storiesCount }: IndexProps): ReactElement => {
             </Home.Features>
           </Home.FeaturesWrapper>
         </Home.Home>
-      </Page>
+      </Page.Unauthenticated>
     </>
   );
 };

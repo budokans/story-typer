@@ -15,7 +15,7 @@ import {
 import { RiStarFill } from "react-icons/ri";
 import { ChildrenProps } from "components";
 import { Styles } from "@/styles";
-import { useUserContext } from "@/context/user";
+import { ArchiveQuery } from "./util.types";
 
 export const Header = ({ children }: ChildrenProps): ReactElement => (
   <Container>
@@ -79,26 +79,29 @@ const Logo = (): ReactElement => (
   </Box>
 );
 
-export const UserMenu = ({ children }: ChildrenProps): ReactElement => {
-  const user = useUserContext();
+interface UserMenuProps {
+  readonly photoURL?: string | null;
+}
 
-  return (
-    <Box as="li">
-      <Menu>
-        <MenuButton
-          as={Avatar}
-          h={[7, 7, 10]}
-          w={[7, 7, 10]}
-          // This will default to a generic avatar image if user.photoURL is
-          // nullish
-          src={user?.photoURL}
-          cursor="pointer"
-        />
-        <MenuList fontSize={["sm", "sm", "md"]}>{children}</MenuList>
-      </Menu>
-    </Box>
-  );
-};
+export const UserMenu = ({
+  photoURL,
+  children,
+}: UserMenuProps & ChildrenProps): ReactElement => (
+  <Box as="li">
+    <Menu>
+      <MenuButton
+        as={Avatar}
+        h={[7, 7, 10]}
+        w={[7, 7, 10]}
+        // This will default to a generic avatar image if user.photoURL is
+        // nullish
+        src={photoURL}
+        cursor="pointer"
+      />
+      <MenuList fontSize={["sm", "sm", "md"]}>{children}</MenuList>
+    </Menu>
+  </Box>
+);
 
 export const StatsContainer = ({ children }: ChildrenProps): ReactElement => (
   <Flex as="li" mr={[3, 3, 5]}>
@@ -123,29 +126,44 @@ export const Stat = ({ children }: ChildrenProps): ReactElement => (
   </Text>
 );
 
-export const Archive = (): ReactElement => (
-  <Box
-    as="li"
-    mr={[3, 3, 5]}
-    fontSize="clamp(0.75rem, 2.5vw, 1rem)"
-    fontWeight="medium"
-  >
-    <Link href="/previous">Previous</Link>
-  </Box>
-);
+export const Archive = (): ReactElement => {
+  const query: ArchiveQuery = { location: "archive" };
 
-export const Favorites = (): ReactElement => (
-  <Box as="li" mr={[3, 3, 5]}>
-    <Link
-      href={{
-        pathname: "/previous",
-        query: { favorites: true },
-      }}
-      passHref
+  return (
+    <Box
+      as="li"
+      mr={[3, 3, 5]}
+      fontSize="clamp(0.75rem, 2.5vw, 1rem)"
+      fontWeight="medium"
     >
-      <a>
-        <Icon as={RiStarFill} h={[7, 7, 8]} w={[7, 7, 8]} />
-      </a>
-    </Link>
-  </Box>
-);
+      <Link
+        href={{
+          pathname: "/game",
+          query,
+        }}
+      >
+        Previous
+      </Link>
+    </Box>
+  );
+};
+
+export const Favorites = (): ReactElement => {
+  const query: ArchiveQuery = { location: "archive", favorites: "true" };
+
+  return (
+    <Box as="li" mr={[3, 3, 5]}>
+      <Link
+        href={{
+          pathname: "/game",
+          query,
+        }}
+        passHref
+      >
+        <a>
+          <Icon as={RiStarFill} h={[7, 7, 8]} w={[7, 7, 8]} />
+        </a>
+      </Link>
+    </Box>
+  );
+};

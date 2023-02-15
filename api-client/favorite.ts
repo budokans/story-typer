@@ -43,20 +43,14 @@ export const useFavorite = (
   readonly data: E.Either<unknown, Response>;
   readonly isLoading: boolean;
 } => {
-  const user = useUserContext();
-  const userId = user?.uid;
+  const { id: userId } = useUserContext();
+
   const {
     data: rawData,
     error,
     isLoading,
-  } = useQuery(
-    ["favorites", userId, storyId],
-    // userId will never be undefined when this runs as long as
-    // we only enable this query when userId is truthy
-    () => DBFavorite.getFavorite(userId!, storyId),
-    {
-      enabled: !!userId,
-    }
+  } = useQuery(["favorites", userId, storyId], async () =>
+    DBFavorite.getFavorite(userId!, storyId)
   );
 
   return {
@@ -73,11 +67,11 @@ export const useFavorite = (
 export const useAddFavorite = (): ((
   storyDetails: FavoriteSchema.StoryData
 ) => TE.TaskEither<unknown, DocumentReference<Document>>) => {
-  const user = useUserContext();
+  const { id: userId } = useUserContext();
   const queryClient = useQueryClient();
 
   const addFavoriteMutation = useMutation(
-    (favorite: Body) => DBFavorite.createFavorite(favorite),
+    async (favorite: Body) => DBFavorite.createFavorite(favorite),
     {
       onSuccess: () => queryClient.invalidateQueries("favorites"),
     }
@@ -85,19 +79,17 @@ export const useAddFavorite = (): ((
 
   return (storyDetails: FavoriteSchema.StoryData) =>
     F.pipe(
-      user?.uid,
-      TE.fromNullable("User not found."),
-      TE.map((userId) => ({
+      storyDetails,
+      (storyDetails) => ({
         userId,
         ...storyDetails,
-      })),
-      TE.map(FavoriteSchema.FavoriteBody.encode),
-      TE.chain((encodedBody) =>
+      }),
+      FavoriteSchema.FavoriteBody.encode,
+      (encodedBody) =>
         TE.tryCatch(
           () => addFavoriteMutation.mutateAsync(encodedBody),
           (error) => error
         )
-      )
     );
 };
 
@@ -107,7 +99,7 @@ export const useDeleteFavorite = (): ((
   const queryClient = useQueryClient();
 
   const deleteFavoriteMutation = useMutation(
-    (id: string) => DBFavorite.deleteFavorite(id),
+    async (id: string) => DBFavorite.deleteFavorite(id),
     {
       onSuccess: () => queryClient.invalidateQueries("favorites"),
     }
@@ -121,7 +113,7 @@ export const useDeleteFavorite = (): ((
 };
 
 export const useFavoritesInfinite = (
-  userId: string | undefined
+  userId: string
 ): UseInfiniteQuery<
   DBFavorite.FavoriteWithCursor<Response, Document>,
   DBFavorite.FavoriteWithCursor<Document, Document>
@@ -143,7 +135,6 @@ export const useFavoritesInfinite = (
     {
       getNextPageParam: (lastPage) => lastPage.cursor,
       refetchOnWindowFocus: false,
-      enabled: !!userId,
     }
   );
 

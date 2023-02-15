@@ -20,7 +20,7 @@ const serializePrevGame = (prevGameDoc: Document): Response => ({
 });
 
 export const usePrevGamesInfinite = (
-  userId: string | undefined
+  userId: string
 ): UseInfiniteQuery<
   DBPrevGame.PrevGamesWithCursor<Response, Document>,
   DBPrevGame.PrevGamesWithCursor<Document, Document>
@@ -40,9 +40,6 @@ export const usePrevGamesInfinite = (
       readonly pageParam?: QueryDocumentSnapshot<Document> | null;
     }) => await DBPrevGame.getPrevGames(userId!, pageParam),
     {
-      // We'll wait until we definitely have a userId before
-      // running this query
-      enabled: !!userId,
       getNextPageParam: (lastPage) => lastPage.cursor,
       refetchOnWindowFocus: false,
     }

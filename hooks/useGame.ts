@@ -1,15 +1,20 @@
 import { ChangeEvent, useCallback, useEffect, useReducer } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import { function as F, io as IO, taskEither as TE, task as T } from "fp-ts";
 import * as GameState from "./reducers/GameReducer";
 import { useCountdown, Timer } from "@/hooks";
+import { User as UserAPI } from "api-client";
 import { useUserContext } from "@/context/user";
 import { useStoriesContext } from "@/context/stories";
-import { Story, User } from "api-schemas";
-import { createPostSkipUser, createPostWinUser } from "@/lib/manageUser";
-import { PrevGame as DBPrevGame, User as DBUser } from "db";
+import {
+  Story as StorySchema,
+  User as UserSchema,
+  PrevGame as PrevGameSchema,
+} from "api-schemas";
+import { buildPostSkipUser, buildPostWinUser } from "@/lib/manageUser";
+import { PrevGame as DBPrevGame } from "db";
 
 export interface UseGame {
-  readonly currentStory: Story.StoryResponse;
+  readonly currentStory: StorySchema.StoryResponse;
   readonly status: GameState.GameStatus;
   readonly inputValue: string;
   readonly userError: boolean;
@@ -31,15 +36,8 @@ export const useGame = (): UseGame => {
     GameState.initialState
   );
   const user = useUserContext();
-  const queryClient = useQueryClient();
-  const userWinMutation = useMutation(
-    (newUserData: User.User) => DBUser.updateUserDataOnWin(newUserData),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("user");
-      },
-    }
-  );
+  const setUserAPI = UserAPI.useSetUser();
+
   const {
     stories,
     isLoading: storiesAreLoading,
@@ -83,15 +81,47 @@ export const useGame = (): UseGame => {
     dispatch({ type: "reset" });
   };
 
+  const updateUserPostSkip: (
+    userData: UserSchema.User,
+    currentStory: StorySchema.StoryResponse
+  ) => TE.TaskEither<unknown, void> = F.flow(
+    (user) => buildPostSkipUser(user, currentStory),
+    setUserAPI
+  );
+
+  const createPrevGame: (
+    userData: UserSchema.User,
+    currentStory: StorySchema.StoryResponse
+  ) => TE.TaskEither<unknown, PrevGameSchema.PrevGameBody> = F.flow(
+    (user) => TE.right(DBPrevGame.buildGame(user.id, currentStory, 0)),
+    TE.chainFirst((prevGame) =>
+      TE.tryCatch(
+        () => DBPrevGame.createPrevGame(prevGame),
+        (error) => error
+      )
+    )
+  );
+
   const handleSkipClick = () => {
-    if (user) {
-      const game = DBPrevGame.buildGame(user.uid, currentStory, 0);
-      DBPrevGame.createPrevGame(game);
-      const updatedUser = createPostSkipUser(user, currentStory);
-      userWinMutation.mutate(updatedUser);
-    }
-    setGameCount(gameCount + 1);
-    dispatch({ type: "next" });
+    F.pipe(
+      TE.Do,
+      TE.bind("updatedUser", () => updateUserPostSkip(user, currentStory)),
+      TE.bind("prevGame", () => createPrevGame(user, currentStory)),
+      TE.fold(
+        (error) =>
+          F.pipe(
+            // Force new line
+            () => console.error(error),
+            T.fromIO
+          ),
+        () =>
+          F.pipe(
+            () => setGameCount(gameCount + 1),
+            IO.apFirst(() => dispatch({ type: "next" })),
+            T.fromIO
+          )
+      )
+    )();
   };
 
   const handleNextStoryClick = () => {
@@ -99,9 +129,8 @@ export const useGame = (): UseGame => {
     dispatch({ type: "next" });
   };
 
-  const checkForUserError = (currentInput: string, source: string) => {
-    return currentInput !== source.slice(0, currentInput.length);
-  };
+  const checkForUserError = (currentInput: string, source: string) =>
+    currentInput !== source.slice(0, currentInput.length);
 
   const getWpm = (time: number) => Math.round(50 * (60 / time));
 
@@ -121,16 +150,51 @@ export const useGame = (): UseGame => {
     }
   }, [state.userInput, currentStory, state.userError]);
 
+  const updateUserPostWin = useCallback(
+    (
+      userData: UserSchema.User,
+      currentStory: StorySchema.StoryResponse,
+      score: number
+    ): TE.TaskEither<unknown, void> =>
+      F.pipe(
+        userData,
+        (user) => buildPostWinUser(user, currentStory, score),
+        setUserAPI
+      ),
+    [setUserAPI]
+  );
+
   const winGame = useCallback(() => {
-    const wpm = getWpm(timer.totalSeconds);
-    if (user) {
-      const game = DBPrevGame.buildGame(user.uid, currentStory, wpm);
-      const updatedUser = createPostWinUser(user, currentStory, wpm);
-      userWinMutation.mutate(updatedUser);
-      DBPrevGame.createPrevGame(game);
-    }
-    dispatch({ type: "win", wpm: wpm });
-  }, [currentStory, timer.totalSeconds, user, userWinMutation]);
+    F.pipe(
+      TE.Do,
+      TE.bind("updatedUser", () =>
+        updateUserPostWin(user, currentStory, getWpm(timer.totalSeconds))
+      ),
+      TE.bind("prevGame", () => createPrevGame(user, currentStory)),
+      TE.fold(
+        (error) =>
+          F.pipe(
+            // Force new line
+            () => console.error(error),
+            T.fromIO
+          ),
+        ({ prevGame }) =>
+          F.pipe(
+            () => setGameCount(gameCount + 1),
+            IO.apFirst(() => dispatch({ type: "win", wpm: prevGame.score })),
+            T.fromIO
+          )
+      )
+    )();
+  }, [
+    user,
+    currentStory,
+    timer.totalSeconds,
+    createPrevGame,
+    gameCount,
+    setGameCount,
+    updateUserPostWin,
+  ]);
 
   // Listen for game completion
   useEffect(() => {

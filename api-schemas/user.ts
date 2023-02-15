@@ -1,7 +1,7 @@
 import * as IoTs from "io-ts";
 
 export const AuthUser = IoTs.type({
-  uid: IoTs.string,
+  id: IoTs.string,
   name: IoTs.union([IoTs.string, IoTs.null]),
   email: IoTs.union([IoTs.string, IoTs.null]),
   photoURL: IoTs.union([IoTs.string, IoTs.null]),

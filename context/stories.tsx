@@ -4,17 +4,15 @@ import {
   useState,
   Dispatch,
   SetStateAction,
-  useEffect,
   ReactElement,
 } from "react";
 import { option as O, function as F } from "fp-ts";
 import { useProvideStories } from "@/hooks";
-import { useUserContext } from "./user";
-import { Story } from "api-schemas";
+import { Story as StorySchema } from "api-schemas";
 import { ChildrenProps } from "components";
 
 interface StoryContext {
-  readonly stories: readonly Story.StoryResponse[];
+  readonly stories: readonly StorySchema.StoryResponse[];
   readonly isLoading: boolean;
   readonly gameCount: number;
   readonly setGameCount: Dispatch<SetStateAction<number>>;
@@ -27,14 +25,6 @@ export const StoriesProvider = ({ children }: ChildrenProps): ReactElement => {
   const [gameCount, setGameCount] = useState(1);
   const { stories, isLoading, handlePlayArchiveStoryClick } =
     useProvideStories(gameCount);
-  const user = useUserContext();
-
-  // Listen for no user (signed out) and reset gameCount
-  useEffect(() => {
-    if (!user) {
-      setGameCount(1);
-    }
-  }, [user]);
 
   return (
     <storiesContext.Provider

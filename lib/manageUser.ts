@@ -3,7 +3,7 @@ import { User, Story } from "api-schemas";
 type User = User.User;
 type Story = Story.StoryResponse;
 
-export const createPostWinUser = (
+export const buildPostWinUser = (
   user: User,
   story: Story,
   score: number
@@ -34,7 +34,7 @@ export const createPostWinUser = (
   };
 };
 
-export const createPostSkipUser = (user: User, story: Story): User => ({
+export const buildPostSkipUser = (user: User, story: Story): User => ({
   ...user,
   newestPlayedStoryPublishedDate: getMostRecentDate(
     user.newestPlayedStoryPublishedDate,

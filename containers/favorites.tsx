@@ -2,11 +2,11 @@ import { Fragment, useRef, ReactElement } from "react";
 import { Divider, Text } from "@chakra-ui/react";
 import { Archive, InfiniteScroll } from "@/components";
 import { useIntersectionObserver } from "@/hooks";
+import { Favorite as FavoriteAPI } from "api-client";
 import { useUserContext } from "@/context/user";
-import { useFavoritesInfinite } from "api-client/favorite";
 
 export const FavoritesContainer = (): ReactElement => {
-  const user = useUserContext();
+  const { id: userId } = useUserContext();
   const {
     data,
     error,
@@ -14,7 +14,7 @@ export const FavoritesContainer = (): ReactElement => {
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-  } = useFavoritesInfinite(user?.uid);
+  } = FavoriteAPI.useFavoritesInfinite(userId);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
 

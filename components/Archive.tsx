@@ -13,7 +13,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import router from "next/router";
+import { useRouter } from "next/router";
 import {
   function as F,
   string as String,
@@ -35,13 +35,7 @@ import {
   CardIsExpandedProvider,
   useCardIsExpandedContext,
 } from "@/context/cardIsExpanded";
-
-type ArchiveFilter = "all" | "favorites";
-
-interface TogglesProps {
-  readonly filter: ArchiveFilter;
-  readonly onSetFilter: (filter: ArchiveFilter) => void;
-}
+import { ArchiveQuery } from "./util.types";
 
 interface CardDateProps {
   readonly dateString: string;
@@ -77,26 +71,36 @@ export const Header = ({ children }: ChildrenProps): ReactElement => (
   </Heading>
 );
 
-export const Toggles = ({
-  filter,
-  onSetFilter,
-}: TogglesProps): ReactElement => (
-  <RadioGroup
-    onChange={onSetFilter}
-    value={filter}
-    alignSelf="flex-start"
-    pl={[1, 4, 6]}
-  >
-    <Stack direction="row">
-      <Radio value="all" cursor="pointer">
-        All
-      </Radio>
-      <Radio value="favorites" cursor="pointer">
-        Favorites
-      </Radio>
-    </Stack>
-  </RadioGroup>
-);
+export const Toggles = (): ReactElement => {
+  const router = useRouter();
+  const query: ArchiveQuery = {
+    location: "archive",
+    ...(router.query.favorites ? {} : { favorites: "true" }),
+  };
+
+  return (
+    <RadioGroup
+      onChange={() => {
+        router.push({
+          pathname: "/game",
+          query,
+        });
+      }}
+      value={router.query.favorites ? "favorites" : "all"}
+      alignSelf="flex-start"
+      pl={[1, 4, 6]}
+    >
+      <Stack direction="row">
+        <Radio value="all" cursor="pointer">
+          All
+        </Radio>
+        <Radio value="favorites" cursor="pointer">
+          Favorites
+        </Radio>
+      </Stack>
+    </RadioGroup>
+  );
+};
 
 export const Card = ({ children }: ChildrenProps): ReactElement => (
   <CardIsExpandedProvider>
@@ -192,6 +196,7 @@ export const PlayAgainButton = ({
   storyId,
 }: PlayAgainButtonProps): ReactElement => {
   const { handlePlayArchiveStoryClick } = useStoriesContext();
+  const router = useRouter();
 
   return (
     <IconButton
@@ -204,7 +209,7 @@ export const PlayAgainButton = ({
       color="blackAlpha.800"
       onClick={() => {
         handlePlayArchiveStoryClick(storyId);
-        router.push("./play");
+        router.push("/game");
       }}
     />
   );
@@ -248,7 +253,7 @@ export const DeleteFavoriteButton = ({
 
 export const BackToGameButton = (): ReactElement => (
   <Box alignSelf="flex-start" fontSize={["14px", "16px"]}>
-    <Link href="/play" passHref>
+    <Link href="/game" passHref>
       <a>
         <Icon as={RiArrowLeftSLine} h="1rem" w="1rem" /> Back to Game
       </a>
