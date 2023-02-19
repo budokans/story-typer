@@ -27,15 +27,13 @@ export const GameContainer = (): ReactElement => {
     "Ready",
   }
 
-  if (!currentStory) {
-    return <p>Error: Invalid current story.</p>;
-  }
-
   return (
     <CenterContent observeLayout>
       <Game.Game>
         {status === "pending" ? (
           <Game.Skeleton isLargeViewport={viewportIsWiderThan768} />
+        ) : !currentStory ? (
+          <p>Error: Invalid current story.</p>
         ) : (
           <>
             <Game.StoryHeader isLargeViewport={viewportIsWiderThan768}>
