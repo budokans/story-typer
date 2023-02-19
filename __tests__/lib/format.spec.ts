@@ -55,9 +55,9 @@ describe("getStartIndex", () => {
     const case1 = ["</p>\n<hr>\n<p>Marie writes poetry", "<hr>"];
     const case2 = ["</p>\n<hr/>\n<p>Marie writes poetry", "<hr/>"];
     const case3 = ["</p>\n<hr />\n<p>Marie writes poetry", "<hr />"];
-    expect(getStartIndex(case1[0], case1[1])).toEqual(9);
-    expect(getStartIndex(case2[0], case2[1])).toEqual(10);
-    expect(getStartIndex(case3[0], case3[1])).toEqual(11);
+    expect(getStartIndex(case1[0]!, case1[1]!)).toEqual(9);
+    expect(getStartIndex(case2[0]!, case2[1]!)).toEqual(10);
+    expect(getStartIndex(case3[0]!, case3[1]!)).toEqual(11);
   });
 });
 

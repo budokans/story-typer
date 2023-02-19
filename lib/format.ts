@@ -10,7 +10,7 @@ const checkBioExists = (text: string): boolean => text.includes("<hr");
 
 const getHrElement = (text: string): string | null => {
   const match = text.match(/<hr\s?\/?>/);
-  return match ? match[0] : null;
+  return match && match.length >= 1 ? match[0]! : null;
 };
 
 const getStartIndex = (text: string, boundary: string): number =>

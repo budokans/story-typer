@@ -18,12 +18,17 @@ export const GameContainer = (): ReactElement => {
     onSkipClick,
     wpm,
   } = useGame();
-  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
+  const [mediaQuery] = useMediaQuery("(min-width: 769px)");
+  const viewportIsWiderThan768 = mediaQuery!;
 
   enum CountDown {
     "Go!",
     "Set",
     "Ready",
+  }
+
+  if (!currentStory) {
+    return <p>Error: Invalid current story.</p>;
   }
 
   return (

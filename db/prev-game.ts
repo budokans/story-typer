@@ -113,7 +113,7 @@ export const getPrevGames = async (
 
   const cursor =
     querySnapshot.docs.length === 10
-      ? querySnapshot.docs[querySnapshot.docs.length - 1]
+      ? querySnapshot.docs[querySnapshot.docs.length - 1]!
       : null;
 
   return { prevGames, cursor };

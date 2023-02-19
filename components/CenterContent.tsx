@@ -11,7 +11,8 @@ export const CenterContent = ({
   observeLayout,
   children,
 }: CenterContentProps & ChildrenProps): ReactElement => {
-  const [viewportIsWiderThan768] = useMediaQuery("(min-width: 769px)");
+  const [mediaQuery] = useMediaQuery("(min-width: 769px)");
+  const viewportIsWiderThan768 = mediaQuery!;
 
   const headerHeight = Styles.headerFooterTotalHeight(
     viewportIsWiderThan768 ? "desktop" : "mobile",

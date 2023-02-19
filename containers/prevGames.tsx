@@ -67,7 +67,7 @@ export const PrevGamesContainer = (): ReactElement => {
         isFetching={isFetching}
         isFetchingNext={isFetchingNextPage}
         hasNext={hasNextPage}
-        data={data?.pages[0].prevGames}
+        data={data?.pages[0]?.prevGames}
       />
     </>
   );

@@ -1,5 +1,11 @@
 import { ChangeEvent, useCallback, useEffect, useReducer } from "react";
-import { function as F, io as IO, taskEither as TE, task as T } from "fp-ts";
+import {
+  function as F,
+  io as IO,
+  taskEither as TE,
+  task as T,
+  readonlyArray as A,
+} from "fp-ts";
 import * as GameState from "./reducers/GameReducer";
 import { useCountdown, Timer } from "@/hooks";
 import { User as UserAPI } from "api-client";
@@ -14,7 +20,7 @@ import { buildPostSkipUser, buildPostWinUser } from "@/lib/manageUser";
 import { PrevGame as DBPrevGame } from "db";
 
 export interface UseGame {
-  readonly currentStory: StorySchema.StoryResponse;
+  readonly currentStory: StorySchema.StoryResponse | undefined;
   readonly status: GameState.GameStatus;
   readonly inputValue: string;
   readonly userError: boolean;
@@ -46,7 +52,9 @@ export const useGame = (): UseGame => {
   } = useStoriesContext();
   const count = useCountdown(state.status);
   const timer = Timer.useTimer(state.status, TIME_LIMIT);
-  const currentStory = stories[gameCount - 1];
+  const currentStory = A.isOutOfBound(gameCount - 1, stories)
+    ? undefined
+    : stories[gameCount - 1];
 
   // Listen for when stories have been loaded into game state and initialise idle state.
   useEffect(() => {
@@ -81,19 +89,26 @@ export const useGame = (): UseGame => {
     dispatch({ type: "reset" });
   };
 
-  const updateUserPostSkip: (
-    userData: UserSchema.User,
-    currentStory: StorySchema.StoryResponse
-  ) => TE.TaskEither<unknown, void> = F.flow(
-    (user) => buildPostSkipUser(user, currentStory),
+  const updateUserPostSkip: ({
+    user,
+    currentStory,
+  }: {
+    readonly user: UserSchema.User;
+    readonly currentStory: StorySchema.StoryResponse;
+  }) => TE.TaskEither<unknown, void> = F.flow(
+    ({ user, currentStory }) => buildPostSkipUser(user, currentStory),
     setUserAPI
   );
 
-  const createPrevGame: (
-    userData: UserSchema.User,
-    currentStory: StorySchema.StoryResponse
-  ) => TE.TaskEither<unknown, PrevGameSchema.PrevGameBody> = F.flow(
-    (user) => TE.right(DBPrevGame.buildGame(user.id, currentStory, 0)),
+  const createPrevGame: ({
+    user,
+    currentStory,
+  }: {
+    readonly user: UserSchema.User;
+    readonly currentStory: StorySchema.StoryResponse;
+  }) => TE.TaskEither<unknown, PrevGameSchema.PrevGameBody> = F.flow(
+    ({ user, currentStory }) =>
+      TE.right(DBPrevGame.buildGame(user.id, currentStory, 0)),
     TE.chainFirst((prevGame) =>
       TE.tryCatch(
         () => DBPrevGame.createPrevGame(prevGame),
@@ -104,9 +119,14 @@ export const useGame = (): UseGame => {
 
   const handleSkipClick = () => {
     F.pipe(
-      TE.Do,
-      TE.bind("updatedUser", () => updateUserPostSkip(user, currentStory)),
-      TE.bind("prevGame", () => createPrevGame(user, currentStory)),
+      currentStory,
+      TE.fromNullable("Invalid current story"),
+      TE.bind("updatedUser", (currentStory) =>
+        updateUserPostSkip({ user, currentStory })
+      ),
+      TE.bind("prevGame", (currentStory) =>
+        createPrevGame({ user, currentStory })
+      ),
       TE.fold(
         (error) =>
           F.pipe(
@@ -166,11 +186,14 @@ export const useGame = (): UseGame => {
 
   const winGame = useCallback(() => {
     F.pipe(
-      TE.Do,
-      TE.bind("updatedUser", () =>
+      currentStory,
+      TE.fromNullable("Invalid current story."),
+      TE.bind("updatedUser", (currentStory) =>
         updateUserPostWin(user, currentStory, getWpm(timer.totalSeconds))
       ),
-      TE.bind("prevGame", () => createPrevGame(user, currentStory)),
+      TE.bind("prevGame", (currentStory) =>
+        createPrevGame({ user, currentStory })
+      ),
       TE.fold(
         (error) =>
           F.pipe(

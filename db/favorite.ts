@@ -77,7 +77,7 @@ export const getFavorite = async (
     ).withConverter(favoriteConverter)
   );
 
-  return querySnapshot.size === 1 ? querySnapshot.docs[0].data() : undefined;
+  return querySnapshot.docs[0]?.data();
 };
 
 const favoritesQueryLimit = 10;
@@ -121,7 +121,7 @@ export const getFavorites = async (
 
   const cursor =
     querySnapshot.docs.length === 10
-      ? querySnapshot.docs[querySnapshot.docs.length - 1]
+      ? querySnapshot.docs[querySnapshot.docs.length - 1]!
       : null;
 
   return { favorites, cursor };

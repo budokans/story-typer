@@ -61,7 +61,7 @@ export const FavoritesContainer = (): ReactElement => {
         isFetching={isFetching}
         isFetchingNext={isFetchingNextPage}
         hasNext={hasNextPage}
-        data={data?.pages[0].favorites}
+        data={data?.pages[0]?.favorites}
       />
     </>
   );

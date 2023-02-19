@@ -71,7 +71,7 @@ export const lastStoryTimestamp = async (): Promise<string> => {
   );
   const q = query(storiesCollRef, orderBy("datePublished", "desc"), limit(1));
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs[0].data().datePublished;
+  return querySnapshot.docs[0]!.data().datePublished;
 };
 
 export const getStory = async (
