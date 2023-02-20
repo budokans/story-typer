@@ -34,7 +34,7 @@ export const PrevGamesContainer = (): ReactElement => {
     <>
       {data?.pages.map((page, idx) => (
         <Fragment key={idx}>
-          {page.prevGames.map((prevGame, idx) => (
+          {page.data.map((prevGame, idx) => (
             <Archive.Card key={idx}>
               <Archive.CardHeader>
                 <Archive.CardTitle>{prevGame.storyTitle}</Archive.CardTitle>
@@ -67,7 +67,7 @@ export const PrevGamesContainer = (): ReactElement => {
         isFetching={isFetching}
         isFetchingNext={isFetchingNextPage}
         hasNext={hasNextPage}
-        data={data?.pages[0]?.prevGames}
+        data={data?.pages[0]?.data}
       />
     </>
   );

@@ -1,58 +1,57 @@
+import { function as F } from "fp-ts";
+import { firelordDb } from "db";
+import { Story } from "api-schemas";
 import {
   addDoc,
-  collection,
-  DocumentData,
-  DocumentReference,
-  FieldValue,
-  FirestoreDataConverter,
   getDocs,
+  getFirelord,
   limit,
+  MetaType,
+  MetaTypeCreator,
   orderBy,
   query,
-  Query,
   QueryDocumentSnapshot,
   serverTimestamp,
+  ServerTimestamp,
   startAfter,
   where,
-} from "firebase/firestore";
-import { function as F } from "fp-ts";
-import { db } from "db";
-import { PrevGame, Story } from "api-schemas";
+} from "firelordjs";
 
-export interface PrevGameDocument {
+export type PrevGameDocumentMetaType = MetaTypeCreator<
+  {
+    readonly userId: string;
+    readonly storyId: string;
+    readonly storyTitle: string;
+    readonly storyHtml: string;
+    readonly score: number;
+    readonly datePlayed: ServerTimestamp;
+  },
+  "prevGames",
+  string
+>;
+export type DocumentWrite = PrevGameDocumentMetaType["write"];
+export type DocumentRead = PrevGameDocumentMetaType["read"] & {
   readonly id: string;
+};
+
+export const prevGames = getFirelord<PrevGameDocumentMetaType>(
+  firelordDb,
+  "prevGames"
+);
+
+interface CreatePrevGameData {
   readonly userId: string;
   readonly storyId: string;
   readonly storyTitle: string;
   readonly storyHtml: string;
   readonly score: number;
-  readonly datePlayed: FieldValue;
 }
-
-const prevGameConverter: FirestoreDataConverter<PrevGameDocument> = {
-  toFirestore: (body: PrevGameDocument) => body,
-  fromFirestore: (snapshot: QueryDocumentSnapshot): PrevGameDocument =>
-    F.pipe(
-      // Force new line
-      snapshot,
-      (snapshot) => ({ id: snapshot.id, data: snapshot.data() }),
-      ({ id, data }): PrevGameDocument => ({
-        id: id,
-        userId: data.userId,
-        storyId: data.storyId,
-        storyTitle: data.storyTitle,
-        storyHtml: data.storyHtml,
-        score: data.score,
-        datePlayed: data.datePlayed,
-      })
-    ),
-};
 
 export const buildGame = (
   userId: string,
   story: Story.StoryResponse,
   wpm: number
-): PrevGame.PrevGameBody => ({
+): CreatePrevGameData => ({
   userId: userId,
   storyId: story.id,
   storyTitle: story.title,
@@ -60,61 +59,65 @@ export const buildGame = (
   score: wpm,
 });
 
-export const createPrevGame = async (
-  body: PrevGame.PrevGameBody
-): Promise<DocumentReference<PrevGameDocument>> =>
-  F.pipe(
-    collection(db, "prevGames"),
-    (collRef) => collRef.withConverter(prevGameConverter),
-    (typedCollRef) =>
-      addDoc(typedCollRef, {
-        ...body,
-        // This is annoying, but in order to use our converter, we must supply an ID here
-        id: "This will be overwritten on the server",
-        datePlayed: serverTimestamp(),
+export const createPrevGame: (
+  createData: CreatePrevGameData
+) => Promise<string> = F.flow(
+  (createData): DocumentWrite => ({
+    datePlayed: serverTimestamp(),
+    ...createData,
+  }),
+  (body) =>
+    addDoc(prevGames.collection(), body)
+      .then((res) => res.id)
+      .catch((e: unknown) => {
+        throw new Error(String(e));
       })
-  );
+);
 
 export const prevGamesQueryLimit = 10;
 
-export interface PrevGamesWithCursor<A, R> {
-  readonly prevGames: readonly A[];
+export interface PrevGamesWithCursor<A, R extends MetaType> {
+  readonly data: readonly A[];
   readonly cursor: QueryDocumentSnapshot<R> | null;
 }
 
-export const getPrevGames = async (
-  userId: string,
-  last: QueryDocumentSnapshot<PrevGameDocument> | null
-): Promise<PrevGamesWithCursor<PrevGameDocument, PrevGameDocument>> => {
-  let queryRef: Query<DocumentData>;
-  const prevGamesCollRef = collection(db, "prevGames");
-
-  if (!last) {
-    queryRef = query(
-      prevGamesCollRef,
-      orderBy("datePlayed", "desc"),
-      where("userId", "==", userId),
-      limit(prevGamesQueryLimit)
-    );
-  } else {
-    queryRef = query(
-      prevGamesCollRef,
-      orderBy("datePlayed", "desc"),
-      where("userId", "==", userId),
-      startAfter(last.data().datePlayed),
-      limit(prevGamesQueryLimit)
-    );
-  }
-
-  const querySnapshot = await getDocs(
-    query(queryRef.withConverter(prevGameConverter))
+export const getPrevGames: ({
+  userId,
+  last,
+}: {
+  readonly userId: string;
+  readonly last: QueryDocumentSnapshot<PrevGameDocumentMetaType> | null;
+}) => Promise<PrevGamesWithCursor<DocumentRead, PrevGameDocumentMetaType>> =
+  F.flow(
+    // Force new line
+    ({ userId, last }) =>
+      last
+        ? query(
+            prevGames.collection(),
+            orderBy("datePlayed", "desc"),
+            where("userId", "==", userId),
+            startAfter(last.data({ serverTimestamps: "estimate" }).datePlayed),
+            limit(prevGamesQueryLimit)
+          )
+        : query(
+            prevGames.collection(),
+            orderBy("datePlayed", "desc"),
+            where("userId", "==", userId),
+            limit(prevGamesQueryLimit)
+          ),
+    (q) =>
+      getDocs(q)
+        .then((querySnapshot) => ({
+          data: querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data({ serverTimestamps: "estimate" }),
+          })),
+          cursor:
+            querySnapshot.docs.length === prevGamesQueryLimit
+              ? querySnapshot.docs[querySnapshot.docs.length - 1]!
+              : null,
+        }))
+        .catch((e: unknown) => {
+          throw new Error(String(e));
+        })
   );
-  const prevGames = querySnapshot.docs.map((doc) => doc.data());
-
-  const cursor =
-    querySnapshot.docs.length === 10
-      ? querySnapshot.docs[querySnapshot.docs.length - 1]!
-      : null;
-
-  return { prevGames, cursor };
-};
