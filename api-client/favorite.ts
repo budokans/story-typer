@@ -1,9 +1,4 @@
 import {
-  DocumentReference,
-  QueryDocumentSnapshot,
-  Timestamp,
-} from "firebase/firestore";
-import {
   useInfiniteQuery,
   useMutation,
   useQuery,
@@ -20,8 +15,9 @@ import { Favorite as DBFavorite } from "db";
 import { Favorite as FavoriteSchema } from "api-schemas";
 import { UseInfiniteQuery } from "./util";
 import { useUserContext } from "@/context/user";
+import { QueryDocumentSnapshot } from "firelordjs";
 
-export type Document = DBFavorite.FavoriteDocument;
+export type Document = DBFavorite.DocumentRead;
 export type Body = FavoriteSchema.FavoriteBody;
 export type Response = FavoriteSchema.FavoriteResponse;
 
@@ -31,10 +27,7 @@ export const serializeFavorite = (favoriteDoc: Document): Response => ({
   storyId: favoriteDoc.storyId,
   storyTitle: favoriteDoc.storyTitle,
   storyHtml: favoriteDoc.storyHtml,
-  // Sadly, an unavoidable cast as serverTimestamp() returns a FieldValue
-  dateFavorited: (favoriteDoc.dateFavorited as Timestamp)
-    .toDate()
-    .toISOString(),
+  dateFavorited: favoriteDoc.dateFavorited.toDate().toISOString(),
 });
 
 export const useFavorite = (
@@ -66,7 +59,7 @@ export const useFavorite = (
 
 export const useAddFavorite = (): ((
   storyDetails: FavoriteSchema.StoryData
-) => TE.TaskEither<unknown, DocumentReference<Document>>) => {
+) => TE.TaskEither<unknown, string>) => {
   const { id: userId } = useUserContext();
   const queryClient = useQueryClient();
 
@@ -99,7 +92,7 @@ export const useDeleteFavorite = (): ((
   const queryClient = useQueryClient();
 
   const deleteFavoriteMutation = useMutation(
-    async (id: string) => DBFavorite.deleteFavorite(id),
+    (id: string) => DBFavorite.deleteFavorite(id),
     {
       onSuccess: () => queryClient.invalidateQueries("favorites"),
     }
@@ -115,8 +108,8 @@ export const useDeleteFavorite = (): ((
 export const useFavoritesInfinite = (
   userId: string
 ): UseInfiniteQuery<
-  DBFavorite.FavoriteWithCursor<Response, Document>,
-  DBFavorite.FavoriteWithCursor<Document, Document>
+  DBFavorite.FavoritesWithCursor<Response, DBFavorite.FavoriteDocumentMetaType>,
+  DBFavorite.FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>
 > => {
   const {
     data: rawData,
@@ -130,8 +123,8 @@ export const useFavoritesInfinite = (
     async ({
       pageParam = null,
     }: {
-      readonly pageParam?: QueryDocumentSnapshot<Document> | null;
-    }) => await DBFavorite.getFavorites(userId!, pageParam),
+      readonly pageParam?: QueryDocumentSnapshot<DBFavorite.FavoriteDocumentMetaType> | null;
+    }) => await DBFavorite.getFavorites({ userId: userId!, last: pageParam }),
     {
       getNextPageParam: (lastPage) => lastPage.cursor,
       refetchOnWindowFocus: false,
@@ -144,7 +137,7 @@ export const useFavoritesInfinite = (
           pages: F.pipe(
             rawData.pages,
             AMut.map((page) => ({
-              favorites: F.pipe(page.favorites, A.map(serializeFavorite)),
+              data: F.pipe(page.data, A.map(serializeFavorite)),
               cursor: page.cursor,
             }))
           ),

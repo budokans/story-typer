@@ -1,131 +1,148 @@
 import {
   addDoc,
-  collection,
   deleteDoc,
-  doc,
-  DocumentData,
-  DocumentReference,
-  FieldValue,
-  FirestoreDataConverter,
   getDocs,
+  getFirelord,
   limit,
+  MetaType,
+  MetaTypeCreator,
   orderBy,
-  Query,
   query,
   QueryDocumentSnapshot,
+  ServerTimestamp,
   serverTimestamp,
   startAfter,
   where,
-} from "firebase/firestore";
-import { function as F } from "fp-ts";
-import { db } from "db";
-import { Favorite } from "api-schemas";
+} from "firelordjs";
+import { function as F, array as AMut, option as O } from "fp-ts";
+import { firelordDb } from "db";
 
-export interface FavoriteDocument {
+export type FavoriteDocumentMetaType = MetaTypeCreator<
+  {
+    readonly userId: string;
+    readonly storyId: string;
+    readonly storyTitle: string;
+    readonly storyHtml: string;
+    readonly dateFavorited: ServerTimestamp;
+  },
+  "favorites",
+  string
+>;
+export type DocumentWrite = FavoriteDocumentMetaType["write"];
+export type DocumentRead = FavoriteDocumentMetaType["read"] & {
   readonly id: string;
+};
+
+interface CreateFavoriteData {
   readonly userId: string;
   readonly storyId: string;
   readonly storyTitle: string;
   readonly storyHtml: string;
-  readonly dateFavorited: FieldValue;
 }
 
-export const favoriteConverter: FirestoreDataConverter<FavoriteDocument> = {
-  toFirestore: (body: FavoriteDocument) => body,
-  fromFirestore: (snapshot: QueryDocumentSnapshot): FavoriteDocument =>
-    F.pipe(
-      // Force new line
-      snapshot,
-      (snapshot) => ({ id: snapshot.id, data: snapshot.data() }),
-      ({ id, data }): FavoriteDocument => ({
-        id: id,
-        userId: data.userId,
-        storyId: data.storyId,
-        storyTitle: data.storyTitle,
-        storyHtml: data.storyHtml,
-        dateFavorited: data.dateFavorited,
-      })
-    ),
-};
+export const favorites = getFirelord<FavoriteDocumentMetaType>(
+  firelordDb,
+  "favorites"
+);
 
-export const createFavorite = async (
-  body: Favorite.FavoriteBody
-): Promise<DocumentReference<FavoriteDocument>> =>
-  F.pipe(
-    collection(db, "favorites"),
-    (collRef) => collRef.withConverter(favoriteConverter),
-    (typedCollRef) =>
-      addDoc(typedCollRef, {
-        ...body,
-        // This is annoying, but in order to use our converter, we must supply an ID here
-        id: "This will be overwritten on the server",
-        dateFavorited: serverTimestamp(),
+export const createFavorite: (
+  createData: CreateFavoriteData
+) => Promise<string> = F.flow(
+  (createData): DocumentWrite => ({
+    dateFavorited: serverTimestamp(),
+    ...createData,
+  }),
+  (body) =>
+    addDoc(favorites.collection(), body)
+      .then((res) => res.id)
+      .catch((e: unknown) => {
+        throw new Error(String(e));
       })
-  );
+);
 
-export const getFavorite = async (
+export const getFavorite = (
   userId: string,
   storyId: string
-): Promise<FavoriteDocument | undefined> => {
-  const favoritesRef = collection(db, "favorites");
-  const querySnapshot = await getDocs(
+): Promise<DocumentRead | undefined> =>
+  F.pipe(
     query(
-      favoritesRef,
+      favorites.collection(),
       where("userId", "==", userId),
       where("storyId", "==", storyId),
       limit(1)
-    ).withConverter(favoriteConverter)
+    ),
+    (q) =>
+      getDocs(q)
+        .then(({ docs }) =>
+          F.pipe(
+            docs,
+            AMut.head,
+            O.fold(
+              // Force new line
+              F.constUndefined,
+              (docSnapshot) => ({
+                id: docSnapshot.id,
+                ...docSnapshot.data({ serverTimestamps: "estimate" }),
+              })
+            )
+          )
+        )
+        .catch((e: unknown) => {
+          throw new Error(String(e));
+        })
   );
-
-  return querySnapshot.docs[0]?.data();
-};
 
 const favoritesQueryLimit = 10;
 
-export interface FavoriteWithCursor<A, R> {
-  readonly favorites: readonly A[];
+export interface FavoritesWithCursor<A, R extends MetaType> {
+  readonly data: readonly A[];
   readonly cursor: QueryDocumentSnapshot<R> | null;
 }
 
-export const getFavorites = async (
-  userId: string,
-  last: QueryDocumentSnapshot<FavoriteDocument> | null
-): Promise<{
-  favorites: readonly FavoriteDocument[];
-  cursor: QueryDocumentSnapshot<FavoriteDocument> | null;
-}> => {
-  let queryRef: Query<DocumentData>;
-  const favoritesCollRef = collection(db, "favorites");
-
-  if (!last) {
-    queryRef = query(
-      favoritesCollRef,
-      orderBy("dateFavorited", "desc"),
-      where("userId", "==", userId),
-      limit(favoritesQueryLimit)
-    );
-  } else {
-    queryRef = query(
-      favoritesCollRef,
-      orderBy("dateFavorited", "desc"),
-      where("userId", "==", userId),
-      startAfter(last.data().dateFavorited),
-      limit(favoritesQueryLimit)
-    );
-  }
-
-  const querySnapshot = await getDocs(
-    query(queryRef.withConverter(favoriteConverter))
+export const getFavorites: ({
+  userId,
+  last,
+}: {
+  readonly userId: string;
+  readonly last: QueryDocumentSnapshot<FavoriteDocumentMetaType> | null;
+}) => Promise<FavoritesWithCursor<DocumentRead, FavoriteDocumentMetaType>> =
+  F.flow(
+    // Force new line
+    ({ userId, last }) =>
+      last
+        ? query(
+            favorites.collection(),
+            orderBy("dateFavorited", "desc"),
+            where("userId", "==", userId),
+            startAfter(
+              last.data({ serverTimestamps: "estimate" }).dateFavorited
+            ),
+            limit(favoritesQueryLimit)
+          )
+        : query(
+            favorites.collection(),
+            orderBy("dateFavorited", "desc"),
+            where("userId", "==", userId),
+            limit(favoritesQueryLimit)
+          ),
+    (q) =>
+      getDocs(q)
+        .then((querySnapshot) => ({
+          data: querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data({ serverTimestamps: "estimate" }),
+          })),
+          cursor:
+            querySnapshot.docs.length === favoritesQueryLimit
+              ? querySnapshot.docs[querySnapshot.docs.length - 1]!
+              : null,
+        }))
+        .catch((e: unknown) => {
+          throw new Error(String(e));
+        })
   );
-  const favorites = querySnapshot.docs.map((doc) => doc.data());
 
-  const cursor =
-    querySnapshot.docs.length === 10
-      ? querySnapshot.docs[querySnapshot.docs.length - 1]!
-      : null;
-
-  return { favorites, cursor };
-};
-
-export const deleteFavorite = async (id: string): Promise<void> =>
-  deleteDoc(doc(db, "favorites", id));
+export const deleteFavorite = (id: string): Promise<void> =>
+  deleteDoc(favorites.doc(id)).catch((e: unknown) => {
+    throw new Error(String(e));
+  });

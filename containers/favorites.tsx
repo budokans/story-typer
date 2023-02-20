@@ -35,7 +35,7 @@ export const FavoritesContainer = (): ReactElement => {
     <>
       {data?.pages.map((page, idx) => (
         <Fragment key={idx}>
-          {page.favorites.map((favorite, idx) => (
+          {page.data.map((favorite, idx) => (
             <Archive.Card key={idx}>
               <Archive.CardHeader>
                 <Archive.CardTitle>{favorite.storyTitle}</Archive.CardTitle>
@@ -61,7 +61,7 @@ export const FavoritesContainer = (): ReactElement => {
         isFetching={isFetching}
         isFetchingNext={isFetchingNextPage}
         hasNext={hasNextPage}
-        data={data?.pages[0]?.favorites}
+        data={data?.pages[0]?.data}
       />
     </>
   );

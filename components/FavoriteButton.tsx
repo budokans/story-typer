@@ -1,11 +1,10 @@
 import { ReactElement } from "react";
 import { function as F, either as E, taskEither as TE, task as T } from "fp-ts";
 import { IconButton } from "@chakra-ui/button";
+import { SkeletonCircle } from "@chakra-ui/react";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { Favorite as FavoriteAPI } from "api-client";
 import { Favorite as FavoriteSchema } from "api-schemas";
-import { DocumentReference } from "firebase/firestore";
-import { SkeletonCircle } from "@chakra-ui/react";
 
 interface FavoriteButtonProps {
   readonly storyDetails: FavoriteSchema.StoryData;
@@ -47,10 +46,7 @@ export const FavoriteButton = ({
 interface FavoriteButtonInternalProps {
   readonly icon: ReactElement;
   readonly iconSize: string;
-  readonly mutationCallback: () => TE.TaskEither<
-    unknown,
-    DocumentReference<FavoriteAPI.Document> | void
-  >;
+  readonly mutationCallback: () => TE.TaskEither<unknown, string | void>;
 }
 
 const FavoriteButtonInternal = ({
