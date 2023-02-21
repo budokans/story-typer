@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
 import { ReactElement } from "react";
-import { Header, Footer, GoogleIcon } from "@/components";
+import { Header, Footer } from "@/components";
 import { getUserAverageScoresDisplay } from "@/lib/manageUser";
 import { ChildrenProps } from "components";
 import { Styles } from "@/styles";
-import { useAuthContext } from "@/context/auth";
 import { UserLoader, useUserContext } from "@/context/user";
 import { StoriesProvider } from "@/context/stories";
 import { useSignOut } from "hooks";
+
+export const Unauthenticated = ({ children }: ChildrenProps): ReactElement => (
+  <Main>
+    <Header.HeaderBorderOnly />
+    <ContentWrapper>{children}</ContentWrapper>
+    <FooterContainer />
+  </Main>
+);
 
 export const Authenticated = ({ children }: ChildrenProps): ReactElement => (
   <UserLoader>
@@ -55,26 +62,6 @@ const AuthenticatedHeaderContent = (): ReactElement => {
         </>
       </Header.UserMenu>
     </>
-  );
-};
-
-export const Unauthenticated = ({ children }: ChildrenProps): ReactElement => {
-  const { signIn } = useAuthContext();
-
-  return (
-    <Main>
-      <Header.Header>
-        <Header.UserMenu>
-          <MenuItem sx={Styles.userMenuItemStateStyles} onClick={signIn}>
-            <GoogleIcon /> Sign in with Google
-          </MenuItem>
-        </Header.UserMenu>
-      </Header.Header>
-
-      <ContentWrapper>{children}</ContentWrapper>
-
-      <FooterContainer />
-    </Main>
   );
 };
 

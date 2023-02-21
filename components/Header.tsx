@@ -49,6 +49,17 @@ const Container = ({ children }: ChildrenProps): ReactElement => (
   </Box>
 );
 
+export const HeaderBorderOnly = (): ReactElement => (
+  <Box
+    position="relative"
+    zIndex="2"
+    bg="white"
+    borderTop={`${Styles.headerBorderHeight}px solid`}
+    borderColor="brand.500"
+    h="100%"
+  />
+);
+
 const Inner = ({ children }: ChildrenProps): ReactElement => (
   <Flex
     as="ul"
@@ -71,11 +82,9 @@ const Logo = (): ReactElement => (
     w={["1.85rem", "1.85rem", "3rem"]}
     alignSelf="flex-start"
   >
-    <Link href="/">
-      <a>
-        <Image src={logo} alt="Story Typer Logo" priority />
-      </a>
-    </Link>
+    <a>
+      <Image src={logo} alt="Story Typer Logo" priority />
+    </a>
   </Box>
 );
 
