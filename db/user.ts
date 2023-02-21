@@ -1,60 +1,36 @@
-import {
-  doc,
-  FirestoreDataConverter,
-  getDoc,
-  QueryDocumentSnapshot,
-  setDoc,
-} from "firebase/firestore";
-import { function as F } from "fp-ts";
-import { db } from "./";
-import { User as UserSchema } from "api-schemas";
+import { getDoc, getFirelord, MetaTypeCreator, setDoc } from "firelordjs";
+import { firelordDb } from "./";
 
-export interface UserDocument {
+type UserData = {
   readonly id: string;
   readonly name: string | null;
   readonly email: string | null;
   readonly photoURL: string | null;
-  readonly registeredDate: string | undefined;
-  readonly lastSignInTime: string | undefined;
+  readonly registeredDate: string;
+  readonly lastSignInTime: string;
   readonly personalBest: number | null;
   readonly lastTenScores: readonly number[];
   readonly gamesPlayed: number;
   readonly newestPlayedStoryPublishedDate: string | null;
   readonly oldestPlayedStoryPublishedDate: string | null;
-}
-
-export const userConverter: FirestoreDataConverter<UserDocument> = {
-  toFirestore: (body: UserDocument) => body,
-  fromFirestore: (snapshot: QueryDocumentSnapshot): UserDocument =>
-    F.pipe(
-      snapshot,
-      (snapshot) => ({ id: snapshot.id, data: snapshot.data() }),
-      ({ id, data }): UserDocument => ({
-        id: id,
-        name: data.name,
-        email: data.email,
-        photoURL: data.photoURL,
-        registeredDate: data.registeredDate,
-        lastSignInTime: data.lastSignInTime,
-        personalBest: data.personalBest,
-        lastTenScores: data.lastTenScores,
-        gamesPlayed: data.gamesPlayed,
-        newestPlayedStoryPublishedDate: data.newestPlayedStoryPublishedDate,
-        oldestPlayedStoryPublishedDate: data.oldestPlayedStoryPublishedDate,
-      })
-    ),
 };
 
-export const getUser = async (id: string): Promise<UserDocument | undefined> =>
-  F.pipe(
-    // Force new line
-    doc(db, "users", id).withConverter(userConverter),
-    (docRef) => getDoc(docRef).then((docSnapshot) => docSnapshot.data())
-  );
+export type UserDocumentMetaType = MetaTypeCreator<UserData, "users", string>;
+export type DocumentWrite = UserDocumentMetaType["write"];
+export type DocumentRead = UserDocumentMetaType["read"];
 
-export const setUser = async (user: UserSchema.User): Promise<void> =>
-  F.pipe(
-    // Force new line
-    doc(db, "users", user.id).withConverter(userConverter),
-    (docRef) => setDoc(docRef, user, { merge: true })
+export const users = getFirelord<UserDocumentMetaType>(firelordDb, "users");
+
+export const getUser = (id: string): Promise<DocumentRead | undefined> =>
+  getDoc(users.doc(id))
+    .then((docSnapshot) => docSnapshot.data())
+    .catch((error: unknown) => {
+      throw new Error(String(error));
+    });
+
+export const setUser = (createData: UserData): Promise<void> =>
+  setDoc(users.doc(createData.id), createData, { merge: true }).catch(
+    (error: unknown) => {
+      throw new Error(String(error));
+    }
   );

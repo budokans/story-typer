@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { function as F, taskEither as TE, either as E } from "fp-ts";
+import { User as FirebaseUser } from "firebase/auth";
 import { User as UserSchema } from "api-schemas";
 import { User as DBUser } from "db";
 import { useAuthContext } from "@/context/auth";
 
-export type Document = DBUser.UserDocument;
+export type Document = DBUser.DocumentRead;
 export type Body = UserSchema.User;
 export type Response = UserSchema.User;
 
@@ -54,6 +55,20 @@ export const useUser = (): {
     status,
   };
 };
+
+export const buildNewUser = (user: FirebaseUser): Body => ({
+  id: user.uid,
+  name: user.displayName,
+  email: user.email,
+  photoURL: user.photoURL,
+  registeredDate: user.metadata.creationTime ?? new Date().toISOString(),
+  lastSignInTime: user.metadata.lastSignInTime ?? new Date().toISOString(),
+  personalBest: null,
+  lastTenScores: [],
+  gamesPlayed: 0,
+  newestPlayedStoryPublishedDate: null,
+  oldestPlayedStoryPublishedDate: null,
+});
 
 export const useSetUser = (): ((
   body: Body
