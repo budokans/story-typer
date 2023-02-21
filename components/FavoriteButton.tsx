@@ -18,12 +18,13 @@ export const FavoriteButton = ({
   const deleteFavoriteMutation = FavoriteAPI.useDeleteFavorite();
   const iconSize = "2.5rem";
 
+  if (isLoading) return <SkeletonCircle size={iconSize} />;
+
   return F.pipe(
     data,
     E.match(
       (error) => {
         if (error) console.error(error);
-        if (isLoading) return <SkeletonCircle size={iconSize} />;
         return (
           <FavoriteButtonInternal
             icon={<RiStarLine />}
