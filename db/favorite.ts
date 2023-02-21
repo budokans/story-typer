@@ -14,7 +14,7 @@ import {
   startAfter,
   where,
 } from "firelordjs";
-import { function as F, array as AMut, option as O } from "fp-ts";
+import { function as F, readonlyArray as A, option as O } from "fp-ts";
 import { firelordDb } from "db";
 
 export type FavoriteDocumentMetaType = MetaTypeCreator<
@@ -76,7 +76,8 @@ export const getFavorite = (
         .then(({ docs }) =>
           F.pipe(
             docs,
-            AMut.head,
+            A.fromArray,
+            A.head,
             O.fold(
               // Force new line
               F.constUndefined,
