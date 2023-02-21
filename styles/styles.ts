@@ -1,20 +1,18 @@
 export const headerHeightMobile = 41;
 export const headerHeightDesktop = 61;
 export const headerBorderHeight = 5;
+export const footerHeightDesktop = headerHeightDesktop - headerBorderHeight;
+export const footerHeightMobile = headerHeightMobile - headerBorderHeight;
 
-export const headerFooterTotalHeight = (
+export const headerFooterHeight = (
   device: "mobile" | "desktop",
   isHeader: boolean
 ): number => {
   switch (device) {
     case "desktop":
-      return isHeader
-        ? headerHeightDesktop
-        : headerHeightDesktop - headerBorderHeight;
+      return isHeader ? headerHeightDesktop : footerHeightDesktop;
     case "mobile":
-      return isHeader
-        ? headerHeightMobile
-        : headerHeightMobile - headerBorderHeight;
+      return isHeader ? headerHeightMobile : footerHeightMobile;
   }
 };
 

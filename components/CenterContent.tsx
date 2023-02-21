@@ -14,12 +14,12 @@ export const CenterContent = ({
   const [mediaQuery] = useMediaQuery("(min-width: 769px)");
   const viewportIsWiderThan768 = mediaQuery!;
 
-  const headerHeight = Styles.headerFooterTotalHeight(
+  const headerHeight = Styles.headerFooterHeight(
     viewportIsWiderThan768 ? "desktop" : "mobile",
     true
   );
 
-  const footerHeight = Styles.headerFooterTotalHeight(
+  const footerHeight = Styles.headerFooterHeight(
     viewportIsWiderThan768 ? "desktop" : "mobile",
     false
   );
