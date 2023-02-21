@@ -133,8 +133,8 @@ export const getFavorites: ({
             ...doc.data({ serverTimestamps: "estimate" }),
           })),
           cursor:
-            querySnapshot.docs.length === favoritesQueryLimit
-              ? querySnapshot.docs[querySnapshot.docs.length - 1]!
+            querySnapshot.size === favoritesQueryLimit
+              ? querySnapshot.docs[querySnapshot.size - 1]!
               : null,
         }))
         .catch((e: unknown) => {

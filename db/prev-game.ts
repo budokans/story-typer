@@ -113,8 +113,8 @@ export const getPrevGames: ({
             ...doc.data({ serverTimestamps: "estimate" }),
           })),
           cursor:
-            querySnapshot.docs.length === prevGamesQueryLimit
-              ? querySnapshot.docs[querySnapshot.docs.length - 1]!
+            querySnapshot.size === prevGamesQueryLimit
+              ? querySnapshot.docs[querySnapshot.size - 1]!
               : null,
         }))
         .catch((e: unknown) => {

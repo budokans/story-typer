@@ -111,7 +111,7 @@ export const getStories = async (
     snapshot = await getDocs(q);
   }
 
-  if (snapshot.docs.length > 0) {
+  if (snapshot.size > 0) {
     batch = snapshot.docs.map((doc) => doc.data());
   }
 
