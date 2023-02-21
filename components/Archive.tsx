@@ -217,9 +217,8 @@ export const PlayAgainButton = ({
 
 export const DeleteFavoriteButton = ({
   id,
-}: DeleteFavoriteButtonProps): ReactElement | null => {
+}: DeleteFavoriteButtonProps): ReactElement => {
   const deleteFavoriteMutation = FavoriteAPI.useDeleteFavorite();
-  const { setIsExpanded } = useCardIsExpandedContext();
 
   return (
     <IconButton
@@ -240,10 +239,7 @@ export const DeleteFavoriteButton = ({
                 () => console.error(error),
                 T.fromIO
               ),
-            () => {
-              setIsExpanded(false);
-              return T.of(undefined);
-            }
+            () => T.of(undefined)
           )
         )()
       }
