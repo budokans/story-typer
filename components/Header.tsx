@@ -89,15 +89,18 @@ export const UserMenu = ({
 }: UserMenuProps & ChildrenProps): ReactElement => (
   <Box as="li">
     <Menu>
-      <MenuButton
-        as={Avatar}
-        h={[7, 7, 10]}
-        w={[7, 7, 10]}
-        // This will default to a generic avatar image if user.photoURL is
-        // nullish
-        src={photoURL}
-        cursor="pointer"
-      />
+      <MenuButton>
+        <Avatar
+          h={[7, 7, 10]}
+          w={[7, 7, 10]}
+          cursor="pointer"
+          bg="brand.800"
+          color="white"
+          // This will default to a generic avatar image if user.photoURL is
+          // nullish
+          {...(photoURL ? { src: photoURL } : {})}
+        />
+      </MenuButton>
       <MenuList fontSize={["sm", "sm", "md"]}>{children}</MenuList>
     </Menu>
   </Box>
