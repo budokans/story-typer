@@ -1,7 +1,6 @@
 import { ReactElement } from "react";
 import { function as F, either as E, taskEither as TE, task as T } from "fp-ts";
-import { IconButton } from "@chakra-ui/button";
-import { SkeletonCircle } from "@chakra-ui/react";
+import { IconButton, SkeletonCircle } from "@chakra-ui/react";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { Favorite as FavoriteAPI } from "api-client";
 import { Favorite as FavoriteSchema } from "api-schemas";
