@@ -6,10 +6,10 @@ import {
   Page,
   PrevGamesContainer,
 } from "@/containers";
-import { DocHead, Archive, CenterContent, Spinner } from "@/components";
+import { DocHead, Archive } from "@/components";
 import { useAuthContext } from "@/context/auth";
 
-const Play = (): ReactElement => {
+const Game = (): ReactElement => {
   const { authUser, authStateIsLoading } = useAuthContext();
   const router = useRouter();
 
@@ -18,14 +18,6 @@ const Play = (): ReactElement => {
       router.push("./");
     }
   }, [router, authUser, authStateIsLoading]);
-
-  if (authStateIsLoading) {
-    return (
-      <CenterContent>
-        <Spinner />
-      </CenterContent>
-    );
-  }
 
   return (
     <>
@@ -68,4 +60,4 @@ const ContainerToggler = (): ReactElement => {
   }
 };
 
-export default Play;
+export default Game;
