@@ -188,6 +188,9 @@ export const useGame = (): UseGame => {
     F.pipe(
       currentStory,
       TE.fromNullable("Invalid current story."),
+      TE.chainFirstIOK(
+        () => () => dispatch({ type: "win", wpm: getWpm(timer.totalSeconds) })
+      ),
       TE.bind("updatedUser", (currentStory) =>
         updateUserPostWin(user, currentStory, getWpm(timer.totalSeconds))
       ),
@@ -201,12 +204,7 @@ export const useGame = (): UseGame => {
             () => console.error(error),
             T.fromIO
           ),
-        ({ prevGame }) =>
-          F.pipe(
-            () => setGameCount(gameCount + 1),
-            IO.apFirst(() => dispatch({ type: "win", wpm: prevGame.score })),
-            T.fromIO
-          )
+        () => T.of(undefined)
       )
     )();
   }, [
@@ -214,8 +212,6 @@ export const useGame = (): UseGame => {
     currentStory,
     timer.totalSeconds,
     createPrevGame,
-    gameCount,
-    setGameCount,
     updateUserPostWin,
   ]);
 
@@ -224,7 +220,7 @@ export const useGame = (): UseGame => {
     if (state.userInput === currentStory?.storyText) {
       winGame();
     }
-  }, [state.userInput, currentStory, winGame]);
+  }, [state.userInput, currentStory, timer.seconds, winGame]);
 
   return {
     currentStory,
