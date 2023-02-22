@@ -15,7 +15,7 @@ import {
   where,
 } from "firelordjs";
 import { function as F, readonlyArray as A, option as O } from "fp-ts";
-import { firelordDb } from "db";
+import { firelordDb, Util } from "./";
 
 export type FavoriteDocumentMetaType = MetaTypeCreator<
   {
@@ -28,10 +28,8 @@ export type FavoriteDocumentMetaType = MetaTypeCreator<
   "favorites",
   string
 >;
-export type DocumentWrite = FavoriteDocumentMetaType["write"];
-export type DocumentRead = FavoriteDocumentMetaType["read"] & {
-  readonly id: string;
-};
+export type DocumentWrite = Util.Write<FavoriteDocumentMetaType>;
+export type DocumentRead = Util.Read<FavoriteDocumentMetaType>;
 
 interface CreateFavoriteData {
   readonly userId: string;
@@ -81,10 +79,7 @@ export const getFavorite = (
             O.fold(
               // Force new line
               F.constUndefined,
-              (docSnapshot) => ({
-                id: docSnapshot.id,
-                ...docSnapshot.data({ serverTimestamps: "estimate" }),
-              })
+              Util.buildDocumentRead
             )
           )
         )
@@ -129,10 +124,7 @@ export const getFavorites: ({
     (q) =>
       getDocs(q)
         .then((querySnapshot) => ({
-          data: querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data({ serverTimestamps: "estimate" }),
-          })),
+          data: querySnapshot.docs.map(Util.buildDocumentRead),
           cursor:
             querySnapshot.size === favoritesQueryLimit
               ? querySnapshot.docs[querySnapshot.size - 1]!

@@ -1,6 +1,4 @@
 import { function as F } from "fp-ts";
-import { firelordDb } from "db";
-import { Story } from "api-schemas";
 import {
   addDoc,
   getDocs,
@@ -16,6 +14,8 @@ import {
   startAfter,
   where,
 } from "firelordjs";
+import { firelordDb, Util } from "./";
+import { Story } from "api-schemas";
 
 export type PrevGameDocumentMetaType = MetaTypeCreator<
   {
@@ -29,11 +29,8 @@ export type PrevGameDocumentMetaType = MetaTypeCreator<
   "prevGames",
   string
 >;
-export type DocumentWrite = PrevGameDocumentMetaType["write"];
-export type DocumentRead = PrevGameDocumentMetaType["read"] & {
-  readonly id: string;
-};
-
+export type DocumentWrite = Util.Write<PrevGameDocumentMetaType>;
+export type DocumentRead = Util.Read<PrevGameDocumentMetaType>;
 export const prevGames = getFirelord<PrevGameDocumentMetaType>(
   firelordDb,
   "prevGames"
@@ -108,10 +105,7 @@ export const getPrevGames: ({
     (q) =>
       getDocs(q)
         .then((querySnapshot) => ({
-          data: querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data({ serverTimestamps: "estimate" }),
-          })),
+          data: querySnapshot.docs.map(Util.buildDocumentRead),
           cursor:
             querySnapshot.size === prevGamesQueryLimit
               ? querySnapshot.docs[querySnapshot.size - 1]!
