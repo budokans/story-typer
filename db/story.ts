@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   DocumentReference,
+  endBefore,
   FieldValue,
   FirestoreDataConverter,
   getDoc,
@@ -105,7 +106,7 @@ export const getStories = async (
     const q = query(
       storiesCollRef,
       orderBy("datePublished", "desc"),
-      startAfter(latest),
+      endBefore(latest),
       limit(initialStoryQueryLimit)
     ).withConverter(storyConverter);
     snapshot = await getDocs(q);
