@@ -1,6 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 import { ReactElement } from "react";
 import "@fontsource/inter/100.css";
 import "@fontsource/inter/200.css";
@@ -20,6 +21,7 @@ const MyApp = ({ Component, pageProps }: AppProps): ReactElement => {
           <Component {...pageProps} />
         </AuthProvider>
       </ChakraProvider>
+      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 };
