@@ -49,6 +49,8 @@ export const useGame = (): UseGame => {
     isLoading: storiesAreLoading,
     gameCount,
     setGameCount,
+    fetchNext,
+    leastRecentStoryPublishedDate,
   } = useStoriesContext();
   const count = useCountdown(state.status);
   const timer = Timer.useTimer(state.status, TIME_LIMIT);
@@ -96,7 +98,8 @@ export const useGame = (): UseGame => {
     readonly user: UserSchema.User;
     readonly currentStory: StorySchema.StoryResponse;
   }) => TE.TaskEither<unknown, void> = F.flow(
-    ({ user, currentStory }) => buildPostSkipUser(user, currentStory),
+    ({ user, currentStory }) =>
+      buildPostSkipUser(user, currentStory, leastRecentStoryPublishedDate),
     setUserAPI
   );
 
@@ -137,6 +140,9 @@ export const useGame = (): UseGame => {
         () =>
           F.pipe(
             () => setGameCount(gameCount + 1),
+            IO.apFirst(() => {
+              if (stories.length === gameCount) fetchNext();
+            }),
             IO.apFirst(() => dispatch({ type: "next" })),
             T.fromIO
           )
@@ -144,10 +150,14 @@ export const useGame = (): UseGame => {
     )();
   };
 
-  const handleNextStoryClick = () => {
-    setGameCount(gameCount + 1);
-    dispatch({ type: "next" });
-  };
+  const handleNextStoryClick = (): IO.IO<void> =>
+    F.pipe(
+      () => setGameCount(gameCount + 1),
+      IO.apFirst(() => {
+        if (stories.length === gameCount) fetchNext();
+      }),
+      IO.apFirst(() => dispatch({ type: "next" }))
+    );
 
   const checkForUserError = (currentInput: string, source: string) =>
     currentInput !== source.slice(0, currentInput.length);
@@ -178,10 +188,16 @@ export const useGame = (): UseGame => {
     ): TE.TaskEither<unknown, void> =>
       F.pipe(
         userData,
-        (user) => buildPostWinUser(user, currentStory, score),
+        (user) =>
+          buildPostWinUser(
+            user,
+            currentStory,
+            score,
+            leastRecentStoryPublishedDate
+          ),
         setUserAPI
       ),
-    [setUserAPI]
+    [setUserAPI, leastRecentStoryPublishedDate]
   );
 
   const winGame = useCallback(() => {

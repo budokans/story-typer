@@ -1,3 +1,4 @@
+import { option as O, function as F } from "fp-ts";
 import { User, Story } from "api-schemas";
 
 type User = User.User;
@@ -6,7 +7,8 @@ type Story = Story.StoryResponse;
 export const buildPostWinUser = (
   user: User,
   story: Story,
-  score: number
+  score: number,
+  leastRecentStoryPublishedDate: O.Option<string>
 ): User => {
   const updatedPersonalBest =
     !user.personalBest || score > user.personalBest ? score : user.personalBest;
@@ -21,7 +23,8 @@ export const buildPostWinUser = (
   );
   const updatedOldestPlayedStoryPublishedDate = getOldestDate(
     user.oldestPlayedStoryPublishedDate,
-    story.datePublished
+    story.datePublished,
+    leastRecentStoryPublishedDate
   );
 
   return {
@@ -34,7 +37,11 @@ export const buildPostWinUser = (
   };
 };
 
-export const buildPostSkipUser = (user: User, story: Story): User => ({
+export const buildPostSkipUser = (
+  user: User,
+  story: Story,
+  leastRecentStoryPublishedDate: O.Option<string>
+): User => ({
   ...user,
   newestPlayedStoryPublishedDate: getMostRecentDate(
     user.newestPlayedStoryPublishedDate,
@@ -42,7 +49,8 @@ export const buildPostSkipUser = (user: User, story: Story): User => ({
   ),
   oldestPlayedStoryPublishedDate: getOldestDate(
     user.oldestPlayedStoryPublishedDate,
-    story.datePublished
+    story.datePublished,
+    leastRecentStoryPublishedDate
   ),
 });
 
@@ -60,16 +68,25 @@ const getMostRecentDate = (
 };
 
 const getOldestDate = (
-  storedDate: User["oldestPlayedStoryPublishedDate"],
-  currentStoryDate: Story["datePublished"]
+  oldestPlayedStoryPublishedDate: string | null,
+  currentStoryDate: string,
+  leastRecentStoryPublishedDate: O.Option<string>
 ) => {
-  if (!storedDate) return currentStoryDate;
-  const parsedStoredDate = Date.parse(storedDate);
+  if (!oldestPlayedStoryPublishedDate) return currentStoryDate;
+  const parsedStoredDate = Date.parse(oldestPlayedStoryPublishedDate);
   const parsedCurrentStoryDate = Date.parse(currentStoryDate);
+  const parsedLeastRecentStoryPublishedDate = F.pipe(
+    leastRecentStoryPublishedDate,
+    O.map(Date.parse),
+    O.getOrElseW(F.constNull)
+  );
 
+  if (parsedCurrentStoryDate === parsedLeastRecentStoryPublishedDate) {
+    return null;
+  }
   return parsedCurrentStoryDate < parsedStoredDate
     ? currentStoryDate
-    : storedDate;
+    : oldestPlayedStoryPublishedDate;
 };
 
 const updateUserLastTenScores = (

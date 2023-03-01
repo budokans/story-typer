@@ -11,14 +11,18 @@ import {
   Text,
   Icon,
   IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
   function as F,
-  string as String,
+  string as Str,
   taskEither as TE,
   task as T,
+  option as O,
+  readonlyArray as A,
+  io as IO,
 } from "fp-ts";
 import {
   RiArrowLeftSLine,
@@ -29,8 +33,8 @@ import {
 import { parseISO, formatDistance } from "date-fns";
 import domToReact from "html-react-parser";
 import { useStoriesContext } from "@/context/stories";
-import { Favorite as FavoriteAPI } from "api-client";
-import { ChildrenProps } from "@/components";
+import { Favorite as FavoriteAPI, Story as StoryAPI } from "api-client";
+import { ChildrenProps, Spinner } from "components";
 import {
   CardIsExpandedProvider,
   useCardIsExpandedContext,
@@ -43,10 +47,6 @@ interface CardDateProps {
 
 interface StoryProps {
   readonly story: string;
-}
-
-interface PlayAgainButtonProps {
-  readonly storyId: string;
 }
 
 interface DeleteFavoriteButtonProps {
@@ -144,8 +144,8 @@ export const CardScore = ({ children }: ChildrenProps): ReactElement => (
 
 export const CardDate = ({ dateString }: CardDateProps): ReactElement =>
   F.pipe(
-    dateString,
     // Force new line
+    dateString,
     parseISO,
     (iso) => (
       <time dateTime={dateString} style={{ fontSize: ".75rem" }}>
@@ -181,7 +181,7 @@ export const CardExpandedSection = ({
 export const Story = ({ story }: StoryProps): ReactElement =>
   F.pipe(
     story,
-    String.replace(/<p/g, '<p style="margin-bottom: 1rem"'),
+    Str.replace(/<p/g, '<p style="margin-bottom: 1rem"'),
     domToReact,
     (parsedStory) => <Box mt={4}>{parsedStory}</Box>
   );
@@ -192,25 +192,72 @@ export const Buttons = ({ children }: ChildrenProps): ReactElement => (
   </HStack>
 );
 
+interface PlayAgainButtonProps {
+  readonly storyId: string;
+}
+
+// TODO: Fix multiple error toasts for queries with same QueryKey.
+// This happens when multiple PlayAgainButtons with the same storyId are rendered
+// when the query runs. The query hook's return value changes, rerendering both components.
+
+// Solution: There's no need to render both buttons. Close any other card with a given storyId
+// when expanding another card with that storyId.
 export const PlayAgainButton = ({
   storyId,
 }: PlayAgainButtonProps): ReactElement => {
-  const { handlePlayArchiveStoryClick } = useStoriesContext();
   const router = useRouter();
+  const toast = useToast();
+  const { stories, setStories, gameCount } = useStoriesContext();
+  const toastIO = (): IO.IO<void> => () =>
+    toast({
+      title: "Sorry, we could not find that story.",
+      description: "Please try another story or return to game.",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+
+  const { refetch, isFetching } = StoryAPI.useStory(storyId, {
+    enabled: false,
+    onSuccess: F.flow(
+      O.fromNullable,
+      O.chain(
+        F.flow(
+          // Force new line
+          StoryAPI.serializeStory,
+          (serialized) => A.insertAt(gameCount - 1, serialized)(stories)
+        )
+      ),
+      O.matchW(
+        // Force new line
+        toastIO,
+        (data) =>
+          F.pipe(
+            () => setStories(data),
+            IO.chainFirst(() => () => router.push("/game"))
+          )
+      ),
+      (unsafePerformIO) => unsafePerformIO()
+    ),
+    onError: F.flow(
+      (err) => () => {
+        console.error(new Error(String(err)));
+      },
+      IO.chain(toastIO),
+      (unsafePerformIO) => unsafePerformIO()
+    ),
+  });
 
   return (
     <IconButton
-      icon={<RiPlayFill />}
+      icon={isFetching ? <Spinner size="md" /> : <RiPlayFill />}
       aria-label="Play this story again"
       isRound
       cursor="pointer"
       fontSize="1.75rem"
-      bg="lime"
+      bg={isFetching ? "gold" : "lime"}
       color="blackAlpha.800"
-      onClick={() => {
-        handlePlayArchiveStoryClick(storyId);
-        router.push("/game");
-      }}
+      onClick={refetch}
     />
   );
 };

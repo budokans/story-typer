@@ -71,7 +71,7 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
 type ScrapedStory = Story.StoryBody;
 
 const getLatestStories = (): Promise<ScrapedStory[] | void> => {
-  return DBStory.lastStoryTimestamp()
+  return DBStory.mostRecentStoryPublishedDate()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
     )
