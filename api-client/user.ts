@@ -43,6 +43,7 @@ export const useUser = (): {
     async () => DBUser.getUser(authUserId!),
     {
       enabled: !!authUserId,
+      refetchOnWindowFocus: false,
     }
   );
 
