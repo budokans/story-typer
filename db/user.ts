@@ -1,5 +1,5 @@
 import { getDoc, getFirelord, MetaTypeCreator, setDoc } from "firelordjs";
-import { firelordDb, Util as DBUtil } from "db";
+import { db, Util as DBUtil } from "db";
 
 type UserData = {
   readonly id: string;
@@ -19,7 +19,7 @@ export type UserDocumentMetaType = MetaTypeCreator<UserData, "users", string>;
 export type DocumentWrite = DBUtil.Write<UserDocumentMetaType>;
 export type DocumentRead = DBUtil.Read<UserDocumentMetaType>;
 
-export const users = getFirelord<UserDocumentMetaType>(firelordDb, "users");
+export const users = getFirelord<UserDocumentMetaType>(db, "users");
 
 export const getUser = (id: string): Promise<DocumentRead | undefined> =>
   getDoc(users.doc(id))

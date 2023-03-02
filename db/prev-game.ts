@@ -14,7 +14,7 @@ import {
   startAfter,
   where,
 } from "firelordjs";
-import { firelordDb, Util as DBUtil } from "db";
+import { db, Util as DBUtil } from "db";
 import { Story } from "api-schemas";
 
 export type PrevGameDocumentMetaType = MetaTypeCreator<
@@ -31,10 +31,7 @@ export type PrevGameDocumentMetaType = MetaTypeCreator<
 >;
 export type DocumentWrite = DBUtil.Write<PrevGameDocumentMetaType>;
 export type DocumentRead = DBUtil.Read<PrevGameDocumentMetaType>;
-export const prevGames = getFirelord<PrevGameDocumentMetaType>(
-  firelordDb,
-  "prevGames"
-);
+export const prevGames = getFirelord<PrevGameDocumentMetaType>(db, "prevGames");
 
 interface CreatePrevGameData {
   readonly userId: string;

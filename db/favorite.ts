@@ -15,7 +15,7 @@ import {
   where,
 } from "firelordjs";
 import { function as F, readonlyArray as A, option as O } from "fp-ts";
-import { firelordDb, Util as DBUtil } from "db";
+import { db, Util as DBUtil } from "db";
 
 export type FavoriteDocumentMetaType = MetaTypeCreator<
   {
@@ -38,10 +38,7 @@ interface CreateFavoriteData {
   readonly storyHtml: string;
 }
 
-export const favorites = getFirelord<FavoriteDocumentMetaType>(
-  firelordDb,
-  "favorites"
-);
+export const favorites = getFirelord<FavoriteDocumentMetaType>(db, "favorites");
 
 export const createFavorite: (
   createData: CreateFavoriteData

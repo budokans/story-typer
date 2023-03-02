@@ -15,7 +15,7 @@ import {
   ServerTimestamp,
   startAfter,
 } from "firelordjs";
-import { firelordDb, Util as DBUtil } from "db";
+import { db, Util as DBUtil } from "db";
 
 export type StoriesDocumentMetaType = MetaTypeCreator<
   {
@@ -42,10 +42,7 @@ interface CreateStoryData {
   readonly datePublished: string;
 }
 
-export const stories = getFirelord<StoriesDocumentMetaType>(
-  firelordDb,
-  "stories"
-);
+export const stories = getFirelord<StoriesDocumentMetaType>(db, "stories");
 
 export const createStory: (createData: CreateStoryData) => Promise<string> =
   F.flow(
