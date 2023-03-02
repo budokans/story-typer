@@ -6,6 +6,7 @@ import {
   SetStateAction,
   ReactElement,
   useEffect,
+  useCallback,
 } from "react";
 import {
   option as O,
@@ -36,6 +37,7 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
     isLoading: leastRecentStoryPublishedDateIsLoading,
     error: leastRecentStoryPublishedDateError,
   } = StoryAPI.useLeastRecentStoryPublishedDate();
+
   const { error, isFetching, fetchNextPage } = StoryAPI.useStoriesInfinite({
     limit: APIUtil.defaultInfiniteQueryLimit,
     options: {
@@ -61,6 +63,10 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
         ),
     },
   });
+
+  const fetchNext = useCallback(() => {
+    fetchNextPage();
+  }, [fetchNextPage]);
 
   useEffect(() => {
     if (stories.length === 0 && !isFetching && !error) {
@@ -90,9 +96,7 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
           isFetching ||
           leastRecentStoryPublishedDateIsLoading ||
           (stories.length === 0 && !error),
-        fetchNext: () => {
-          fetchNextPage();
-        },
+        fetchNext,
         gameCount,
         setGameCount,
         leastRecentStoryPublishedDate,

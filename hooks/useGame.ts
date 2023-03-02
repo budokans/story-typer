@@ -79,17 +79,15 @@ export const useGame = (): UseGame => {
     timer.totalSeconds === TIME_LIMIT && dispatch({ type: "outOfTime" });
   }, [timer.totalSeconds]);
 
-  const initCountdown = () =>
-    state.status === "idle" && dispatch({ type: "startCountdown" });
+  const initCountdown = useCallback(
+    () => state.status === "idle" && dispatch({ type: "startCountdown" }),
+    [state.status]
+  );
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    dispatch({ type: "inputValueChange", inputValue });
-  };
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) =>
+    dispatch({ type: "inputValueChange", inputValue: e.target.value });
 
-  const handleResetClick = () => {
-    dispatch({ type: "reset" });
-  };
+  const handleResetClick = () => dispatch({ type: "reset" });
 
   const updateUserPostSkip: ({
     user,
@@ -120,44 +118,58 @@ export const useGame = (): UseGame => {
     )
   );
 
-  const handleSkipClick = () => {
-    F.pipe(
+  const handleSkipClick = useCallback(
+    () =>
+      F.pipe(
+        currentStory,
+        TE.fromNullable("Invalid current story"),
+        TE.bind("updatedUser", (currentStory) =>
+          updateUserPostSkip({ user, currentStory })
+        ),
+        TE.bind("prevGame", (currentStory) =>
+          createPrevGame({ user, currentStory })
+        ),
+        TE.fold(
+          (error) =>
+            F.pipe(
+              // Force new line
+              () => console.error(error),
+              T.fromIO
+            ),
+          () =>
+            F.pipe(
+              () => setGameCount(gameCount + 1),
+              IO.apFirst(() => {
+                if (stories.length === gameCount) fetchNext();
+              }),
+              IO.apFirst(() => dispatch({ type: "next" })),
+              T.fromIO
+            )
+        )
+      )(),
+    [
       currentStory,
-      TE.fromNullable("Invalid current story"),
-      TE.bind("updatedUser", (currentStory) =>
-        updateUserPostSkip({ user, currentStory })
-      ),
-      TE.bind("prevGame", (currentStory) =>
-        createPrevGame({ user, currentStory })
-      ),
-      TE.fold(
-        (error) =>
-          F.pipe(
-            // Force new line
-            () => console.error(error),
-            T.fromIO
-          ),
-        () =>
-          F.pipe(
-            () => setGameCount(gameCount + 1),
-            IO.apFirst(() => {
-              if (stories.length === gameCount) fetchNext();
-            }),
-            IO.apFirst(() => dispatch({ type: "next" })),
-            T.fromIO
-          )
-      )
-    )();
-  };
+      user,
+      createPrevGame,
+      fetchNext,
+      gameCount,
+      setGameCount,
+      stories.length,
+      updateUserPostSkip,
+    ]
+  );
 
-  const handleNextStoryClick = (): IO.IO<void> =>
-    F.pipe(
-      () => setGameCount(gameCount + 1),
-      IO.apFirst(() => {
-        if (stories.length === gameCount) fetchNext();
-      }),
-      IO.apFirst(() => dispatch({ type: "next" }))
-    );
+  const handleNextStoryClick = useCallback(
+    (): IO.IO<void> =>
+      F.pipe(
+        () => setGameCount(gameCount + 1),
+        IO.apFirst(() => {
+          if (stories.length === gameCount) fetchNext();
+        }),
+        IO.apFirst(() => dispatch({ type: "next" }))
+      ),
+    [fetchNext, gameCount, setGameCount, stories.length]
+  );
 
   const checkForUserError = (currentInput: string, source: string) =>
     currentInput !== source.slice(0, currentInput.length);

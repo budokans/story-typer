@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useCallback } from "react";
 import {
   Container as ChakraContainer,
   Heading,
@@ -266,6 +266,23 @@ export const DeleteFavoriteButton = ({
 }: DeleteFavoriteButtonProps): ReactElement => {
   const deleteFavoriteMutation = FavoriteAPI.useDeleteFavorite();
 
+  const deleteFavorite = useCallback(
+    () =>
+      F.pipe(
+        deleteFavoriteMutation(id),
+        TE.fold(
+          (error) =>
+            F.pipe(
+              // Force new line
+              () => console.error(error),
+              T.fromIO
+            ),
+          () => T.of(undefined)
+        )
+      )(),
+    [id, deleteFavoriteMutation]
+  );
+
   return (
     <IconButton
       icon={<RiDeleteBin2Line />}
@@ -275,20 +292,7 @@ export const DeleteFavoriteButton = ({
       fontSize="1.75rem"
       bg="blackAlpha.400"
       color="blackAlpha.800"
-      onClick={() =>
-        F.pipe(
-          deleteFavoriteMutation(id),
-          TE.fold(
-            (error) =>
-              F.pipe(
-                // Force new line
-                () => console.error(error),
-                T.fromIO
-              ),
-            () => T.of(undefined)
-          )
-        )()
-      }
+      onClick={deleteFavorite}
     />
   );
 };

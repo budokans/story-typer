@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactElement } from "react";
+import { createContext, useContext, ReactElement, useCallback } from "react";
 import { option as O, function as F, taskEither as TE, task as T } from "fp-ts";
 import { AuthError, getAuth, User as FirebaseUser } from "firebase/auth";
 import { useAuthState, useSignInWithGoogle } from "react-firebase-hooks/auth";
@@ -25,7 +25,7 @@ export const AuthLoader = ({ children }: ChildrenProps): ReactElement => {
     useSignInWithGoogle(auth);
   const router = useRouter();
 
-  const signIn = (): void => {
+  const signIn = useCallback((): void => {
     F.pipe(
       TE.tryCatch(
         () => signInWithGoogle(),
@@ -50,7 +50,7 @@ export const AuthLoader = ({ children }: ChildrenProps): ReactElement => {
         () => T.of(undefined)
       )
     )();
-  };
+  }, [router, signInWithGoogle]);
 
   return (
     <authContext.Provider

@@ -4,6 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from "react-query";
+import { useCallback } from "react";
 import {
   function as F,
   array as AMut,
@@ -70,20 +71,23 @@ export const useAddFavorite = (): ((
     }
   );
 
-  return (storyDetails: FavoriteSchema.StoryData) =>
-    F.pipe(
-      storyDetails,
-      (storyDetails) => ({
-        userId,
-        ...storyDetails,
-      }),
-      FavoriteSchema.FavoriteBody.encode,
-      (encodedBody) =>
-        TE.tryCatch(
-          () => addFavoriteMutation.mutateAsync(encodedBody),
-          (error) => error
-        )
-    );
+  return useCallback(
+    (storyDetails: FavoriteSchema.StoryData) =>
+      F.pipe(
+        storyDetails,
+        (storyDetails) => ({
+          userId,
+          ...storyDetails,
+        }),
+        FavoriteSchema.FavoriteBody.encode,
+        (encodedBody) =>
+          TE.tryCatch(
+            () => addFavoriteMutation.mutateAsync(encodedBody),
+            (error) => error
+          )
+      ),
+    [userId, addFavoriteMutation]
+  );
 };
 
 export const useDeleteFavorite = (): ((
@@ -98,11 +102,14 @@ export const useDeleteFavorite = (): ((
     }
   );
 
-  return (id: string) =>
-    TE.tryCatch(
-      () => deleteFavoriteMutation.mutateAsync(id),
-      (error) => error
-    );
+  return useCallback(
+    (id: string) =>
+      TE.tryCatch(
+        () => deleteFavoriteMutation.mutateAsync(id),
+        (error) => error
+      ),
+    [deleteFavoriteMutation]
+  );
 };
 
 export const useFavoritesInfinite = (

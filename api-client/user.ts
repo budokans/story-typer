@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useCallback } from "react";
 import { function as F, taskEither as TE, either as E } from "fp-ts";
 import { User as FirebaseUser } from "firebase/auth";
 import { User as UserSchema } from "api-schemas";
@@ -83,15 +84,18 @@ export const useSetUser = (): ((
     }
   );
 
-  return (body: Body) =>
-    F.pipe(
-      // Force new Line
-      body,
-      UserSchema.User.encode,
-      (encodedBody) =>
-        TE.tryCatch(
-          () => setUserMutation.mutateAsync(encodedBody),
-          (error) => error
-        )
-    );
+  return useCallback(
+    (body: Body) =>
+      F.pipe(
+        // Force new Line
+        body,
+        UserSchema.User.encode,
+        (encodedBody) =>
+          TE.tryCatch(
+            () => setUserMutation.mutateAsync(encodedBody),
+            (error) => error
+          )
+      ),
+    [setUserMutation]
+  );
 };
