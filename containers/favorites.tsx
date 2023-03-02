@@ -1,12 +1,12 @@
 import { Fragment, useRef, ReactElement } from "react";
 import { Divider, Text } from "@chakra-ui/react";
-import { Archive, InfiniteScroll } from "@/components";
-import { useIntersectionObserver } from "@/hooks";
+import { Archive, InfiniteScroll } from "components";
+import { useIntersectionObserver } from "hooks";
 import { Favorite as FavoriteAPI } from "api-client";
-import { useUserContext } from "@/context/user";
+import { User as UserContext } from "context";
 
 export const FavoritesContainer = (): ReactElement => {
-  const { id: userId } = useUserContext();
+  const { id: userId } = UserContext.useUserContext();
   const {
     data,
     error,

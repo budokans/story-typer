@@ -32,13 +32,12 @@ import {
 } from "react-icons/ri";
 import { parseISO, formatDistance } from "date-fns";
 import domToReact from "html-react-parser";
-import { useStoriesContext } from "@/context/stories";
+import {
+  Stories as StoriesContext,
+  CardIsExpanded as CardContext,
+} from "context";
 import { Favorite as FavoriteAPI, Story as StoryAPI } from "api-client";
 import { ChildrenProps, Spinner } from "components";
-import {
-  CardIsExpandedProvider,
-  useCardIsExpandedContext,
-} from "@/context/cardIsExpanded";
 import { ArchiveQuery } from "./util.types";
 
 interface CardDateProps {
@@ -103,7 +102,7 @@ export const Toggles = (): ReactElement => {
 };
 
 export const Card = ({ children }: ChildrenProps): ReactElement => (
-  <CardIsExpandedProvider>
+  <CardContext.CardIsExpandedProvider>
     <Box
       w={["100vw", "100%"]}
       bg="white"
@@ -114,11 +113,11 @@ export const Card = ({ children }: ChildrenProps): ReactElement => (
     >
       {children}
     </Box>
-  </CardIsExpandedProvider>
+  </CardContext.CardIsExpandedProvider>
 );
 
 export const CardHeader = ({ children }: ChildrenProps): ReactElement => {
-  const { isExpanded, setIsExpanded } = useCardIsExpandedContext();
+  const { isExpanded, setIsExpanded } = CardContext.useCardIsExpandedContext();
 
   return (
     <Box
@@ -155,7 +154,7 @@ export const CardDate = ({ dateString }: CardDateProps): ReactElement =>
   );
 
 export const CloseCardIcon = (): ReactElement | null => {
-  const { isExpanded } = useCardIsExpandedContext();
+  const { isExpanded } = CardContext.useCardIsExpandedContext();
 
   return isExpanded ? (
     <Icon
@@ -173,7 +172,7 @@ export const CloseCardIcon = (): ReactElement | null => {
 export const CardExpandedSection = ({
   children,
 }: ChildrenProps): ReactElement | null => {
-  const { isExpanded } = useCardIsExpandedContext();
+  const { isExpanded } = CardContext.useCardIsExpandedContext();
 
   return isExpanded ? <Box>{children}</Box> : null;
 };
@@ -207,7 +206,7 @@ export const PlayAgainButton = ({
 }: PlayAgainButtonProps): ReactElement => {
   const router = useRouter();
   const toast = useToast();
-  const { stories, setStories, gameCount } = useStoriesContext();
+  const { stories, setStories, gameCount } = StoriesContext.useStoriesContext();
   const toastIO = (): IO.IO<void> => () =>
     toast({
       title: "Sorry, we could not find that story.",

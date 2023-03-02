@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { RiGithubFill } from "react-icons/ri";
 import { ChildrenProps } from "components";
-import { Styles } from "@/styles";
+import { Styles } from "styles";
 
 export const Footer = ({ children }: ChildrenProps): ReactElement => (
   <Container>

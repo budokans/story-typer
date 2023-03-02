@@ -5,12 +5,12 @@ import {
   GameContainer,
   Page,
   PrevGamesContainer,
-} from "@/containers";
-import { DocHead, Archive } from "@/components";
-import { useAuthContext } from "@/context/auth";
+} from "containers";
+import { DocHead, Archive } from "components";
+import { Auth as AuthContext } from "context";
 
 const Game = (): ReactElement => {
-  const { authUser, authStateIsLoading } = useAuthContext();
+  const { authUser, authStateIsLoading } = AuthContext.useAuthContext();
   const router = useRouter();
 
   useEffect(() => {

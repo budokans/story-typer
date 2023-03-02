@@ -1,12 +1,12 @@
 import { Fragment, useRef, ReactElement } from "react";
 import { Divider, Text } from "@chakra-ui/react";
-import { Archive, FavoriteButton, InfiniteScroll } from "@/components";
-import { useIntersectionObserver } from "@/hooks";
-import { useUserContext } from "@/context/user";
-import { usePrevGamesInfinite } from "api-client/prev-game";
+import { Archive, FavoriteButton, InfiniteScroll } from "components";
+import { useIntersectionObserver } from "hooks";
+import { User as UserContext } from "context";
+import { PrevGame as PrevGameAPI } from "api-client";
 
 export const PrevGamesContainer = (): ReactElement => {
-  const { id: userId } = useUserContext();
+  const { id: userId } = UserContext.useUserContext();
   const {
     data,
     error,
@@ -14,7 +14,7 @@ export const PrevGamesContainer = (): ReactElement => {
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-  } = usePrevGamesInfinite(userId);
+  } = PrevGameAPI.usePrevGamesInfinite(userId);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useIntersectionObserver({

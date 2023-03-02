@@ -1,6 +1,6 @@
 import { ReactElement, useEffect } from "react";
 import { useRouter } from "next/router";
-import { CenterContent, Spinner } from "@/components";
+import { CenterContent, Spinner } from "components";
 
 export const LoginRerouter = (): ReactElement => {
   const router = useRouter();

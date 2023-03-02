@@ -1,16 +1,16 @@
 import { ReactElement } from "react";
 import { GetStaticProps } from "next";
 import { Box, Text } from "@chakra-ui/react";
-import { getStoriesCount } from "@/db/admin";
-import { useAuthContext } from "@/context/auth";
-import { Page } from "@/containers";
+import { getStoriesCount } from "db/admin";
+import { Auth as AuthContext } from "context";
+import { Page } from "containers";
 import {
   DocHead,
   Home,
   CountUp,
   FiftyWordStoriesLink,
   GoogleIcon,
-} from "@/components";
+} from "components";
 
 interface IndexProps {
   readonly storiesCount: number;
@@ -25,7 +25,7 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Index = ({ storiesCount }: IndexProps): ReactElement => {
-  const { signIn, signInError } = useAuthContext();
+  const { signIn, signInError } = AuthContext.useAuthContext();
 
   return (
     <>

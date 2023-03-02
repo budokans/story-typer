@@ -1,5 +1,5 @@
 import axios from "axios";
-import { testables } from "@/lib/getStories";
+import { testables } from "lib/getStories";
 const {
   getParamsString,
   getLatestPostsUrl,

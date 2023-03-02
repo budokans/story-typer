@@ -6,17 +6,17 @@ import {
   task as T,
   readonlyArray as A,
 } from "fp-ts";
-import * as GameState from "./reducers/GameReducer";
-import { useCountdown, Timer } from "@/hooks";
+import * as GameState from "@/reducers/GameReducer";
+import { useCountdown, Timer } from "hooks";
 import { User as UserAPI } from "api-client";
-import { useUserContext } from "@/context/user";
-import { useStoriesContext } from "@/context/stories";
+import { User as UserContext, Stories as StoriesContext } from "context";
+
 import {
   Story as StorySchema,
   User as UserSchema,
   PrevGame as PrevGameSchema,
 } from "api-schemas";
-import { buildPostSkipUser, buildPostWinUser } from "@/lib/manageUser";
+import { buildPostSkipUser, buildPostWinUser } from "lib/manageUser";
 import { PrevGame as DBPrevGame } from "db";
 
 export interface UseGame {
@@ -41,7 +41,7 @@ export const useGame = (): UseGame => {
     GameState.GameReducer,
     GameState.initialState
   );
-  const user = useUserContext();
+  const user = UserContext.useUserContext();
   const setUserAPI = UserAPI.useSetUser();
 
   const {
@@ -51,7 +51,7 @@ export const useGame = (): UseGame => {
     setGameCount,
     fetchNext,
     leastRecentStoryPublishedDate,
-  } = useStoriesContext();
+  } = StoriesContext.useStoriesContext();
   const count = useCountdown(state.status);
   const timer = Timer.useTimer(state.status, TIME_LIMIT);
   const currentStory = A.isOutOfBound(gameCount - 1, stories)

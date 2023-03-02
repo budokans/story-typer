@@ -17,16 +17,12 @@ const config: Config.InitialOptions = {
     },
   },
   coverageReporters: ["html", "text"],
+  rootDir: ".",
+  roots: ["<rootDir>"],
+  modulePaths: ["<rootDir>"],
   moduleDirectories: ["node_modules"],
   setupFilesAfterEnv: ["./jest.setup.ts"],
   testEnvironment: "jsdom",
-  moduleNameMapper: {
-    "@/lib/(.*)": ["<rootDir>/lib/$1"],
-    "@/hooks/(.*)": ["<rootDir>/hooks/$1"],
-    "@/components/(.*)": ["<rootDir>/components/$1"],
-    "@/containers/(.*)": ["<rootDir>/containers/$1"],
-    "@/context/(.*)": ["<rootDir>/context/$1"],
-  },
 };
 
 export default config;

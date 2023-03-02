@@ -1,7 +1,7 @@
 import { Center, useMediaQuery } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import { ChildrenProps } from "components";
-import { Styles } from "@/styles";
+import { Styles } from "styles";
 
 interface CenterContentProps {
   readonly observeLayout?: boolean;

@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
 import { ChildrenProps } from "components";
-import { Styles } from "@/styles";
+import { Styles } from "styles";
 import { ArchiveQuery } from "./util.types";
 
 export const Header = ({ children }: ChildrenProps): ReactElement => (

@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
 import { ReactElement } from "react";
-import { Header, Footer } from "@/components";
-import { getUserAverageScoresDisplay } from "@/lib/manageUser";
-import { ChildrenProps } from "components";
-import { Styles } from "@/styles";
-import { UserLoader, useUserContext } from "@/context/user";
-import { StoriesProvider } from "@/context/stories";
+import { getUserAverageScoresDisplay } from "lib/manageUser";
+import { ChildrenProps, Header, Footer } from "components";
+import { Styles } from "styles";
+import { User as UserContext, Stories as StoriesContext } from "context";
 import { useSignOut } from "hooks";
 
 export const Unauthenticated = ({ children }: ChildrenProps): ReactElement => (
@@ -18,8 +16,8 @@ export const Unauthenticated = ({ children }: ChildrenProps): ReactElement => (
 );
 
 export const Authenticated = ({ children }: ChildrenProps): ReactElement => (
-  <UserLoader>
-    <StoriesProvider>
+  <UserContext.UserLoader>
+    <StoriesContext.StoriesLoader>
       <Main>
         <Header.Header>
           <AuthenticatedHeaderContent />
@@ -29,12 +27,12 @@ export const Authenticated = ({ children }: ChildrenProps): ReactElement => (
 
         <FooterContainer />
       </Main>
-    </StoriesProvider>
-  </UserLoader>
+    </StoriesContext.StoriesLoader>
+  </UserContext.UserLoader>
 );
 
 const AuthenticatedHeaderContent = (): ReactElement => {
-  const user = useUserContext();
+  const user = UserContext.useUserContext();
   const { signOut } = useSignOut();
 
   return (

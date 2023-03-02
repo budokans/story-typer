@@ -28,7 +28,7 @@ interface StoryContext {
 
 const storiesContext = createContext<O.Option<StoryContext>>(O.none);
 
-export const StoriesProvider = ({ children }: ChildrenProps): ReactElement => {
+export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
   const [gameCount, setGameCount] = useState(1);
   const [stories, setStories] = useState<readonly StoryAPI.Response[]>([]);
   const {

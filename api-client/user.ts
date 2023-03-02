@@ -3,7 +3,7 @@ import { function as F, taskEither as TE, either as E } from "fp-ts";
 import { User as FirebaseUser } from "firebase/auth";
 import { User as UserSchema } from "api-schemas";
 import { User as DBUser } from "db";
-import { useAuthContext } from "@/context/auth";
+import { Auth as AuthContext } from "context";
 
 export type Document = DBUser.DocumentRead;
 export type Body = UserSchema.User;
@@ -30,7 +30,7 @@ export const useUser = (): {
   readonly data: E.Either<unknown, Response>;
   readonly status: "idle" | "error" | "loading" | "success";
 } => {
-  const { authUser } = useAuthContext();
+  const { authUser } = AuthContext.useAuthContext();
   const authUserId = authUser?.uid;
 
   const {

@@ -14,7 +14,7 @@ import {
 import { Story as DBStory } from "db";
 import { Story as StorySchema, User as UserSchema } from "api-schemas";
 import { Util as APIUtil } from "api-client";
-import { useUserContext } from "@/context/user";
+import { User as UserContext } from "context";
 
 export type Document = DBStory.DocumentRead;
 export type Response = StorySchema.StoryResponse;
@@ -114,7 +114,7 @@ export const useStoriesInfinite = ({
   StoriesWithCursor<Response>,
   StoriesWithCursor<Document>
 > => {
-  const user = useUserContext();
+  const user = UserContext.useUserContext();
   const {
     data: rawData,
     error,

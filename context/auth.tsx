@@ -17,7 +17,7 @@ export interface Auth {
   readonly signInError: AuthError | undefined;
 }
 
-export const AuthProvider = ({ children }: ChildrenProps): ReactElement => {
+export const AuthLoader = ({ children }: ChildrenProps): ReactElement => {
   const auth = getAuth(firebaseApp);
   const [authUser, authStateIsLoading, authStateIsError] = useAuthState(auth);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

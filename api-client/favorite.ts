@@ -15,7 +15,7 @@ import { QueryDocumentSnapshot } from "firelordjs";
 import { Favorite as DBFavorite } from "db";
 import { Favorite as FavoriteSchema } from "api-schemas";
 import { Util as APIUtil } from "api-client";
-import { useUserContext } from "@/context/user";
+import { User as UserContext } from "context";
 
 export type Document = DBFavorite.DocumentRead;
 export type Body = FavoriteSchema.FavoriteBody;
@@ -36,7 +36,7 @@ export const useFavorite = (
   readonly data: E.Either<unknown, Response>;
   readonly isLoading: boolean;
 } => {
-  const { id: userId } = useUserContext();
+  const { id: userId } = UserContext.useUserContext();
 
   const {
     data: rawData,
@@ -60,7 +60,7 @@ export const useFavorite = (
 export const useAddFavorite = (): ((
   storyDetails: FavoriteSchema.StoryData
 ) => TE.TaskEither<unknown, string>) => {
-  const { id: userId } = useUserContext();
+  const { id: userId } = UserContext.useUserContext();
   const queryClient = useQueryClient();
 
   const addFavoriteMutation = useMutation(
