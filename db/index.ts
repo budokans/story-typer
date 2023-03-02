@@ -5,3 +5,4 @@ export * as PrevGame from "./prev-game";
 export * as Favorite from "./favorite";
 export * as Metadata from "./metadata";
 export * as Util from "./util";
+export * as Error from "./error";

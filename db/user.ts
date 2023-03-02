@@ -1,5 +1,5 @@
 import { getDoc, getFirelord, MetaTypeCreator, setDoc } from "firelordjs";
-import { db, Util as DBUtil } from "db";
+import { db, Util as DBUtil, Error as DBError } from "db";
 
 type UserData = {
   readonly id: string;
@@ -24,13 +24,9 @@ export const users = getFirelord<UserDocumentMetaType>(db, "users");
 export const getUser = (id: string): Promise<DocumentRead | undefined> =>
   getDoc(users.doc(id))
     .then((docSnapshot) => docSnapshot.data())
-    .catch((error: unknown) => {
-      throw new Error(String(error));
-    });
+    .catch(DBError.catchError);
 
 export const setUser = (createData: UserData): Promise<void> =>
   setDoc(users.doc(createData.id), createData, { merge: true }).catch(
-    (error: unknown) => {
-      throw new Error(String(error));
-    }
+    DBError.catchError
   );

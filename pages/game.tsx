@@ -1,4 +1,5 @@
 import { ReactElement, useEffect, useState } from "react";
+import { function as F, option as O } from "fp-ts";
 import { useRouter } from "next/router";
 import {
   FavoritesContainer,
@@ -6,7 +7,7 @@ import {
   Page,
   PrevGamesContainer,
 } from "containers";
-import { DocHead, Archive } from "components";
+import { DocHead, Archive, CenterContent, Spinner } from "components";
 import { Auth as AuthContext } from "context";
 
 const Game = (): ReactElement => {
@@ -19,13 +20,29 @@ const Game = (): ReactElement => {
     }
   }, [router, authUser, authStateIsLoading]);
 
-  return (
-    <>
-      <DocHead />
-      <Page.Authenticated>
-        <ContainerToggler />
-      </Page.Authenticated>
-    </>
+  return F.pipe(
+    authUser,
+    O.fromNullable,
+    O.match(
+      () => (
+        <>
+          <DocHead />
+          <Page.Unauthenticated>
+            <CenterContent>
+              <Spinner />
+            </CenterContent>
+          </Page.Unauthenticated>
+        </>
+      ),
+      (authUser) => (
+        <>
+          <DocHead />
+          <Page.Authenticated authUser={authUser}>
+            <ContainerToggler />
+          </Page.Authenticated>
+        </>
+      )
+    )
   );
 };
 

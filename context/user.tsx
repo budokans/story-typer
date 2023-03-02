@@ -1,4 +1,5 @@
-import { createContext, useContext, ReactElement, useState } from "react";
+import { createContext, useContext, ReactElement } from "react";
+import { User as FirebaseUser } from "firebase/auth";
 import {
   option as O,
   function as F,
@@ -9,15 +10,29 @@ import {
 import { User as UserSchema } from "api-schemas";
 import { User as UserAPI } from "api-client";
 import { CenterContent, ChildrenProps, Spinner } from "components";
-import { useAuthContext } from "./auth";
+import { useQueryClient } from "react-query";
 
 const userContext = createContext<O.Option<UserSchema.User>>(O.none);
 
-export const UserLoader = ({ children }: ChildrenProps): ReactElement => {
-  const { authUser } = useAuthContext();
-  const [newUserHasBeenSet, setNewUserHasBeenSet] = useState(false);
-  const { data, status } = UserAPI.useUser();
-  const setUserAPI = UserAPI.useSetUser();
+export const UserLoader = ({
+  authUser,
+  children,
+}: { readonly authUser: FirebaseUser } & ChildrenProps): ReactElement => {
+  const queryClient = useQueryClient();
+  const userQuery = UserAPI.useUser(authUser.uid);
+  const setUserAPI = UserAPI.useSetUser({
+    onMutate: async (newUser: UserSchema.User) => {
+      await queryClient.cancelQueries("user");
+      const prevUser = queryClient.getQueryData<UserSchema.User>("user");
+      queryClient.setQueryData<UserSchema.User>("user", newUser);
+      return prevUser;
+    },
+    onError: (_, __, context) => {
+      if (context) {
+        queryClient.setQueryData<UserSchema.User>("user", context);
+      }
+    },
+  });
 
   const loadingSpinner = (
     <CenterContent>
@@ -25,48 +40,42 @@ export const UserLoader = ({ children }: ChildrenProps): ReactElement => {
     </CenterContent>
   );
 
-  // TODO: We really need a DatumEither here. This handling of asynchronous refreshable data
-  // with Eithers is both awkward and dangerous.
-  if (status === "loading") {
-    return loadingSpinner;
-  }
-
-  return F.pipe(
-    data,
-    E.match(
-      (error) => {
-        if (error === UserAPI.noUserResponseMessage) {
-          if (authUser && !newUserHasBeenSet) {
-            setNewUserHasBeenSet(true);
-            F.pipe(
-              authUser,
-              UserAPI.buildNewUser,
-              setUserAPI,
-              TE.fold(
-                (error) =>
-                  F.pipe(
-                    // Force new line
-                    () => console.error(error),
-                    T.fromIO
-                  ),
-                () => T.of(undefined)
+  switch (userQuery._tag) {
+    case "loading":
+      return loadingSpinner;
+    case "create-new-user": {
+      if (!setUserAPI.isLoading) {
+        F.pipe(
+          authUser,
+          UserAPI.buildNewUser,
+          setUserAPI.mutateAsync,
+          TE.fold(
+            (error) =>
+              F.pipe(
+                // Force new line
+                () => console.error(error),
+                T.fromIO
               ),
-              (unsafeRunTask) => unsafeRunTask()
-            );
-          }
-          return loadingSpinner;
-        } else {
-          console.error(error);
-          return <p>TODO: Create error page.</p>;
-        }
-      },
-      (data) => (
-        <userContext.Provider value={O.some(data)}>
-          {children}
-        </userContext.Provider>
-      )
-    )
-  );
+            () => T.of(undefined)
+          ),
+          (unsafeRunTask) => unsafeRunTask()
+        );
+      }
+      return loadingSpinner;
+    }
+    case "resolved":
+      return F.pipe(
+        userQuery.data,
+        E.match(
+          (error) => <p>{error.message}</p>,
+          (data) => (
+            <userContext.Provider value={O.some(data)}>
+              {children}
+            </userContext.Provider>
+          )
+        )
+      );
+  }
 };
 
 export const useUserContext = (): UserSchema.User => {

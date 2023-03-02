@@ -1,10 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import { useCallback } from "react";
 import { function as F, taskEither as TE, either as E } from "fp-ts";
 import { User as FirebaseUser } from "firebase/auth";
 import { User as UserSchema } from "api-schemas";
-import { User as DBUser } from "db";
-import { Auth as AuthContext } from "context";
+import { User as DBUser, Error as DBError } from "db";
 
 export type Document = DBUser.DocumentRead;
 export type Body = UserSchema.User;
@@ -27,34 +31,48 @@ export const serializeUser = (userDoc: Document): Response => ({
 export const noUserResponseMessage =
   "A user has not been returned from the server.";
 
-export const useUser = (): {
-  readonly data: E.Either<unknown, Response>;
-  readonly status: "idle" | "error" | "loading" | "success";
-} => {
-  const { authUser } = AuthContext.useAuthContext();
-  const authUserId = authUser?.uid;
+type UseUser =
+  | {
+      _tag: "loading";
+    }
+  | {
+      _tag: "resolved";
+      data: E.Either<DBError.DBError, Response>;
+    }
+  | {
+      _tag: "create-new-user";
+    };
 
+type UserQueryKey = ["user", string];
+
+export const useUser = (id: string): UseUser => {
   const {
     data: rawData,
     error,
     status,
-  } = useQuery(
+  } = useQuery<
+    Response | undefined,
+    DBError.DBError,
+    Response | undefined,
+    UserQueryKey
+  >(
     // Force new line
-    ["user", authUserId],
-    async () => DBUser.getUser(authUserId!),
+    ["user", id],
+    () => DBUser.getUser(id),
     {
-      enabled: !!authUserId,
       refetchOnWindowFocus: false,
     }
   );
 
+  if (status === "loading") return { _tag: "loading" };
+  if (status === "success" && !rawData) return { _tag: "create-new-user" };
   return {
+    _tag: "resolved",
     data: F.pipe(
       rawData,
-      E.fromNullable(error ?? noUserResponseMessage),
+      E.fromNullable(error ?? new DBError.Unknown("Unknown Error.")),
       E.map(serializeUser)
     ),
-    status,
   };
 };
 
@@ -72,30 +90,44 @@ export const buildNewUser = (user: FirebaseUser): Body => ({
   oldestPlayedStoryPublishedDate: null,
 });
 
-export const useSetUser = (): ((
-  body: Body
-) => TE.TaskEither<unknown, void>) => {
+export const useSetUser = (
+  options?: UseMutationOptions<
+    void,
+    DBError.DBError,
+    Body,
+    UserSchema.User | undefined
+  >
+): {
+  readonly mutateAsync: (body: Body) => TE.TaskEither<unknown, void>;
+  readonly isLoading: boolean;
+} => {
   const queryClient = useQueryClient();
 
-  const setUserMutation = useMutation(
-    async (user: Body) => DBUser.setUser(user),
-    {
-      onSuccess: () => queryClient.invalidateQueries("user"),
-    }
-  );
+  const setUserMutation = useMutation<
+    void,
+    DBError.DBError,
+    Body,
+    UserSchema.User | undefined
+  >((user: Body) => DBUser.setUser(user), {
+    onSettled: () => queryClient.invalidateQueries("user"),
+    ...options,
+  });
 
-  return useCallback(
-    (body: Body) =>
-      F.pipe(
-        // Force new Line
-        body,
-        UserSchema.User.encode,
-        (encodedBody) =>
-          TE.tryCatch(
-            () => setUserMutation.mutateAsync(encodedBody),
-            (error) => error
-          )
-      ),
-    [setUserMutation]
-  );
+  return {
+    mutateAsync: useCallback(
+      (body: Body) =>
+        F.pipe(
+          // Force new Line
+          body,
+          UserSchema.User.encode,
+          (encodedBody) =>
+            TE.tryCatch(
+              () => setUserMutation.mutateAsync(encodedBody),
+              (error) => error
+            )
+        ),
+      [setUserMutation]
+    ),
+    isLoading: setUserMutation.isLoading,
+  };
 };
