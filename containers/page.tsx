@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { Box, MenuItem } from "@chakra-ui/react";
 import { ReactElement } from "react";
+import { User as FirebaseUser } from "firebase/auth";
 import { getUserAverageScoresDisplay } from "lib/manageUser";
 import { ChildrenProps, Header, Footer } from "components";
 import { Styles } from "styles";
-import { User as UserContext, Stories as StoriesContext } from "context";
-import { useSignOut } from "hooks";
+import {
+  User as UserContext,
+  Stories as StoriesContext,
+  Auth as AuthContext,
+} from "context";
 
 export const Unauthenticated = ({ children }: ChildrenProps): ReactElement => (
   <Main>
@@ -15,8 +19,11 @@ export const Unauthenticated = ({ children }: ChildrenProps): ReactElement => (
   </Main>
 );
 
-export const Authenticated = ({ children }: ChildrenProps): ReactElement => (
-  <UserContext.UserLoader>
+export const Authenticated = ({
+  authUser,
+  children,
+}: { readonly authUser: FirebaseUser } & ChildrenProps): ReactElement => (
+  <UserContext.UserLoader authUser={authUser}>
     <StoriesContext.StoriesLoader>
       <Main>
         <Header.Header>
@@ -33,7 +40,7 @@ export const Authenticated = ({ children }: ChildrenProps): ReactElement => (
 
 const AuthenticatedHeaderContent = (): ReactElement => {
   const user = UserContext.useUserContext();
-  const { signOut } = useSignOut();
+  const { signOut } = AuthContext.useAuthContext();
 
   return (
     <>
@@ -56,7 +63,9 @@ const AuthenticatedHeaderContent = (): ReactElement => {
           </Link>
           <MenuItem
             sx={Styles.userMenuItemStateStyles}
-            onClick={() => signOut()}
+            onClick={() => {
+              signOut();
+            }}
           >
             Sign out
           </MenuItem>

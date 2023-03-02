@@ -1,7 +1,11 @@
 import { createContext, useContext, ReactElement, useCallback } from "react";
 import { option as O, function as F, taskEither as TE, task as T } from "fp-ts";
 import { AuthError, getAuth, User as FirebaseUser } from "firebase/auth";
-import { useAuthState, useSignInWithGoogle } from "react-firebase-hooks/auth";
+import {
+  useAuthState,
+  useSignInWithGoogle,
+  useSignOut,
+} from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { firebaseApp } from "db";
 import { ChildrenProps } from "components";
@@ -15,6 +19,9 @@ export interface Auth {
   readonly signIn: () => void;
   readonly signInIsLoading: boolean;
   readonly signInError: AuthError | undefined;
+  readonly signOut: () => void;
+  readonly signOutIsLoading: boolean;
+  readonly signOutError: Error | AuthError | undefined;
 }
 
 export const AuthLoader = ({ children }: ChildrenProps): ReactElement => {
@@ -23,6 +30,7 @@ export const AuthLoader = ({ children }: ChildrenProps): ReactElement => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [signInWithGoogle, _, signInIsLoading, signInError] =
     useSignInWithGoogle(auth);
+  const [signOut, signOutIsLoading, signOutError] = useSignOut(auth);
   const router = useRouter();
 
   const signIn = useCallback((): void => {
@@ -61,6 +69,9 @@ export const AuthLoader = ({ children }: ChildrenProps): ReactElement => {
         signIn,
         signInIsLoading,
         signInError,
+        signOut,
+        signOutIsLoading,
+        signOutError,
       })}
     >
       {children}
