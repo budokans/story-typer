@@ -8,9 +8,8 @@ import {
 } from "fp-ts";
 import { User as UserSchema } from "api-schemas";
 import { User as UserAPI } from "api-client";
-import { CenterContent, ChildrenProps, Game } from "components";
+import { CenterContent, ChildrenProps, Spinner } from "components";
 import { useAuthContext } from "./auth";
-import { useMediaQuery } from "@chakra-ui/react";
 
 const userContext = createContext<O.Option<UserSchema.User>>(O.none);
 
@@ -19,14 +18,10 @@ export const UserLoader = ({ children }: ChildrenProps): ReactElement => {
   const [newUserHasBeenSet, setNewUserHasBeenSet] = useState(false);
   const { data, status } = UserAPI.useUser();
   const setUserAPI = UserAPI.useSetUser();
-  const [mediaQuery] = useMediaQuery("(min-width: 769px)");
-  const viewportIsWiderThan768 = mediaQuery!;
 
   const loadingSpinner = (
     <CenterContent>
-      <Game.Game>
-        <Game.Skeleton isLargeViewport={viewportIsWiderThan768} />
-      </Game.Game>
+      <Spinner />
     </CenterContent>
   );
 
