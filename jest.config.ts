@@ -1,13 +1,7 @@
 import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
-  collectCoverageFrom: [
-    "<rootDir>/hooks/**",
-    "<rootDir>/lib/**",
-    "!<rootDir>/lib/firebase.ts",
-    "!<rootDir>/lib/firestore.ts",
-    "!**/*.types.ts",
-  ],
+  collectCoverageFrom: ["<rootDir>/lib/**"],
   coverageThreshold: {
     global: {
       branches: 90,
@@ -23,6 +17,10 @@ const config: Config.InitialOptions = {
   moduleDirectories: ["node_modules"],
   setupFilesAfterEnv: ["./jest.setup.ts"],
   testEnvironment: "jsdom",
+  transformIgnorePatterns: ["node_modules/(?!(firelordjs)/)"],
+  transform: {
+    "^.+\\.[t|j]sx?$": "ts-jest",
+  },
 };
 
 export default config;

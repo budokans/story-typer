@@ -178,7 +178,6 @@ describe("formatStory", () => {
 
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",
-      dateScraped: "2022-07-21T03:00:24",
     };
 
     const expectedOutput = {
@@ -192,7 +191,6 @@ describe("formatStory", () => {
 
       url: "http://fiftywordstories.com/wp-json/wp/v2/posts",
       datePublished: "2021-07-21T03:00:24",
-      dateScraped: "2022-07-21T03:00:24",
     };
 
     const result = formatStory(unformattedStory);
