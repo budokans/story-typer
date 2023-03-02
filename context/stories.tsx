@@ -14,7 +14,7 @@ import {
   io as IO,
 } from "fp-ts";
 import { ChildrenProps } from "components";
-import { Story as StoryAPI, Util } from "api-client";
+import { Story as StoryAPI, Util as APIUtil } from "api-client";
 
 interface StoryContext {
   readonly stories: readonly StoryAPI.Response[];
@@ -37,7 +37,7 @@ export const StoriesProvider = ({ children }: ChildrenProps): ReactElement => {
     error: leastRecentStoryPublishedDateError,
   } = StoryAPI.useLeastRecentStoryPublishedDate();
   const { error, isFetching, fetchNextPage } = StoryAPI.useStoriesInfinite({
-    limit: Util.defaultInfiniteQueryLimit,
+    limit: APIUtil.defaultInfiniteQueryLimit,
     options: {
       enabled: false,
       onSuccess: (data) =>

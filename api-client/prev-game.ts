@@ -2,7 +2,7 @@ import { useInfiniteQuery } from "react-query";
 import { function as F, array as AMut, readonlyArray as A } from "fp-ts";
 import { PrevGame as DBPrevGame } from "db";
 import { PrevGame as PrevGameSchema } from "api-schemas";
-import { UseInfiniteQuery } from "./util";
+import { Util as APIUtil } from "api-client";
 import { QueryDocumentSnapshot } from "firelordjs";
 
 type Document = DBPrevGame.DocumentRead;
@@ -20,7 +20,7 @@ const serializePrevGame = (prevGameDoc: Document): Response => ({
 
 export const usePrevGamesInfinite = (
   userId: string
-): UseInfiniteQuery<
+): APIUtil.UseInfiniteQuery<
   DBPrevGame.PrevGamesWithCursor<Response, DBPrevGame.PrevGameDocumentMetaType>,
   DBPrevGame.PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>
 > => {
@@ -33,11 +33,16 @@ export const usePrevGamesInfinite = (
     hasNextPage,
   } = useInfiniteQuery(
     "prevGames",
-    async ({
+    ({
       pageParam = null,
     }: {
       readonly pageParam?: QueryDocumentSnapshot<DBPrevGame.PrevGameDocumentMetaType> | null;
-    }) => await DBPrevGame.getPrevGames({ userId: userId!, last: pageParam }),
+    }) =>
+      DBPrevGame.getPrevGames({
+        userId: userId!,
+        last: pageParam,
+        _limit: APIUtil.defaultInfiniteQueryLimit,
+      }),
     {
       getNextPageParam: (lastPage) => lastPage.cursor,
       refetchOnWindowFocus: false,

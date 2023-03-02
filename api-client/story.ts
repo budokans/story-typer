@@ -13,7 +13,7 @@ import {
 } from "fp-ts";
 import { Story as DBStory } from "db";
 import { Story as StorySchema, User as UserSchema } from "api-schemas";
-import { Util } from "api-client";
+import { Util as APIUtil } from "api-client";
 import { useUserContext } from "@/context/user";
 
 export type Document = DBStory.DocumentRead;
@@ -110,7 +110,7 @@ export const useStoriesInfinite = ({
     StoriesWithCursor<Document>,
     StoriesQueryKey
   >;
-}): Util.UseInfiniteQuery<
+}): APIUtil.UseInfiniteQuery<
   StoriesWithCursor<Response>,
   StoriesWithCursor<Document>
 > => {

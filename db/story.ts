@@ -15,7 +15,7 @@ import {
   ServerTimestamp,
   startAfter,
 } from "firelordjs";
-import { firelordDb, Util } from "db";
+import { firelordDb, Util as DBUtil } from "db";
 
 export type StoriesDocumentMetaType = MetaTypeCreator<
   {
@@ -30,8 +30,8 @@ export type StoriesDocumentMetaType = MetaTypeCreator<
   "stories",
   string
 >;
-export type DocumentWrite = Util.Write<StoriesDocumentMetaType>;
-export type DocumentRead = Util.Read<StoriesDocumentMetaType>;
+export type DocumentWrite = DBUtil.Write<StoriesDocumentMetaType>;
+export type DocumentRead = DBUtil.Read<StoriesDocumentMetaType>;
 
 interface CreateStoryData {
   readonly title: string;
@@ -211,7 +211,7 @@ export const getStories = (
     (promise) =>
       promise
         .then((snapshot) => ({
-          data: snapshot.docs.map(Util.buildDocumentRead),
+          data: snapshot.docs.map(DBUtil.buildDocumentRead),
           cursor: buildCursor(snapshot)(params),
         }))
         .catch((error: unknown) => {

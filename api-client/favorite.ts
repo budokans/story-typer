@@ -11,11 +11,11 @@ import {
   either as E,
   taskEither as TE,
 } from "fp-ts";
+import { QueryDocumentSnapshot } from "firelordjs";
 import { Favorite as DBFavorite } from "db";
 import { Favorite as FavoriteSchema } from "api-schemas";
-import { UseInfiniteQuery } from "./util";
+import { Util as APIUtil } from "api-client";
 import { useUserContext } from "@/context/user";
-import { QueryDocumentSnapshot } from "firelordjs";
 
 export type Document = DBFavorite.DocumentRead;
 export type Body = FavoriteSchema.FavoriteBody;
@@ -107,7 +107,7 @@ export const useDeleteFavorite = (): ((
 
 export const useFavoritesInfinite = (
   userId: string
-): UseInfiniteQuery<
+): APIUtil.UseInfiniteQuery<
   DBFavorite.FavoritesWithCursor<Response, DBFavorite.FavoriteDocumentMetaType>,
   DBFavorite.FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>
 > => {
@@ -120,11 +120,16 @@ export const useFavoritesInfinite = (
     hasNextPage,
   } = useInfiniteQuery(
     "favorites",
-    async ({
+    ({
       pageParam = null,
     }: {
       readonly pageParam?: QueryDocumentSnapshot<DBFavorite.FavoriteDocumentMetaType> | null;
-    }) => await DBFavorite.getFavorites({ userId: userId!, last: pageParam }),
+    }) =>
+      DBFavorite.getFavorites({
+        userId: userId!,
+        last: pageParam,
+        _limit: APIUtil.defaultInfiniteQueryLimit,
+      }),
     {
       getNextPageParam: (lastPage) => lastPage.cursor,
       refetchOnWindowFocus: false,

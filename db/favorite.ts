@@ -15,7 +15,7 @@ import {
   where,
 } from "firelordjs";
 import { function as F, readonlyArray as A, option as O } from "fp-ts";
-import { firelordDb, Util } from "./";
+import { firelordDb, Util as DBUtil } from "db";
 
 export type FavoriteDocumentMetaType = MetaTypeCreator<
   {
@@ -28,8 +28,8 @@ export type FavoriteDocumentMetaType = MetaTypeCreator<
   "favorites",
   string
 >;
-export type DocumentWrite = Util.Write<FavoriteDocumentMetaType>;
-export type DocumentRead = Util.Read<FavoriteDocumentMetaType>;
+export type DocumentWrite = DBUtil.Write<FavoriteDocumentMetaType>;
+export type DocumentRead = DBUtil.Read<FavoriteDocumentMetaType>;
 
 interface CreateFavoriteData {
   readonly userId: string;
@@ -79,7 +79,7 @@ export const getFavorite = (
             O.fold(
               // Force new line
               F.constUndefined,
-              Util.buildDocumentRead
+              DBUtil.buildDocumentRead
             )
           )
         )
@@ -88,23 +88,20 @@ export const getFavorite = (
         })
   );
 
-const favoritesQueryLimit = 10;
-
 export interface FavoritesWithCursor<A, R extends MetaType> {
   readonly data: readonly A[];
   readonly cursor: QueryDocumentSnapshot<R> | null;
 }
 
-export const getFavorites: ({
-  userId,
-  last,
-}: {
+export const getFavorites = (params: {
   readonly userId: string;
   readonly last: QueryDocumentSnapshot<FavoriteDocumentMetaType> | null;
-}) => Promise<FavoritesWithCursor<DocumentRead, FavoriteDocumentMetaType>> =
-  F.flow(
+  readonly _limit: number;
+}): Promise<FavoritesWithCursor<DocumentRead, FavoriteDocumentMetaType>> =>
+  F.pipe(
     // Force new line
-    ({ userId, last }) =>
+    params,
+    ({ userId, last, _limit }) =>
       last
         ? query(
             favorites.collection(),
@@ -113,20 +110,20 @@ export const getFavorites: ({
             startAfter(
               last.data({ serverTimestamps: "estimate" }).dateFavorited
             ),
-            limit(favoritesQueryLimit)
+            limit(_limit)
           )
         : query(
             favorites.collection(),
             orderBy("dateFavorited", "desc"),
             where("userId", "==", userId),
-            limit(favoritesQueryLimit)
+            limit(_limit)
           ),
     (q) =>
       getDocs(q)
         .then((querySnapshot) => ({
-          data: querySnapshot.docs.map(Util.buildDocumentRead),
+          data: querySnapshot.docs.map(DBUtil.buildDocumentRead),
           cursor:
-            querySnapshot.size === favoritesQueryLimit
+            querySnapshot.size === params._limit
               ? querySnapshot.docs[querySnapshot.size - 1]!
               : null,
         }))

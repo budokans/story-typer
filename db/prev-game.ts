@@ -14,7 +14,7 @@ import {
   startAfter,
   where,
 } from "firelordjs";
-import { firelordDb, Util } from "./";
+import { firelordDb, Util as DBUtil } from "db";
 import { Story } from "api-schemas";
 
 export type PrevGameDocumentMetaType = MetaTypeCreator<
@@ -29,8 +29,8 @@ export type PrevGameDocumentMetaType = MetaTypeCreator<
   "prevGames",
   string
 >;
-export type DocumentWrite = Util.Write<PrevGameDocumentMetaType>;
-export type DocumentRead = Util.Read<PrevGameDocumentMetaType>;
+export type DocumentWrite = DBUtil.Write<PrevGameDocumentMetaType>;
+export type DocumentRead = DBUtil.Read<PrevGameDocumentMetaType>;
 export const prevGames = getFirelord<PrevGameDocumentMetaType>(
   firelordDb,
   "prevGames"
@@ -71,43 +71,40 @@ export const createPrevGame: (
       })
 );
 
-export const prevGamesQueryLimit = 10;
-
 export interface PrevGamesWithCursor<A, R extends MetaType> {
   readonly data: readonly A[];
   readonly cursor: QueryDocumentSnapshot<R> | null;
 }
 
-export const getPrevGames: ({
-  userId,
-  last,
-}: {
+export const getPrevGames = (params: {
   readonly userId: string;
   readonly last: QueryDocumentSnapshot<PrevGameDocumentMetaType> | null;
-}) => Promise<PrevGamesWithCursor<DocumentRead, PrevGameDocumentMetaType>> =
-  F.flow(
+  readonly _limit: number;
+}): Promise<PrevGamesWithCursor<DocumentRead, PrevGameDocumentMetaType>> =>
+  F.pipe(
     // Force new line
-    ({ userId, last }) =>
+    params,
+    ({ userId, last, _limit }) =>
       last
         ? query(
             prevGames.collection(),
             orderBy("datePlayed", "desc"),
             where("userId", "==", userId),
             startAfter(last.data({ serverTimestamps: "estimate" }).datePlayed),
-            limit(prevGamesQueryLimit)
+            limit(_limit)
           )
         : query(
             prevGames.collection(),
             orderBy("datePlayed", "desc"),
             where("userId", "==", userId),
-            limit(prevGamesQueryLimit)
+            limit(_limit)
           ),
     (q) =>
       getDocs(q)
         .then((querySnapshot) => ({
-          data: querySnapshot.docs.map(Util.buildDocumentRead),
+          data: querySnapshot.docs.map(DBUtil.buildDocumentRead),
           cursor:
-            querySnapshot.size === prevGamesQueryLimit
+            querySnapshot.size === params._limit
               ? querySnapshot.docs[querySnapshot.size - 1]!
               : null,
         }))
