@@ -119,7 +119,6 @@ export const useStoriesInfinite = ({
     data: rawData,
     error,
     isFetching,
-    isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery<
@@ -187,7 +186,6 @@ export const useStoriesInfinite = ({
     ),
     error,
     isFetching,
-    isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
   };

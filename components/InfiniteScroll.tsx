@@ -4,18 +4,17 @@ import { Spinner } from "components";
 
 interface InfiniteScrollProps {
   readonly isFetching: boolean;
-  readonly isFetchingNext: boolean;
   readonly hasNext: boolean | undefined;
   readonly data: readonly unknown[] | undefined;
 }
 
 export const InfiniteScroll = forwardRef(function InfiniteScroll(
-  { isFetching, isFetchingNext, hasNext, data }: InfiniteScrollProps,
+  { isFetching, hasNext, data }: InfiniteScrollProps,
   ref: ForwardedRef<HTMLDivElement>
 ): ReactElement {
   return (
     <div ref={ref} style={{ margin: "4rem 0 2rem" }}>
-      {isFetching || isFetchingNext ? (
+      {isFetching ? (
         <Spinner />
       ) : hasNext ? (
         <Text>Load more</Text>

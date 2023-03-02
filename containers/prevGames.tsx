@@ -7,14 +7,8 @@ import { PrevGame as PrevGameAPI } from "api-client";
 
 export const PrevGamesContainer = (): ReactElement => {
   const { id: userId } = UserContext.useUserContext();
-  const {
-    data,
-    error,
-    isFetching,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-  } = PrevGameAPI.usePrevGamesInfinite(userId);
+  const { data, error, isFetching, fetchNextPage, hasNextPage } =
+    PrevGameAPI.usePrevGamesInfinite(userId);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useIntersectionObserver({
@@ -65,7 +59,6 @@ export const PrevGamesContainer = (): ReactElement => {
       <InfiniteScroll
         ref={loadMoreRef}
         isFetching={isFetching}
-        isFetchingNext={isFetchingNextPage}
         hasNext={hasNextPage}
         data={data?.pages[0]?.data}
       />

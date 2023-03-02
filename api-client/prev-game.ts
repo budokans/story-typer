@@ -28,7 +28,6 @@ export const usePrevGamesInfinite = (
     data: rawData,
     error,
     isFetching,
-    isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery(
@@ -64,7 +63,6 @@ export const usePrevGamesInfinite = (
       : undefined,
     error,
     isFetching,
-    isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
   };

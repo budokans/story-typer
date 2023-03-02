@@ -122,7 +122,6 @@ export const useFavoritesInfinite = (
     data: rawData,
     error,
     isFetching,
-    isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery(
@@ -158,7 +157,6 @@ export const useFavoritesInfinite = (
       : undefined,
     error,
     isFetching,
-    isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
   };

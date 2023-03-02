@@ -7,14 +7,8 @@ import { User as UserContext } from "context";
 
 export const FavoritesContainer = (): ReactElement => {
   const { id: userId } = UserContext.useUserContext();
-  const {
-    data,
-    error,
-    isFetching,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-  } = FavoriteAPI.useFavoritesInfinite(userId);
+  const { data, error, isFetching, fetchNextPage, hasNextPage } =
+    FavoriteAPI.useFavoritesInfinite(userId);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -59,7 +53,6 @@ export const FavoritesContainer = (): ReactElement => {
       <InfiniteScroll
         ref={loadMoreRef}
         isFetching={isFetching}
-        isFetchingNext={isFetchingNextPage}
         hasNext={hasNextPage}
         data={data?.pages[0]?.data}
       />
