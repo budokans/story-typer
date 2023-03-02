@@ -54,7 +54,10 @@ const AuthenticatedHeaderContent = (): ReactElement => {
           <Link href="#" passHref>
             <MenuItem sx={Styles.userMenuItemStateStyles}>My Account</MenuItem>
           </Link>
-          <MenuItem sx={Styles.userMenuItemStateStyles} onClick={signOut}>
+          <MenuItem
+            sx={Styles.userMenuItemStateStyles}
+            onClick={() => signOut()}
+          >
             Sign out
           </MenuItem>
         </>
