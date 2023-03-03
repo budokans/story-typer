@@ -98,7 +98,7 @@ export const useGame = (): UseGame => {
   }) => TE.TaskEither<unknown, void> = F.flow(
     ({ user, currentStory }) =>
       buildPostSkipUser(user, currentStory, leastRecentStoryPublishedDate),
-    setUserAPI
+    setUserAPI.mutateAsync
   );
 
   const createPrevGame: ({
@@ -207,7 +207,7 @@ export const useGame = (): UseGame => {
             score,
             leastRecentStoryPublishedDate
           ),
-        setUserAPI
+        setUserAPI.mutateAsync
       ),
     [setUserAPI, leastRecentStoryPublishedDate]
   );

@@ -10,7 +10,6 @@ import {
 import { User as UserSchema } from "api-schemas";
 import { User as UserAPI } from "api-client";
 import { CenterContent, ChildrenProps, Spinner } from "components";
-import { useQueryClient } from "react-query";
 
 const userContext = createContext<O.Option<UserSchema.User>>(O.none);
 
@@ -18,21 +17,8 @@ export const UserLoader = ({
   authUser,
   children,
 }: { readonly authUser: FirebaseUser } & ChildrenProps): ReactElement => {
-  const queryClient = useQueryClient();
   const userQuery = UserAPI.useUser(authUser.uid);
-  const setUserAPI = UserAPI.useSetUser({
-    onMutate: async (newUser: UserSchema.User) => {
-      await queryClient.cancelQueries("user");
-      const prevUser = queryClient.getQueryData<UserSchema.User>("user");
-      queryClient.setQueryData<UserSchema.User>("user", newUser);
-      return prevUser;
-    },
-    onError: (_, __, context) => {
-      if (context) {
-        queryClient.setQueryData<UserSchema.User>("user", context);
-      }
-    },
-  });
+  const setUserAPI = UserAPI.useSetUser();
 
   const loadingSpinner = (
     <CenterContent>
