@@ -21,9 +21,12 @@ export type DocumentRead = DBUtil.Read<UserDocumentMetaType>;
 
 export const users = getFirelord<UserDocumentMetaType>(db, "users");
 
-export const getUser = (id: string): Promise<DocumentRead | undefined> =>
+export const getUser = (id: string): Promise<DocumentRead> =>
   getDoc(users.doc(id))
-    .then((docSnapshot) => docSnapshot.data())
+    .then((docSnapshot) => {
+      if (!docSnapshot.data()) throw new DBError.NotFound("User not found.");
+      return docSnapshot.data()!;
+    })
     .catch(DBError.catchError);
 
 export const setUser = (createData: UserData): Promise<void> =>

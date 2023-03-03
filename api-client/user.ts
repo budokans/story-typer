@@ -61,11 +61,14 @@ export const useUser = (id: string): UseUser => {
     () => DBUser.getUser(id),
     {
       refetchOnWindowFocus: false,
+      retry: (_, error): boolean =>
+        error instanceof DBError.NotFound ? false : true,
     }
   );
 
   if (status === "loading") return { _tag: "loading" };
-  if (status === "success" && !rawData) return { _tag: "create-new-user" };
+  if (error instanceof DBError.NotFound) return { _tag: "create-new-user" };
+
   return {
     _tag: "resolved",
     data: F.pipe(

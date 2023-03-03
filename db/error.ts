@@ -1,7 +1,11 @@
 import { FirestoreError } from "firebase/firestore";
 import { function as F } from "fp-ts";
 
-type DBErrorType = "Not Found" | "Unknown" | "Unauthenticated" | "Firestore";
+type DBErrorType =
+  | "Not Found"
+  | "Unknown"
+  | "Unauthenticated"
+  | "FirestoreOther";
 
 abstract class ErrorBase extends Error {
   abstract type: DBErrorType;
@@ -24,7 +28,7 @@ export class Unauthenticated extends ErrorBase {
 }
 
 export class FirestoreOther extends ErrorBase {
-  readonly type: DBErrorType = "Firestore";
+  readonly type: DBErrorType = "FirestoreOther";
 }
 
 export type DBError = NotFound | Unknown | Unauthenticated | FirestoreOther;
@@ -40,9 +44,7 @@ export const buildError = (error: FirestoreError): DBError => {
   }
 };
 
-export const throwError = (
-  error: FirestoreOther | NotFound | Unknown
-): never => {
+export const throwError = (error: DBError): never => {
   throw error;
 };
 
