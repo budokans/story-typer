@@ -112,7 +112,21 @@ export const useSetUser = (
     Body,
     UserSchema.User | undefined
   >((user: Body) => DBUser.setUser(user), {
-    onSettled: () => queryClient.invalidateQueries("user"),
+    onMutate: async (newUser: UserSchema.User) => {
+      await queryClient.cancelQueries(["user", newUser.id]);
+      const prevUser = queryClient.getQueryData<UserSchema.User>([
+        "user",
+        newUser.id,
+      ]);
+      queryClient.setQueryData<UserSchema.User>(["user", newUser.id], newUser);
+      return prevUser;
+    },
+    onError: (_, __, context) => {
+      if (context) {
+        queryClient.setQueryData<UserSchema.User>(["user"], context);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries(["user"]),
     ...options,
   });
 
