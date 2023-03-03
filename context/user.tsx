@@ -49,7 +49,7 @@ export const UserLoader = ({
       }
       return loadingSpinner;
     }
-    case "resolved":
+    case "settled":
       return F.pipe(
         userQuery.data,
         E.match(

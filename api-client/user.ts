@@ -36,7 +36,7 @@ type UseUser =
       _tag: "loading";
     }
   | {
-      _tag: "resolved";
+      _tag: "settled";
       data: E.Either<DBError.DBError, Response>;
     }
   | {
@@ -52,7 +52,7 @@ export const useUser = (id: string): UseUser => {
     status,
   } = useQuery<
     Response | undefined,
-    DBError.DBError,
+    DBError.DBError | null,
     Response | undefined,
     UserQueryKey
   >(
@@ -61,8 +61,7 @@ export const useUser = (id: string): UseUser => {
     () => DBUser.getUser(id),
     {
       refetchOnWindowFocus: false,
-      retry: (_, error): boolean =>
-        error instanceof DBError.NotFound ? false : true,
+      retry: false,
     }
   );
 
@@ -70,7 +69,7 @@ export const useUser = (id: string): UseUser => {
   if (error instanceof DBError.NotFound) return { _tag: "create-new-user" };
 
   return {
-    _tag: "resolved",
+    _tag: "settled",
     data: F.pipe(
       rawData,
       E.fromNullable(error ?? new DBError.Unknown("Unknown Error.")),
@@ -96,7 +95,7 @@ export const buildNewUser = (user: FirebaseUser): Body => ({
 export const useSetUser = (
   options?: UseMutationOptions<
     void,
-    DBError.DBError,
+    DBError.DBError | null,
     Body,
     UserSchema.User | undefined
   >
@@ -108,7 +107,7 @@ export const useSetUser = (
 
   const setUserMutation = useMutation<
     void,
-    DBError.DBError,
+    DBError.DBError | null,
     Body,
     UserSchema.User | undefined
   >((user: Body) => DBUser.setUser(user), {

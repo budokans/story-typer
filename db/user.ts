@@ -1,5 +1,6 @@
 import { getDoc, getFirelord, MetaTypeCreator, setDoc } from "firelordjs";
 import { db, Util as DBUtil, Error as DBError } from "db";
+import { FirestoreError } from "firebase/firestore";
 
 type UserData = {
   readonly id: string;
@@ -27,7 +28,11 @@ export const getUser = (id: string): Promise<DocumentRead> =>
       if (!docSnapshot.data()) throw new DBError.NotFound("User not found.");
       return docSnapshot.data()!;
     })
-    .catch(DBError.catchError);
+    .catch((error: DBError.NotFound | FirestoreError) =>
+      error instanceof DBError.NotFound
+        ? DBError.throwError(error)
+        : DBError.catchError(error)
+    );
 
 export const setUser = (createData: UserData): Promise<void> =>
   setDoc(users.doc(createData.id), createData, { merge: true }).catch(
