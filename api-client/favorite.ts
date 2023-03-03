@@ -12,8 +12,8 @@ import {
   either as E,
   taskEither as TE,
 } from "fp-ts";
-import { QueryDocumentSnapshot } from "firelordjs";
-import { Favorite as DBFavorite } from "db";
+import { MetaType, QueryDocumentSnapshot } from "firelordjs";
+import { Favorite as DBFavorite, Error as DBError } from "db";
 import { Favorite as FavoriteSchema } from "api-schemas";
 import { Util as APIUtil } from "api-client";
 import { User as UserContext } from "context";
@@ -21,6 +21,10 @@ import { User as UserContext } from "context";
 export type Document = DBFavorite.DocumentRead;
 export type Body = FavoriteSchema.FavoriteBody;
 export type Response = FavoriteSchema.FavoriteResponse;
+export type FavoritesWithCursor<
+  A,
+  R extends MetaType
+> = DBFavorite.FavoritesWithCursor<A, R>;
 
 export const serializeFavorite = (favoriteDoc: Document): Response => ({
   id: favoriteDoc.id,
@@ -31,92 +35,116 @@ export const serializeFavorite = (favoriteDoc: Document): Response => ({
   dateFavorited: favoriteDoc.dateFavorited.toDate().toISOString(),
 });
 
+type FavoritesQueryString = "favorites";
+type FavoritesQueryKey = [FavoritesQueryString, string, string];
+
 export const useFavorite = (
   storyId: string
-): {
-  readonly data: E.Either<unknown, Response>;
-  readonly isLoading: boolean;
-} => {
+): APIUtil.UseQuery<Response | undefined> => {
   const { id: userId } = UserContext.useUserContext();
 
   const {
     data: rawData,
     error,
-    isLoading,
-  } = useQuery(["favorites", userId, storyId], async () =>
+    status,
+  } = useQuery<
+    Document | undefined,
+    DBError.DBError,
+    Document | undefined,
+    FavoritesQueryKey
+  >(["favorites", userId, storyId], async () =>
     DBFavorite.getFavorite(userId!, storyId)
   );
 
+  if (status === "loading") return { _tag: "loading" };
+
   return {
+    _tag: "settled",
     data: F.pipe(
-      // Force new line
-      rawData,
-      E.fromNullable(error),
-      E.map(serializeFavorite)
+      error,
+      (error) => (error ? E.left(error) : E.right(rawData)),
+      E.map((data) => (data ? serializeFavorite(data) : undefined))
     ),
-    isLoading,
   };
 };
 
-export const useAddFavorite = (): ((
-  storyDetails: FavoriteSchema.StoryData
-) => TE.TaskEither<unknown, string>) => {
+export const useAddFavorite = (): {
+  readonly mutateAsync: (
+    storyDetails: FavoriteSchema.StoryData
+  ) => TE.TaskEither<DBError.DBError, string>;
+  readonly isLoading: boolean;
+} => {
   const { id: userId } = UserContext.useUserContext();
   const queryClient = useQueryClient();
 
-  const addFavoriteMutation = useMutation(
-    async (favorite: Body) => DBFavorite.createFavorite(favorite),
-    {
-      onSuccess: () => queryClient.invalidateQueries("favorites"),
-    }
-  );
+  const addFavoriteMutation = useMutation<
+    string,
+    DBError.DBError,
+    Body,
+    Response | readonly Response[]
+  >((favorite: Body) => DBFavorite.createFavorite(favorite), {
+    onSuccess: () => queryClient.invalidateQueries("favorites"),
+  });
 
-  return useCallback(
-    (storyDetails: FavoriteSchema.StoryData) =>
-      F.pipe(
-        storyDetails,
-        (storyDetails) => ({
-          userId,
-          ...storyDetails,
-        }),
-        FavoriteSchema.FavoriteBody.encode,
-        (encodedBody) =>
-          TE.tryCatch(
-            () => addFavoriteMutation.mutateAsync(encodedBody),
-            (error) => error
-          )
-      ),
-    [userId, addFavoriteMutation]
-  );
+  return {
+    mutateAsync: useCallback(
+      (storyDetails: FavoriteSchema.StoryData) =>
+        F.pipe(
+          storyDetails,
+          (storyDetails): Body => ({
+            userId,
+            ...storyDetails,
+          }),
+          FavoriteSchema.FavoriteBody.encode,
+          (encodedBody) =>
+            TE.tryCatch(
+              () => addFavoriteMutation.mutateAsync(encodedBody),
+              // Note: This is not fully type-safe as we're assuming that we build
+              // a DBError in the db, as we do at the time of writing.
+              (error) => error as DBError.DBError
+            )
+        ),
+      [userId, addFavoriteMutation]
+    ),
+    isLoading: addFavoriteMutation.isLoading,
+  };
 };
 
-export const useDeleteFavorite = (): ((
-  id: string
-) => TE.TaskEither<unknown, void>) => {
+export const useDeleteFavorite = (): {
+  readonly mutateAsync: (id: string) => TE.TaskEither<DBError.DBError, void>;
+  readonly isLoading: boolean;
+} => {
   const queryClient = useQueryClient();
 
-  const deleteFavoriteMutation = useMutation(
-    (id: string) => DBFavorite.deleteFavorite(id),
-    {
-      onSuccess: () => queryClient.invalidateQueries("favorites"),
-    }
-  );
+  const deleteFavoriteMutation = useMutation<
+    void,
+    DBError.DBError,
+    string,
+    Response | readonly Response[]
+  >((id: string) => DBFavorite.deleteFavorite(id), {
+    onSuccess: () => queryClient.invalidateQueries("favorites"),
+  });
 
-  return useCallback(
-    (id: string) =>
-      TE.tryCatch(
-        () => deleteFavoriteMutation.mutateAsync(id),
-        (error) => error
-      ),
-    [deleteFavoriteMutation]
-  );
+  return {
+    mutateAsync: useCallback(
+      (id: string) =>
+        TE.tryCatch(
+          () => deleteFavoriteMutation.mutateAsync(id),
+          // Note: This is not fully type-safe as we're assuming that we build
+          // a DBError in the db, as we do at the time of writing.
+          (error) => error as DBError.DBError
+        ),
+      [deleteFavoriteMutation]
+    ),
+    isLoading: deleteFavoriteMutation.isLoading,
+  };
 };
 
 export const useFavoritesInfinite = (
   userId: string
 ): APIUtil.UseInfiniteQuery<
-  DBFavorite.FavoritesWithCursor<Response, DBFavorite.FavoriteDocumentMetaType>,
-  DBFavorite.FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>
+  FavoritesWithCursor<Response, DBFavorite.FavoriteDocumentMetaType>,
+  FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>
 > => {
   const {
     data: rawData,
@@ -124,7 +152,12 @@ export const useFavoritesInfinite = (
     isFetching,
     fetchNextPage,
     hasNextPage,
-  } = useInfiniteQuery(
+  } = useInfiniteQuery<
+    FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>,
+    DBError.DBError,
+    FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>,
+    FavoritesQueryString
+  >(
     "favorites",
     ({
       pageParam = null,

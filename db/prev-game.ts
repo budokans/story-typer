@@ -14,7 +14,7 @@ import {
   startAfter,
   where,
 } from "firelordjs";
-import { db, Util as DBUtil } from "db";
+import { db, Util as DBUtil, Error as DBError } from "db";
 import { Story } from "api-schemas";
 
 export type PrevGameDocumentMetaType = MetaTypeCreator<
@@ -63,9 +63,7 @@ export const createPrevGame: (
   (body) =>
     addDoc(prevGames.collection(), body)
       .then((res) => res.id)
-      .catch((e: unknown) => {
-        throw new Error(String(e));
-      })
+      .catch(DBError.catchError)
 );
 
 export interface PrevGamesWithCursor<A, R extends MetaType> {
@@ -79,7 +77,6 @@ export const getPrevGames = (params: {
   readonly _limit: number;
 }): Promise<PrevGamesWithCursor<DocumentRead, PrevGameDocumentMetaType>> =>
   F.pipe(
-    // Force new line
     params,
     ({ userId, last, _limit }) =>
       last
@@ -105,7 +102,5 @@ export const getPrevGames = (params: {
               ? querySnapshot.docs[querySnapshot.size - 1]!
               : null,
         }))
-        .catch((e: unknown) => {
-          throw new Error(String(e));
-        })
+        .catch(DBError.catchError)
   );

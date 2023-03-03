@@ -11,7 +11,7 @@ import {
   readonlyArray as A,
   option as O,
 } from "fp-ts";
-import { Story as DBStory } from "db";
+import { Story as DBStory, Error as DBError } from "db";
 import { Story as StorySchema, User as UserSchema } from "api-schemas";
 import { Util as APIUtil } from "api-client";
 import { User as UserContext } from "context";
@@ -105,7 +105,7 @@ export const useStoriesInfinite = ({
   readonly limit: number;
   readonly options?: UseInfiniteQueryOptions<
     StoriesWithCursor<Document>,
-    unknown,
+    DBError.DBError,
     StoriesWithCursor<Document>,
     StoriesWithCursor<Document>,
     StoriesQueryKey
@@ -123,7 +123,7 @@ export const useStoriesInfinite = ({
     hasNextPage,
   } = useInfiniteQuery<
     StoriesWithCursor<Document>,
-    unknown,
+    DBError.DBError,
     StoriesWithCursor<Document>,
     StoriesQueryKey
   >(

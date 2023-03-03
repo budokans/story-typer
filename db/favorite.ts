@@ -15,7 +15,7 @@ import {
   where,
 } from "firelordjs";
 import { function as F, readonlyArray as A, option as O } from "fp-ts";
-import { db, Util as DBUtil } from "db";
+import { db, Util as DBUtil, Error as DBError } from "db";
 
 export type FavoriteDocumentMetaType = MetaTypeCreator<
   {
@@ -50,9 +50,7 @@ export const createFavorite: (
   (body) =>
     addDoc(favorites.collection(), body)
       .then((res) => res.id)
-      .catch((e: unknown) => {
-        throw new Error(String(e));
-      })
+      .catch(DBError.catchError)
 );
 
 export const getFavorite = (
@@ -80,9 +78,7 @@ export const getFavorite = (
             )
           )
         )
-        .catch((e: unknown) => {
-          throw new Error(String(e));
-        })
+        .catch(DBError.catchError)
   );
 
 export interface FavoritesWithCursor<A, R extends MetaType> {
@@ -96,7 +92,6 @@ export const getFavorites = (params: {
   readonly _limit: number;
 }): Promise<FavoritesWithCursor<DocumentRead, FavoriteDocumentMetaType>> =>
   F.pipe(
-    // Force new line
     params,
     ({ userId, last, _limit }) =>
       last
@@ -124,12 +119,8 @@ export const getFavorites = (params: {
               ? querySnapshot.docs[querySnapshot.size - 1]!
               : null,
         }))
-        .catch((e: unknown) => {
-          throw new Error(String(e));
-        })
+        .catch(DBError.catchError)
   );
 
 export const deleteFavorite = (id: string): Promise<void> =>
-  deleteDoc(favorites.doc(id)).catch((e: unknown) => {
-    throw new Error(String(e));
-  });
+  deleteDoc(favorites.doc(id)).catch(DBError.catchError);

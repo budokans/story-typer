@@ -15,7 +15,7 @@ import {
   ServerTimestamp,
   startAfter,
 } from "firelordjs";
-import { db, Util as DBUtil } from "db";
+import { db, Util as DBUtil, Error as DBError } from "db";
 
 export type StoriesDocumentMetaType = MetaTypeCreator<
   {
@@ -53,9 +53,7 @@ export const createStory: (createData: CreateStoryData) => Promise<string> =
     (body) =>
       addDoc(stories.collection(), body)
         .then((res) => res.id)
-        .catch((e: unknown) => {
-          throw new Error(String(e));
-        })
+        .catch(DBError.catchError)
   );
 
 export const getStory = (id: string): Promise<DocumentRead | undefined> =>
@@ -74,9 +72,7 @@ export const getStory = (id: string): Promise<DocumentRead | undefined> =>
         )
       )
     )
-    .catch((error: unknown) => {
-      throw new Error(String(error));
-    });
+    .catch(DBError.catchError);
 
 type NewerThanParams = {
   readonly _tag: "params-newer";
@@ -211,9 +207,7 @@ export const getStories = (
           data: snapshot.docs.map(DBUtil.buildDocumentRead),
           cursor: buildCursor(snapshot)(params),
         }))
-        .catch((error: unknown) => {
-          throw new Error(String(error));
-        })
+        .catch(DBError.catchError)
   );
 
 // TODO: We can safely use a TaskEither here, but the scraper will need to be refactored too.
@@ -238,9 +232,7 @@ export const mostRecentStoryPublishedDate = (): Promise<string> =>
             )
           )
         )
-        .catch((error: unknown) => {
-          throw new Error(String(error));
-        })
+        .catch(DBError.catchError)
   );
 
 export const leastRecentStoryPublishedDate = (): Promise<string> =>
@@ -263,7 +255,5 @@ export const leastRecentStoryPublishedDate = (): Promise<string> =>
             )
           )
         )
-        .catch((error: unknown) => {
-          throw new Error(String(error));
-        })
+        .catch(DBError.catchError)
   );

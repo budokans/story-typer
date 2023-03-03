@@ -6,10 +6,10 @@ export const defaultInfiniteQueryLimit = 10;
 
 export interface UseInfiniteQuery<A, R> {
   readonly data: InfiniteData<A> | undefined;
-  readonly error: unknown;
+  readonly error: DBError.DBError | null;
   readonly isFetching: boolean;
   readonly fetchNextPage: () => Promise<
-    InfiniteQueryObserverResult<R, unknown>
+    InfiniteQueryObserverResult<R, DBError.DBError>
   >;
   readonly hasNextPage: boolean | undefined;
 }

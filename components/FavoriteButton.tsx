@@ -1,9 +1,11 @@
 import { ReactElement } from "react";
 import { function as F, either as E, taskEither as TE, task as T } from "fp-ts";
-import { IconButton, SkeletonCircle } from "@chakra-ui/react";
+import { IconButton, Tooltip } from "@chakra-ui/react";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
+import { FaExclamation } from "react-icons/fa";
 import { Favorite as FavoriteAPI } from "api-client";
 import { Favorite as FavoriteSchema } from "api-schemas";
+import { Spinner } from "components";
 
 interface FavoriteButtonProps {
   readonly storyDetails: FavoriteSchema.StoryData;
@@ -12,35 +14,69 @@ interface FavoriteButtonProps {
 export const FavoriteButton = ({
   storyDetails,
 }: FavoriteButtonProps): ReactElement => {
-  const { data, isLoading } = FavoriteAPI.useFavorite(storyDetails.storyId);
-  const addFavoriteMutation = FavoriteAPI.useAddFavorite();
-  const deleteFavoriteMutation = FavoriteAPI.useDeleteFavorite();
+  const favoriteQuery = FavoriteAPI.useFavorite(storyDetails.storyId);
+  const addFavoriteAPI = FavoriteAPI.useAddFavorite();
+  const deleteFavoriteAPI = FavoriteAPI.useDeleteFavorite();
   const iconSize = "2.5rem";
 
-  if (isLoading) return <SkeletonCircle size={iconSize} />;
-
-  return F.pipe(
-    data,
-    E.match(
-      (error) => {
-        if (error) console.error(error);
-        return (
-          <FavoriteButtonInternal
-            icon={<RiStarLine />}
-            iconSize={iconSize}
-            mutationCallback={() => addFavoriteMutation(storyDetails)}
-          />
-        );
-      },
-      ({ id }) => (
-        <FavoriteButtonInternal
-          icon={<RiStarFill />}
-          iconSize={iconSize}
-          mutationCallback={() => deleteFavoriteMutation(id)}
-        />
-      )
-    )
-  );
+  switch (favoriteQuery._tag) {
+    case "loading":
+      return <Spinner size="lg" color="gold" />;
+    case "settled":
+      return F.pipe(
+        favoriteQuery.data,
+        E.match(
+          (error) => {
+            console.error(error);
+            return (
+              <Tooltip
+                label="Error checking favorite status"
+                placement="right-end"
+                openDelay={200}
+              >
+                <IconButton
+                  aria-label="Error checking favorite status"
+                  icon={<FaExclamation />}
+                  fontSize="1.2rem"
+                  isRound
+                  bg="red.300"
+                />
+              </Tooltip>
+            );
+          },
+          (favorite) =>
+            favorite ? (
+              <FavoriteButtonInternal
+                icon={
+                  deleteFavoriteAPI.isLoading ? (
+                    <Spinner size="lg" color="gold" />
+                  ) : (
+                    <RiStarFill />
+                  )
+                }
+                iconSize={iconSize}
+                mutationCallback={() =>
+                  deleteFavoriteAPI.mutateAsync(favorite.id)
+                }
+              />
+            ) : (
+              <FavoriteButtonInternal
+                icon={
+                  addFavoriteAPI.isLoading ? (
+                    <Spinner size="lg" color="gold" />
+                  ) : (
+                    <RiStarLine />
+                  )
+                }
+                iconSize={iconSize}
+                mutationCallback={() =>
+                  addFavoriteAPI.mutateAsync(storyDetails)
+                }
+              />
+            )
+        )
+      );
+  }
 };
 
 interface FavoriteButtonInternalProps {
@@ -60,19 +96,18 @@ const FavoriteButtonInternal = ({
       isRound
       cursor="pointer"
       fontSize={iconSize}
-      aria-label="favorite this story"
+      aria-label="Favorite or unfavorite this story"
       bg="transparent"
       color="gold"
       onClick={() =>
         F.pipe(
           mutationCallback(),
           TE.fold(
-            (error) =>
-              F.pipe(
-                // Force new line
-                () => console.error(error),
-                T.fromIO
-              ),
+            F.flow(
+              // Force new line
+              (error) => () => console.error(error),
+              T.fromIO
+            ),
             () => T.of(undefined)
           )
         )()

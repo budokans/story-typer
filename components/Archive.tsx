@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from "react";
+import { ReactElement } from "react";
 import {
   Container as ChakraContainer,
   Heading,
@@ -264,35 +264,36 @@ export const PlayAgainButton = ({
 export const DeleteFavoriteButton = ({
   id,
 }: DeleteFavoriteButtonProps): ReactElement => {
-  const deleteFavoriteMutation = FavoriteAPI.useDeleteFavorite();
-
-  const deleteFavorite = useCallback(
-    () =>
-      F.pipe(
-        deleteFavoriteMutation(id),
-        TE.fold(
-          (error) =>
-            F.pipe(
-              // Force new line
-              () => console.error(error),
-              T.fromIO
-            ),
-          () => T.of(undefined)
-        )
-      )(),
-    [id, deleteFavoriteMutation]
-  );
+  const deleteFavoriteAPI = FavoriteAPI.useDeleteFavorite();
 
   return (
     <IconButton
-      icon={<RiDeleteBin2Line />}
+      icon={
+        deleteFavoriteAPI.isLoading ? (
+          <Spinner size="lg" color="gold" />
+        ) : (
+          <RiDeleteBin2Line />
+        )
+      }
       aria-label="Remove from favorites"
       isRound
       cursor="pointer"
       fontSize="1.75rem"
       bg="blackAlpha.400"
       color="blackAlpha.800"
-      onClick={deleteFavorite}
+      onClick={() =>
+        F.pipe(
+          deleteFavoriteAPI.mutateAsync(id),
+          TE.fold(
+            F.flow(
+              // Force new line
+              (error) => () => console.error(error),
+              T.fromIO
+            ),
+            () => T.of(undefined)
+          )
+        )()
+      }
     />
   );
 };

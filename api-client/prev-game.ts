@@ -1,12 +1,16 @@
 import { useInfiniteQuery } from "react-query";
 import { function as F, array as AMut, readonlyArray as A } from "fp-ts";
-import { PrevGame as DBPrevGame } from "db";
+import { PrevGame as DBPrevGame, Error as DBError } from "db";
 import { PrevGame as PrevGameSchema } from "api-schemas";
 import { Util as APIUtil } from "api-client";
-import { QueryDocumentSnapshot } from "firelordjs";
+import { MetaType, QueryDocumentSnapshot } from "firelordjs";
 
 type Document = DBPrevGame.DocumentRead;
 type Response = PrevGameSchema.PrevGameResponse;
+type PrevGamesWithCursor<
+  A,
+  R extends MetaType
+> = DBPrevGame.PrevGamesWithCursor<A, R>;
 
 const serializePrevGame = (prevGameDoc: Document): Response => ({
   id: prevGameDoc.id,
@@ -18,11 +22,13 @@ const serializePrevGame = (prevGameDoc: Document): Response => ({
   datePlayed: prevGameDoc.datePlayed.toDate().toISOString(),
 });
 
+type PrevGameQueryString = "prevGames";
+
 export const usePrevGamesInfinite = (
   userId: string
 ): APIUtil.UseInfiniteQuery<
-  DBPrevGame.PrevGamesWithCursor<Response, DBPrevGame.PrevGameDocumentMetaType>,
-  DBPrevGame.PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>
+  PrevGamesWithCursor<Response, DBPrevGame.PrevGameDocumentMetaType>,
+  PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>
 > => {
   const {
     data: rawData,
@@ -30,7 +36,12 @@ export const usePrevGamesInfinite = (
     isFetching,
     fetchNextPage,
     hasNextPage,
-  } = useInfiniteQuery(
+  } = useInfiniteQuery<
+    PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>,
+    DBError.DBError,
+    PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>,
+    PrevGameQueryString
+  >(
     "prevGames",
     ({
       pageParam = null,

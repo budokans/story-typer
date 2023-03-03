@@ -81,7 +81,7 @@ export const buildNewUser = (user: FirebaseUser): Body => ({
 export const useSetUser = (
   options?: UseMutationOptions<void, DBError.DBError, Body, UserSchema.User>
 ): {
-  readonly mutateAsync: (body: Body) => TE.TaskEither<unknown, void>;
+  readonly mutateAsync: (body: Body) => TE.TaskEither<DBError.DBError, void>;
   readonly isLoading: boolean;
 } => {
   const queryClient = useQueryClient();
@@ -120,7 +120,9 @@ export const useSetUser = (
           (encodedBody) =>
             TE.tryCatch(
               () => setUserMutation.mutateAsync(encodedBody),
-              (error) => error
+              // Note: This is not fully type-safe as we're assuming that we build
+              // a DBError in the db, as we do at the time of writing.
+              (error) => error as DBError.DBError
             )
         ),
       [setUserMutation]
