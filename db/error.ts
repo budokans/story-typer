@@ -33,7 +33,7 @@ export class FirestoreOther extends ErrorBase {
 
 export type DBError = NotFound | Unknown | Unauthenticated | FirestoreOther;
 
-export const buildError = (error: FirestoreError): DBError => {
+export const buildFirestoreError = (error: FirestoreError): DBError => {
   switch (error.code) {
     case "not-found":
       return new NotFound(error.message);
@@ -48,7 +48,7 @@ export const throwError = (error: DBError): never => {
   throw error;
 };
 
-export const catchError: (error: FirestoreError) => never = F.flow(
-  buildError,
-  throwError
-);
+export const catchError = (error: NotFound | FirestoreError): never =>
+  error instanceof NotFound
+    ? throwError(error)
+    : F.pipe(error, buildFirestoreError, throwError);

@@ -9,6 +9,7 @@ import { function as F, taskEither as TE, either as E } from "fp-ts";
 import { User as FirebaseUser } from "firebase/auth";
 import { User as UserSchema } from "api-schemas";
 import { User as DBUser, Error as DBError } from "db";
+import { Util as APIUtil } from "api-client";
 
 export type Document = DBUser.DocumentRead;
 export type Body = UserSchema.User;
@@ -28,17 +29,8 @@ export const serializeUser = (userDoc: Document): Response => ({
   oldestPlayedStoryPublishedDate: userDoc.oldestPlayedStoryPublishedDate,
 });
 
-export const noUserResponseMessage =
-  "A user has not been returned from the server.";
-
 type UseUser =
-  | {
-      _tag: "loading";
-    }
-  | {
-      _tag: "settled";
-      data: E.Either<DBError.DBError, Response>;
-    }
+  | APIUtil.UseQuery<Response>
   | {
       _tag: "create-new-user";
     };
@@ -50,13 +42,7 @@ export const useUser = (id: string): UseUser => {
     data: rawData,
     error,
     status,
-  } = useQuery<
-    Response | undefined,
-    DBError.DBError | null,
-    Response | undefined,
-    UserQueryKey
-  >(
-    // Force new line
+  } = useQuery<Response, DBError.DBError, Response, UserQueryKey>(
     ["user", id],
     () => DBUser.getUser(id),
     {
@@ -72,7 +58,7 @@ export const useUser = (id: string): UseUser => {
     _tag: "settled",
     data: F.pipe(
       rawData,
-      E.fromNullable(error ?? new DBError.Unknown("Unknown Error.")),
+      E.fromNullable(error ?? new DBError.Unknown("Unknown error.")),
       E.map(serializeUser)
     ),
   };
@@ -93,12 +79,7 @@ export const buildNewUser = (user: FirebaseUser): Body => ({
 });
 
 export const useSetUser = (
-  options?: UseMutationOptions<
-    void,
-    DBError.DBError | null,
-    Body,
-    UserSchema.User | undefined
-  >
+  options?: UseMutationOptions<void, DBError.DBError, Body, UserSchema.User>
 ): {
   readonly mutateAsync: (body: Body) => TE.TaskEither<unknown, void>;
   readonly isLoading: boolean;
@@ -107,9 +88,9 @@ export const useSetUser = (
 
   const setUserMutation = useMutation<
     void,
-    DBError.DBError | null,
+    DBError.DBError,
     Body,
-    UserSchema.User | undefined
+    UserSchema.User
   >((user: Body) => DBUser.setUser(user), {
     onMutate: async (newUser: UserSchema.User) => {
       await queryClient.cancelQueries(["user", newUser.id]);
