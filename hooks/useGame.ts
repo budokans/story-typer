@@ -160,13 +160,14 @@ export const useGame = (): UseGame => {
   );
 
   const handleNextStoryClick = useCallback(
-    (): IO.IO<void> =>
+    (): void =>
       F.pipe(
         () => setGameCount(gameCount + 1),
         IO.apFirst(() => {
           if (stories.length === gameCount) fetchNext();
         }),
-        IO.apFirst(() => dispatch({ type: "next" }))
+        IO.apFirst(() => dispatch({ type: "next" })),
+        (unsafePerformIO) => unsafePerformIO()
       ),
     [fetchNext, gameCount, setGameCount, stories.length]
   );
