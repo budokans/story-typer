@@ -87,9 +87,11 @@ type OlderThanParams = {
   readonly startAfter: O.Option<string>;
 };
 
-export type Params = NewerThanParams | OlderThanParams;
+export type InfiniteQueryParams = NewerThanParams | OlderThanParams;
 
-const buildQuery = (params: Params): Query<StoriesDocumentMetaType> => {
+const buildQuery = (
+  params: InfiniteQueryParams
+): Query<StoriesDocumentMetaType> => {
   switch (params._tag) {
     case "params-newer":
       return F.pipe(
@@ -166,7 +168,7 @@ export interface StoriesWithCursor<T> {
 
 const buildCursor =
   (snapshot: QuerySnapshot<StoriesDocumentMetaType>) =>
-  (params: Params): Cursor =>
+  (params: InfiniteQueryParams): Cursor =>
     F.pipe(
       snapshot,
       // If we have fewer docs than our limit, we don't need to bother with a last.
@@ -194,7 +196,7 @@ const buildCursor =
     );
 
 export const getStories = (
-  params: Params
+  params: InfiniteQueryParams
 ): Promise<StoriesWithCursor<DocumentRead>> =>
   F.pipe(
     // Force new line

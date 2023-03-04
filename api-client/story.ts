@@ -19,7 +19,7 @@ import { User as UserContext } from "context";
 export type Document = DBStory.DocumentRead;
 export type Response = StorySchema.StoryResponse;
 export type StoriesWithCursor<T> = DBStory.StoriesWithCursor<T>;
-export type Params = DBStory.Params;
+export type InfiniteQueryParams = DBStory.InfiniteQueryParams;
 
 export const serializeStory = (storyDoc: Document): Response => ({
   id: storyDoc.id,
@@ -84,7 +84,10 @@ const serializePagesData: (
 
 type StoriesQueryKey = "stories";
 
-const getInitialParams = (user: UserSchema.User, limit: number): Params =>
+const getInitialParams = (
+  user: UserSchema.User,
+  limit: number
+): InfiniteQueryParams =>
   user.newestPlayedStoryPublishedDate
     ? {
         _tag: "params-newer",
@@ -131,10 +134,12 @@ export const useStoriesInfinite = ({
     ({
       pageParam = getInitialParams(user, limit),
     }: {
-      readonly pageParam?: Params;
+      readonly pageParam?: InfiniteQueryParams;
     }) => DBStory.getStories(pageParam),
     {
-      getNextPageParam: ({ cursor }: StoriesWithCursor<Document>): Params =>
+      getNextPageParam: ({
+        cursor,
+      }: StoriesWithCursor<Document>): InfiniteQueryParams =>
         F.pipe(
           cursor,
           (cursor) => {
