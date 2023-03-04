@@ -79,15 +79,17 @@ export const buildNewUser = (user: FirebaseUser): Body => ({
 });
 
 export const useSetUser = (
-  options?: UseMutationOptions<void, DBError.DBError, Body, UserSchema.User>
+  options?: UseMutationOptions<Response, DBError.DBError, Body, UserSchema.User>
 ): {
-  readonly mutateAsync: (body: Body) => TE.TaskEither<DBError.DBError, void>;
+  readonly mutateAsync: (
+    body: Body
+  ) => TE.TaskEither<DBError.DBError, Response>;
   readonly isLoading: boolean;
 } => {
   const queryClient = useQueryClient();
 
   const setUserMutation = useMutation<
-    void,
+    Response,
     DBError.DBError,
     Body,
     UserSchema.User

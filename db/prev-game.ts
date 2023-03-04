@@ -15,7 +15,6 @@ import {
   where,
 } from "firelordjs";
 import { db, Util as DBUtil, Error as DBError } from "db";
-import { Story } from "api-schemas";
 
 export type PrevGameDocumentMetaType = MetaTypeCreator<
   {
@@ -40,18 +39,6 @@ interface CreatePrevGameData {
   readonly storyHtml: string;
   readonly score: number;
 }
-
-export const buildGame = (
-  userId: string,
-  story: Story.StoryResponse,
-  wpm: number
-): CreatePrevGameData => ({
-  userId: userId,
-  storyId: story.id,
-  storyTitle: story.title,
-  storyHtml: story.storyHtml,
-  score: wpm,
-});
 
 export const createPrevGame: (
   createData: CreatePrevGameData

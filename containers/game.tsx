@@ -2,6 +2,7 @@ import { ReactElement } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 import { Game, FavoriteButton, CenterContent } from "components";
 import { useGame } from "hooks";
+import { User as UserContext } from "context";
 
 export const GameContainer = (): ReactElement => {
   const {
@@ -20,6 +21,7 @@ export const GameContainer = (): ReactElement => {
   } = useGame();
   const [mediaQuery] = useMediaQuery("(min-width: 769px)");
   const viewportIsWiderThan768 = mediaQuery!;
+  const user = UserContext.useUserContext();
 
   enum CountDown {
     "Go!",
@@ -49,7 +51,7 @@ export const GameContainer = (): ReactElement => {
                 <Game.Score>Out of time!</Game.Score>
               ) : (
                 <Game.Input
-                  onInputClick={onInitCountdown}
+                  onInputClick={() => onInitCountdown(status)}
                   onInputChange={onInputChange}
                   value={inputValue}
                   gameStatus={status}
@@ -69,11 +71,16 @@ export const GameContainer = (): ReactElement => {
                 />
               )}
 
-              <Game.NewGameButton type="restart" onClick={onResetClick} />
-              <Game.NewGameButton
-                type="new"
-                onClick={status === "complete" ? onNextClick : onSkipClick}
-              />
+              <Game.NextGameButton _tag="restart" onResetClick={onResetClick} />
+
+              {status === "complete" ? (
+                <Game.NextGameButton _tag="new" onNextClick={onNextClick()} />
+              ) : (
+                <Game.NextGameButton
+                  _tag="skip"
+                  onSkipClick={onSkipClick({ currentStory, user })}
+                />
+              )}
             </Game.Pad>
 
             {status === "idle" && (

@@ -29,7 +29,9 @@ export const getUser = (id: string): Promise<DocumentRead> =>
     })
     .catch(DBError.catchError);
 
-export const setUser = (createData: UserData): Promise<void> =>
-  setDoc(users.doc(createData.id), createData, { merge: true }).catch(
-    DBError.catchError
-  );
+export const setUser = (createData: UserData): Promise<UserData> =>
+  setDoc(users.doc(createData.id), createData, { merge: true })
+    // We'll return our input data here since setDoc returns void
+    // (SO annoying!)
+    .then(() => createData)
+    .catch(DBError.catchError);

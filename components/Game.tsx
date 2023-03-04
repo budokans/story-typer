@@ -1,9 +1,11 @@
 import { useEffect, useRef, ReactElement, ChangeEvent } from "react";
+import { io as IO, task as T, function as F } from "fp-ts";
 import {
   Container as ChakraContainer,
   Flex,
   Heading,
   IconButton,
+  IconButtonProps,
   Input as ChakraInput,
   Skeleton as ChakraSkeleton,
   SkeletonCircle,
@@ -142,25 +144,70 @@ export const ErrorAlert = (): ReactElement => (
   />
 );
 
-interface NewGameButtonProps {
-  readonly type: "restart" | "new";
-  readonly onClick: () => void;
-}
+type RestartButtonProps = {
+  readonly _tag: "restart";
+  readonly onResetClick: IO.IO<void>;
+};
+type SkipButtonProps = {
+  readonly _tag: "skip";
+  readonly onSkipClick: T.Task<void>;
+};
+type NewGameButtonProps = {
+  readonly _tag: "new";
+  readonly onNextClick: IO.IO<void>;
+};
 
-export const NewGameButton = ({
-  type,
-  onClick,
-}: NewGameButtonProps): ReactElement => (
+type NextGameButtonProps =
+  | RestartButtonProps
+  | SkipButtonProps
+  | NewGameButtonProps;
+
+export const NextGameButton = (props: NextGameButtonProps): ReactElement => {
+  switch (props._tag) {
+    case "restart":
+      return (
+        <NextGameButtonInternal
+          aria-label="Restart game"
+          icon={<RiRestartFill />}
+          bg="gold"
+          onClick={() =>
+            F.pipe(props.onResetClick, (unsafePerformIO) => unsafePerformIO())
+          }
+        />
+      );
+    case "skip":
+      return (
+        <NextGameButtonInternal
+          aria-label="Skip game"
+          icon={<RiSkipForwardFill />}
+          bg="lime"
+          onClick={() =>
+            F.pipe(props.onSkipClick, (unsafeRunRask) => unsafeRunRask())
+          }
+        />
+      );
+    case "new":
+      return (
+        <NextGameButtonInternal
+          aria-label="New game"
+          icon={<RiSkipForwardFill />}
+          bg="lime"
+          onClick={() =>
+            F.pipe(props.onNextClick, (unsafePerformIO) => unsafePerformIO())
+          }
+        />
+      );
+  }
+};
+
+const NextGameButtonInternal = (props: IconButtonProps): ReactElement => (
   <IconButton
-    icon={type === "restart" ? <RiRestartFill /> : <RiSkipForwardFill />}
-    aria-label={type === "restart" ? "Restart game" : "Next story"}
     isRound
     cursor="pointer"
     ml={3}
     fontSize="1.75rem"
-    bg={type === "restart" ? "gold" : "lime"}
     color="blackAlpha.800"
-    onClick={onClick}
+    {...props}
   />
 );
 

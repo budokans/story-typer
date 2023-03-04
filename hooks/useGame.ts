@@ -10,14 +10,13 @@ import * as GameState from "@/reducers/GameReducer";
 import { useCountdown, Timer } from "hooks";
 import { User as UserAPI } from "api-client";
 import { User as UserContext, Stories as StoriesContext } from "context";
-
 import {
   Story as StorySchema,
   User as UserSchema,
   PrevGame as PrevGameSchema,
 } from "api-schemas";
 import { buildPostSkipUser, buildPostWinUser } from "lib/manageUser";
-import { PrevGame as DBPrevGame } from "db";
+import { PrevGame as DBPrevGame, Error as DBError } from "db";
 
 export interface UseGame {
   readonly currentStory: StorySchema.StoryResponse | undefined;
@@ -25,16 +24,38 @@ export interface UseGame {
   readonly inputValue: string;
   readonly userError: boolean;
   readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  readonly onInitCountdown: () => void;
+  readonly onInitCountdown: (status: GameState.GameStatus) => void;
   readonly countdown: number;
   readonly timer: Timer.Timer;
   readonly wpm: number;
-  readonly onResetClick: () => void;
-  readonly onSkipClick: () => void;
-  readonly onNextClick: () => void;
+  readonly onResetClick: IO.IO<void>;
+  readonly onSkipClick: ({
+    currentStory,
+    user,
+  }: {
+    readonly currentStory: StorySchema.StoryResponse;
+    readonly user: UserSchema.User;
+  }) => T.Task<void>;
+  readonly onNextClick: () => IO.IO<void>;
 }
 
 const TIME_LIMIT = 120;
+
+const buildGame = ({
+  userId,
+  story,
+  wpm,
+}: {
+  readonly userId: string;
+  readonly story: StorySchema.StoryResponse;
+  readonly wpm: number;
+}): PrevGameSchema.PrevGameBody => ({
+  userId: userId,
+  storyId: story.id,
+  storyTitle: story.title,
+  storyHtml: story.storyHtml,
+  score: wpm,
+});
 
 export const useGame = (): UseGame => {
   const [state, dispatch] = useReducer(
@@ -52,8 +73,11 @@ export const useGame = (): UseGame => {
     fetchNext,
     leastRecentStoryPublishedDate,
   } = StoriesContext.useStoriesContext();
-  const count = useCountdown(state.status);
+  const countdown = useCountdown(state.status);
   const timer = Timer.useTimer(state.status, TIME_LIMIT);
+  // TODO: We shouldn't return anything if we have no current story. We can return a discriminated
+  // union type from this hook with an error tag and handle error and other states in the container.
+  // .
   const currentStory = A.isOutOfBound(gameCount - 1, stories)
     ? undefined
     : stories[gameCount - 1];
@@ -69,25 +93,24 @@ export const useGame = (): UseGame => {
 
   // Listen for countdown complete and update game status to "inGame"
   useEffect(() => {
-    if (count === 0) {
+    if (countdown === 0) {
       dispatch({ type: "countdownComplete" });
     }
-  }, [count]);
+  }, [countdown]);
 
   // Listen for time limit up and dispatch outOfTime action
   useEffect(() => {
     timer.totalSeconds === TIME_LIMIT && dispatch({ type: "outOfTime" });
   }, [timer.totalSeconds]);
 
-  const initCountdown = useCallback(
-    () => state.status === "idle" && dispatch({ type: "startCountdown" }),
-    [state.status]
-  );
+  // TODO: This shouldn't rely on an if check. It can be an IO<void> and
+  // only be passed down if game state is idle.
+  const initCountdown = (status: GameState.GameStatus) => {
+    if (status === "idle") dispatch({ type: "startCountdown" });
+  };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) =>
     dispatch({ type: "inputValueChange", inputValue: e.target.value });
-
-  const handleResetClick = () => dispatch({ type: "reset" });
 
   const updateUserPostSkip: ({
     user,
@@ -95,39 +118,48 @@ export const useGame = (): UseGame => {
   }: {
     readonly user: UserSchema.User;
     readonly currentStory: StorySchema.StoryResponse;
-  }) => TE.TaskEither<unknown, void> = F.flow(
+  }) => TE.TaskEither<DBError.DBError, UserSchema.User> = F.flow(
     ({ user, currentStory }) =>
       buildPostSkipUser(user, currentStory, leastRecentStoryPublishedDate),
     setUserAPI.mutateAsync
   );
 
   const createPrevGame: ({
-    user,
-    currentStory,
+    userId,
+    story,
+    wpm,
   }: {
-    readonly user: UserSchema.User;
-    readonly currentStory: StorySchema.StoryResponse;
-  }) => TE.TaskEither<unknown, PrevGameSchema.PrevGameBody> = F.flow(
-    ({ user, currentStory }) =>
-      TE.right(DBPrevGame.buildGame(user.id, currentStory, 0)),
-    TE.chainFirst((prevGame) =>
+    readonly userId: string;
+    readonly story: StorySchema.StoryResponse;
+    readonly wpm: number;
+  }) => TE.TaskEither<DBError.DBError, string> = F.flow(
+    // Force new line
+    buildGame,
+    (prevGame) =>
       TE.tryCatch(
         () => DBPrevGame.createPrevGame(prevGame),
-        (error) => error
+        (error) => error as DBError.DBError
       )
-    )
   );
 
+  const handleResetClick: IO.IO<void> = () => dispatch({ type: "reset" });
+
   const handleSkipClick = useCallback(
-    () =>
+    ({
+      currentStory,
+      user,
+    }: {
+      readonly currentStory: StorySchema.StoryResponse;
+      readonly user: UserSchema.User;
+    }): T.Task<void> =>
       F.pipe(
-        currentStory,
-        TE.fromNullable("Invalid current story"),
-        TE.bind("updatedUser", (currentStory) =>
-          updateUserPostSkip({ user, currentStory })
-        ),
-        TE.bind("prevGame", (currentStory) =>
-          createPrevGame({ user, currentStory })
+        updateUserPostSkip({ user, currentStory }),
+        TE.chain((updatedUser) =>
+          createPrevGame({
+            userId: updatedUser.id,
+            story: currentStory,
+            wpm: 0,
+          })
         ),
         TE.fold(
           (error) =>
@@ -146,10 +178,8 @@ export const useGame = (): UseGame => {
               T.fromIO
             )
         )
-      )(),
+      ),
     [
-      currentStory,
-      user,
       createPrevGame,
       fetchNext,
       gameCount,
@@ -159,15 +189,14 @@ export const useGame = (): UseGame => {
     ]
   );
 
-  const handleNextStoryClick = useCallback(
-    (): void =>
+  const handleNextStoryClick: () => IO.IO<void> = useCallback(
+    () =>
       F.pipe(
         () => setGameCount(gameCount + 1),
         IO.apFirst(() => {
           if (stories.length === gameCount) fetchNext();
         }),
-        IO.apFirst(() => dispatch({ type: "next" })),
-        (unsafePerformIO) => unsafePerformIO()
+        IO.apFirst(() => dispatch({ type: "next" }))
       ),
     [fetchNext, gameCount, setGameCount, stories.length]
   );
@@ -175,7 +204,7 @@ export const useGame = (): UseGame => {
   const checkForUserError = (currentInput: string, source: string) =>
     currentInput !== source.slice(0, currentInput.length);
 
-  const getWpm = (time: number) => Math.round(50 * (60 / time));
+  const wpm = (time: number) => Math.round(50 * (60 / time));
 
   // Listen for user error
   useEffect(() => {
@@ -198,58 +227,59 @@ export const useGame = (): UseGame => {
       userData: UserSchema.User,
       currentStory: StorySchema.StoryResponse,
       score: number
-    ): TE.TaskEither<unknown, void> =>
+    ): TE.TaskEither<DBError.DBError, UserSchema.User> =>
       F.pipe(
-        userData,
-        (user) =>
-          buildPostWinUser(
-            user,
-            currentStory,
-            score,
-            leastRecentStoryPublishedDate
-          ),
+        buildPostWinUser(
+          userData,
+          currentStory,
+          score,
+          leastRecentStoryPublishedDate
+        ),
         setUserAPI.mutateAsync
       ),
     [setUserAPI, leastRecentStoryPublishedDate]
   );
 
-  const winGame = useCallback(() => {
-    F.pipe(
-      currentStory,
-      TE.fromNullable("Invalid current story."),
-      TE.chainFirstIOK(
-        () => () => dispatch({ type: "win", wpm: getWpm(timer.totalSeconds) })
+  const winGame = useCallback(
+    (
+      currentStory: StorySchema.StoryResponse,
+      user: UserSchema.User,
+      seconds: number
+    ) =>
+      F.pipe(
+        () => dispatch({ type: "win", wpm: wpm(seconds) }),
+        TE.fromIO,
+        TE.chain(() => updateUserPostWin(user, currentStory, wpm(seconds))),
+        TE.chain((updatedUser) =>
+          createPrevGame({
+            userId: updatedUser.id,
+            story: currentStory,
+            wpm: wpm(seconds),
+          })
+        ),
+        TE.fold(
+          (error) =>
+            F.pipe(
+              // Force new line
+              () => console.error(error),
+              T.fromIO
+            ),
+          () => T.of(undefined)
+        )
       ),
-      TE.bind("updatedUser", (currentStory) =>
-        updateUserPostWin(user, currentStory, getWpm(timer.totalSeconds))
-      ),
-      TE.bind("prevGame", (currentStory) =>
-        createPrevGame({ user, currentStory })
-      ),
-      TE.fold(
-        (error) =>
-          F.pipe(
-            // Force new line
-            () => console.error(error),
-            T.fromIO
-          ),
-        () => T.of(undefined)
-      )
-    )();
-  }, [
-    user,
-    currentStory,
-    timer.totalSeconds,
-    createPrevGame,
-    updateUserPostWin,
-  ]);
+    [createPrevGame, updateUserPostWin]
+  );
 
   // Listen for game completion
   useEffect(() => {
     if (state.userInput === currentStory?.storyText) {
-      winGame();
+      F.pipe(
+        // Force new line
+        winGame(currentStory, user, timer.totalSeconds),
+        (unsafeRunTask) => unsafeRunTask()
+      );
     }
-  }, [state.userInput, currentStory, timer.seconds, winGame]);
+  }, [state.userInput, currentStory, user, timer.totalSeconds, winGame]);
 
   return {
     currentStory,
@@ -258,8 +288,8 @@ export const useGame = (): UseGame => {
     userError: state.userError,
     onInputChange: handleInputChange,
     onInitCountdown: initCountdown,
-    countdown: count,
-    timer: timer,
+    countdown,
+    timer,
     wpm: state.wpm,
     onResetClick: handleResetClick,
     onSkipClick: handleSkipClick,
