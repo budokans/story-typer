@@ -21,17 +21,15 @@ interface StoryContext {
   readonly setStories: Dispatch<SetStateAction<readonly StoryAPI.Response[]>>;
   readonly isFetching: boolean;
   readonly fetchNext: () => void;
-  readonly gameCount: number;
-  readonly setGameCount: Dispatch<SetStateAction<number>>;
+  readonly currentStoryIdx: number;
+  readonly setCurrentStoryIdx: Dispatch<SetStateAction<number>>;
   readonly leastRecentStoryPublishedDate: O.Option<string>;
 }
 
 const storiesContext = createContext<O.Option<StoryContext>>(O.none);
 
 export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
-  // TODO: We are not consuming or setting gameCount state here
-  // so we should move it elsewhere.
-  const [gameCount, setGameCount] = useState(1);
+  const [currentStoryIdx, setCurrentStoryIdx] = useState(0);
   const [stories, setStories] = useState<readonly StoryAPI.Response[]>([]);
   const {
     data: leastRecentStoryPublishedDate,
@@ -63,6 +61,7 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
     fetchNextPage();
   }, [fetchNextPage]);
 
+  // TODO: Handle each of these errors separately.
   if (error || leastRecentStoryPublishedDateError) {
     error && console.error(error);
     leastRecentStoryPublishedDateError &&
@@ -83,8 +82,8 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
         setStories,
         isFetching: isFetching || leastRecentStoryPublishedDateIsLoading,
         fetchNext,
-        gameCount,
-        setGameCount,
+        currentStoryIdx,
+        setCurrentStoryIdx,
         leastRecentStoryPublishedDate,
       })}
     >

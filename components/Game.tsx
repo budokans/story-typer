@@ -128,7 +128,7 @@ export const Input = ({
       ref={inputRef}
       autoCapitalize="off"
       autoComplete="off"
-      onPaste={(e) => e.preventDefault()}
+      // onPaste={(e) => e.preventDefault()}
     />
   );
 };

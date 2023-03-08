@@ -206,7 +206,8 @@ export const PlayAgainButton = ({
 }: PlayAgainButtonProps): ReactElement => {
   const router = useRouter();
   const toast = useToast();
-  const { stories, setStories, gameCount } = StoriesContext.useStoriesContext();
+  const { stories, setStories, currentStoryIdx } =
+    StoriesContext.useStoriesContext();
   const toastIO = (): IO.IO<void> => () =>
     toast({
       title: "Sorry, we could not find that story.",
@@ -224,7 +225,7 @@ export const PlayAgainButton = ({
         F.flow(
           // Force new line
           StoryAPI.serializeStory,
-          (serialized) => A.insertAt(gameCount - 1, serialized)(stories)
+          (serialized) => A.insertAt(currentStoryIdx, serialized)(stories)
         )
       ),
       O.matchW(

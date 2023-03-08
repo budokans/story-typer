@@ -67,9 +67,9 @@ export const useGame = (): UseGame => {
 
   const {
     stories,
-    isLoading: storiesAreLoading,
-    gameCount,
-    setGameCount,
+    isFetching: storiesAreLoading,
+    currentStoryIdx,
+    setCurrentStoryIdx,
     fetchNext,
     leastRecentStoryPublishedDate,
   } = StoriesContext.useStoriesContext();
@@ -78,9 +78,9 @@ export const useGame = (): UseGame => {
   // TODO: We shouldn't return anything if we have no current story. We can return a discriminated
   // union type from this hook with an error tag and handle error and other states in the container.
   // .
-  const currentStory = A.isOutOfBound(gameCount - 1, stories)
+  const currentStory = A.isOutOfBound(currentStoryIdx, stories)
     ? undefined
-    : stories[gameCount - 1];
+    : stories[currentStoryIdx];
 
   // Listen for when stories have been loaded into game state and initialise idle state.
   useEffect(() => {
@@ -144,6 +144,18 @@ export const useGame = (): UseGame => {
 
   const handleResetClick: IO.IO<void> = () => dispatch({ type: "reset" });
 
+  const nextStory = useCallback(
+    () =>
+      F.pipe(
+        () => setCurrentStoryIdx(currentStoryIdx + 1),
+        IO.apFirst(() => {
+          if (stories.length - 1 === currentStoryIdx) fetchNext();
+        }),
+        IO.apFirst(() => dispatch({ type: "next" }))
+      ),
+    [fetchNext, currentStoryIdx, setCurrentStoryIdx, stories.length]
+  );
+
   const handleSkipClick = useCallback(
     ({
       currentStory,
@@ -168,37 +180,10 @@ export const useGame = (): UseGame => {
               () => console.error(error),
               T.fromIO
             ),
-          () =>
-            F.pipe(
-              () => setGameCount(gameCount + 1),
-              IO.apFirst(() => {
-                if (stories.length === gameCount) fetchNext();
-              }),
-              IO.apFirst(() => dispatch({ type: "next" })),
-              T.fromIO
-            )
+          () => F.pipe(nextStory(), T.fromIO)
         )
       ),
-    [
-      createPrevGame,
-      fetchNext,
-      gameCount,
-      setGameCount,
-      stories.length,
-      updateUserPostSkip,
-    ]
-  );
-
-  const handleNextStoryClick: () => IO.IO<void> = useCallback(
-    () =>
-      F.pipe(
-        () => setGameCount(gameCount + 1),
-        IO.apFirst(() => {
-          if (stories.length === gameCount) fetchNext();
-        }),
-        IO.apFirst(() => dispatch({ type: "next" }))
-      ),
-    [fetchNext, gameCount, setGameCount, stories.length]
+    [createPrevGame, updateUserPostSkip, nextStory]
   );
 
   const checkForUserError = (currentInput: string, source: string) =>
@@ -293,6 +278,6 @@ export const useGame = (): UseGame => {
     wpm: state.wpm,
     onResetClick: handleResetClick,
     onSkipClick: handleSkipClick,
-    onNextClick: handleNextStoryClick,
+    onNextClick: nextStory,
   };
 };
