@@ -5,14 +5,13 @@ import {
   Dispatch,
   SetStateAction,
   ReactElement,
-  useEffect,
   useCallback,
 } from "react";
 import {
   option as O,
   function as F,
   readonlyArray as A,
-  io as IO,
+  readonlyNonEmptyArray as NEA,
 } from "fp-ts";
 import { ChildrenProps } from "components";
 import { Story as StoryAPI, Util as APIUtil } from "api-client";
@@ -20,7 +19,7 @@ import { Story as StoryAPI, Util as APIUtil } from "api-client";
 interface StoryContext {
   readonly stories: readonly StoryAPI.Response[];
   readonly setStories: Dispatch<SetStateAction<readonly StoryAPI.Response[]>>;
-  readonly isLoading: boolean;
+  readonly isFetching: boolean;
   readonly fetchNext: () => void;
   readonly gameCount: number;
   readonly setGameCount: Dispatch<SetStateAction<number>>;
@@ -30,6 +29,8 @@ interface StoryContext {
 const storiesContext = createContext<O.Option<StoryContext>>(O.none);
 
 export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
+  // TODO: We are not consuming or setting gameCount state here
+  // so we should move it elsewhere.
   const [gameCount, setGameCount] = useState(1);
   const [stories, setStories] = useState<readonly StoryAPI.Response[]>([]);
   const {
@@ -41,23 +42,17 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
   const { error, isFetching, fetchNextPage } = StoryAPI.useStoriesInfinite({
     limit: APIUtil.defaultInfiniteQueryLimit,
     options: {
-      enabled: false,
       onSuccess: (data) =>
         F.pipe(
           data?.pages,
           A.last,
+          O.chain(({ data }) => (A.isNonEmpty(data) ? O.some(data) : O.none)),
           O.match(
-            // Force new line
-            IO.of(F.constVoid),
-            ({ data }) =>
-              F.pipe(
-                // Force new line
-                data,
-                A.map(StoryAPI.serializeStory),
-                (serialized): IO.IO<void> =>
-                  () =>
-                    setStories([...stories, ...serialized])
-              )
+            () => () => fetchNextPage(),
+            F.flow(
+              NEA.map(StoryAPI.serializeStory),
+              (serialized) => () => setStories([...stories, ...serialized])
+            )
           ),
           (unsafePerformIO) => unsafePerformIO()
         ),
@@ -67,12 +62,6 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
   const fetchNext = useCallback(() => {
     fetchNextPage();
   }, [fetchNextPage]);
-
-  useEffect(() => {
-    if (stories.length === 0 && !isFetching && !error) {
-      fetchNextPage();
-    }
-  }, [stories.length, isFetching, error, fetchNextPage]);
 
   if (error || leastRecentStoryPublishedDateError) {
     error && console.error(error);
@@ -92,10 +81,7 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
       value={O.some({
         stories,
         setStories,
-        isLoading:
-          isFetching ||
-          leastRecentStoryPublishedDateIsLoading ||
-          (stories.length === 0 && !error),
+        isFetching: isFetching || leastRecentStoryPublishedDateIsLoading,
         fetchNext,
         gameCount,
         setGameCount,
