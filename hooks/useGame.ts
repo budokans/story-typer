@@ -73,7 +73,7 @@ export const useGame = (): UseGame => {
     fetchNext,
     leastRecentStoryPublishedDate,
   } = StoriesContext.useStoriesContext();
-  const countdown = useCountdown(state.status);
+  const countdown = useCountdown(state.status === "countdown");
   const timer = Timer.useTimer(state.status, TIME_LIMIT);
   // TODO: We shouldn't return anything if we have no current story. We can return a discriminated
   // union type from this hook with an error tag and handle error and other states in the container.
