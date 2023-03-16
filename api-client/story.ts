@@ -206,7 +206,7 @@ export const useLeastRecentStoryPublishedDate = (
     LeastRecentStoryPublishedDateKey
   >
 ): {
-  readonly data: O.Option<string>;
+  readonly data: string | undefined;
   readonly isLoading: boolean;
   readonly error: unknown;
 } => {
@@ -225,7 +225,7 @@ export const useLeastRecentStoryPublishedDate = (
   );
 
   return {
-    data: O.fromNullable(data),
+    data,
     isLoading,
     error,
   };

@@ -1,124 +1,180 @@
-import { ChangeEvent, useCallback, useEffect, useReducer } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import {
   function as F,
   io as IO,
   taskEither as TE,
   task as T,
-  readonlyArray as A,
+  option as O,
 } from "fp-ts";
-import * as GameState from "@/reducers/GameReducer";
 import { useCountdown, Timer } from "hooks";
-import { User as UserAPI } from "api-client";
+import { User as UserAPI, Story as StoryAPI } from "api-client";
 import { User as UserContext, Stories as StoriesContext } from "context";
-import {
-  Story as StorySchema,
-  User as UserSchema,
-  PrevGame as PrevGameSchema,
-} from "api-schemas";
+import { PrevGame as PrevGameSchema } from "api-schemas";
 import { buildPostSkipUser, buildPostWinUser } from "lib/manageUser";
 import { PrevGame as DBPrevGame, Error as DBError } from "db";
 
-export interface UseGame {
-  readonly currentStory: StorySchema.StoryResponse | undefined;
-  readonly status: GameState.GameStatus;
-  readonly inputValue: string;
-  readonly userError: boolean;
-  readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  readonly onInitCountdown: (status: GameState.GameStatus) => void;
+// State
+type PreGameState = {
+  readonly _tag: "pre-game";
+};
+type CountdownState = {
+  readonly _tag: "countdown";
+};
+type InGameState = {
+  readonly _tag: "in-game";
+  readonly userInput: string;
+  readonly userErrorIsPresent: boolean;
+};
+type WinState = {
+  readonly _tag: "win";
+  readonly userInput: string;
+  readonly score: number;
+};
+type LoseState = {
+  readonly _tag: "lose";
+  readonly userInput: string;
+  readonly userErrorIsPresent: boolean;
+};
+type State = PreGameState | CountdownState | InGameState | WinState | LoseState;
+
+// Hook
+type PreGame = {
+  readonly _tag: "pre-game";
+  readonly currentStory: StoryAPI.Response;
   readonly countdown: number;
+  readonly onInitCountdown: IO.IO<void>;
+  readonly onSkipClick: ({
+    currentStory,
+    user,
+  }: {
+    readonly currentStory: StoryAPI.Response;
+    readonly user: UserAPI.Response;
+  }) => T.Task<void>;
+};
+type Countdown = {
+  readonly _tag: "countdown";
+  readonly countdown: number;
+  readonly currentStory: StoryAPI.Response;
+  readonly onResetClick: IO.IO<void>;
+};
+type InGame = {
+  readonly _tag: "in-game";
+  readonly currentStory: StoryAPI.Response;
+  readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => IO.IO<void>;
+  readonly userInput: string;
+  readonly userErrorIsPresent: boolean;
+  readonly timer: Timer.Timer;
+  readonly onResetClick: IO.IO<void>;
+};
+type Win = {
+  readonly _tag: "win";
+  readonly currentStory: StoryAPI.Response;
   readonly timer: Timer.Timer;
   readonly wpm: number;
+  readonly onResetClick: IO.IO<void>;
+  readonly onNextClick: IO.IO<void>;
+};
+type Lose = {
+  readonly _tag: "lose";
+  readonly currentStory: StoryAPI.Response;
+  readonly userErrorIsPresent: boolean;
   readonly onResetClick: IO.IO<void>;
   readonly onSkipClick: ({
     currentStory,
     user,
   }: {
-    readonly currentStory: StorySchema.StoryResponse;
-    readonly user: UserSchema.User;
+    readonly currentStory: StoryAPI.Response;
+    readonly user: UserAPI.Response;
   }) => T.Task<void>;
-  readonly onNextClick: () => IO.IO<void>;
-}
+};
+type UseGame = PreGame | Countdown | InGame | Win | Lose;
 
 const TIME_LIMIT = 120;
 
-const buildGame = ({
-  userId,
-  story,
-  wpm,
-}: {
-  readonly userId: string;
-  readonly story: StorySchema.StoryResponse;
-  readonly wpm: number;
-}): PrevGameSchema.PrevGameBody => ({
-  userId: userId,
-  storyId: story.id,
-  storyTitle: story.title,
-  storyHtml: story.storyHtml,
-  score: wpm,
-});
-
 export const useGame = (): UseGame => {
-  const [state, dispatch] = useReducer(
-    GameState.GameReducer,
-    GameState.initialState
-  );
+  const [gameState, setGameState] = useState<State>({ _tag: "pre-game" });
   const user = UserContext.useUserContext();
   const setUserAPI = UserAPI.useSetUser();
 
   const {
     stories,
-    isFetching: storiesAreLoading,
+    currentStory,
     currentStoryIdx,
     setCurrentStoryIdx,
     fetchNext,
     leastRecentStoryPublishedDate,
   } = StoriesContext.useStoriesContext();
-  const countdown = useCountdown(state.status === "countdown");
-  const timer = Timer.useTimer(state.status, TIME_LIMIT);
-  // TODO: We shouldn't return anything if we have no current story. We can return a discriminated
-  // union type from this hook with an error tag and handle error and other states in the container.
-  // .
-  const currentStory = A.isOutOfBound(currentStoryIdx, stories)
-    ? undefined
-    : stories[currentStoryIdx];
+  const countdown = useCountdown(gameState._tag === "countdown");
+  const timer = Timer.useTimer(gameState._tag === "in-game", TIME_LIMIT);
 
-  // Listen for when stories have been loaded into game state and initialise idle state.
+  // Listen for countdown complete, set in-game state
   useEffect(() => {
-    if (!storiesAreLoading) {
-      dispatch({ type: "storiesLoaded" });
-    } else if (storiesAreLoading) {
-      dispatch({ type: "storiesLoading" });
+    if (countdown === 0 && gameState._tag === "countdown") {
+      setGameState({
+        _tag: "in-game",
+        userInput: "",
+        userErrorIsPresent: false,
+      });
     }
-  }, [storiesAreLoading, stories]);
+  }, [countdown, gameState]);
 
-  // Listen for countdown complete and update game status to "inGame"
+  const isInGame = useCallback(
+    (): O.Option<InGameState> =>
+      F.pipe(
+        gameState,
+        O.fromPredicate(
+          (prevState): prevState is InGameState => prevState._tag === "in-game"
+        )
+      ),
+    [gameState]
+  );
+
+  // Listen for time limit up, set lose state
   useEffect(() => {
-    if (countdown === 0) {
-      dispatch({ type: "countdownComplete" });
-    }
-  }, [countdown]);
+    if (timer.totalSeconds === TIME_LIMIT)
+      F.pipe(
+        isInGame(),
+        O.match(
+          F.constVoid,
+          F.flow(
+            ({ userInput, userErrorIsPresent }): LoseState => ({
+              _tag: "lose" as const,
+              userInput,
+              userErrorIsPresent,
+            }),
+            setGameState
+          )
+        )
+      );
+  }, [gameState, isInGame, timer.totalSeconds]);
 
-  // Listen for time limit up and dispatch outOfTime action
-  useEffect(() => {
-    timer.totalSeconds === TIME_LIMIT && dispatch({ type: "outOfTime" });
-  }, [timer.totalSeconds]);
-
-  // TODO: This shouldn't rely on an if check. It can be an IO<void> and
-  // only be passed down if game state is idle.
-  const initCountdown = (status: GameState.GameStatus) => {
-    if (status === "idle") dispatch({ type: "startCountdown" });
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) =>
-    dispatch({ type: "inputValueChange", inputValue: e.target.value });
+  const handleInputChange =
+    (e: ChangeEvent<HTMLInputElement>): IO.IO<void> =>
+    () =>
+      F.pipe(
+        isInGame(),
+        O.match(
+          F.constVoid,
+          F.flow(
+            (): InGameState => ({
+              _tag: "in-game" as const,
+              userInput: e.target.value,
+              userErrorIsPresent:
+                e.target.value !==
+                currentStory.storyText.slice(0, e.target.value.length),
+            }),
+            setGameState
+          )
+        )
+      );
 
   const updateUserPostSkip: ({
     user,
     currentStory,
   }: {
-    readonly user: UserSchema.User;
-    readonly currentStory: StorySchema.StoryResponse;
-  }) => TE.TaskEither<DBError.DBError, UserSchema.User> = F.flow(
+    readonly user: UserAPI.Response;
+    readonly currentStory: StoryAPI.Response;
+  }) => TE.TaskEither<DBError.DBError, UserAPI.Response> = F.flow(
     ({ user, currentStory }) =>
       buildPostSkipUser(user, currentStory, leastRecentStoryPublishedDate),
     setUserAPI.mutateAsync
@@ -130,29 +186,31 @@ export const useGame = (): UseGame => {
     wpm,
   }: {
     readonly userId: string;
-    readonly story: StorySchema.StoryResponse;
+    readonly story: StoryAPI.Response;
     readonly wpm: number;
   }) => TE.TaskEither<DBError.DBError, string> = F.flow(
     // Force new line
     buildGame,
     (prevGame) =>
+      // TODO: Move this to prev-game API module
       TE.tryCatch(
         () => DBPrevGame.createPrevGame(prevGame),
+        // Note: Casting dangerously for now, as that's what our DB function will error with.
         (error) => error as DBError.DBError
       )
   );
 
-  const handleResetClick: IO.IO<void> = () => dispatch({ type: "reset" });
+  const reset: IO.IO<void> = () => setGameState({ _tag: "pre-game" });
 
-  const nextStory = useCallback(
+  const nextStory: IO.IO<void> = useCallback(
     () =>
       F.pipe(
         () => setCurrentStoryIdx(currentStoryIdx + 1),
         IO.apFirst(() => {
           if (stories.length - 1 === currentStoryIdx) fetchNext();
         }),
-        IO.apFirst(() => dispatch({ type: "next" }))
-      ),
+        IO.apFirst(() => setGameState({ _tag: "pre-game" }))
+      )(),
     [fetchNext, currentStoryIdx, setCurrentStoryIdx, stories.length]
   );
 
@@ -161,8 +219,8 @@ export const useGame = (): UseGame => {
       currentStory,
       user,
     }: {
-      readonly currentStory: StorySchema.StoryResponse;
-      readonly user: UserSchema.User;
+      readonly currentStory: StoryAPI.Response;
+      readonly user: UserAPI.Response;
     }): T.Task<void> =>
       F.pipe(
         updateUserPostSkip({ user, currentStory }),
@@ -180,39 +238,18 @@ export const useGame = (): UseGame => {
               () => console.error(error),
               T.fromIO
             ),
-          () => F.pipe(nextStory(), T.fromIO)
+          () => F.pipe(nextStory, T.fromIO)
         )
       ),
     [createPrevGame, updateUserPostSkip, nextStory]
   );
 
-  const checkForUserError = (currentInput: string, source: string) =>
-    currentInput !== source.slice(0, currentInput.length);
-
-  const wpm = (time: number) => Math.round(50 * (60 / time));
-
-  // Listen for user error
-  useEffect(() => {
-    if (currentStory) {
-      const errorPresent = checkForUserError(
-        state.userInput,
-        currentStory.storyText
-      );
-
-      if (errorPresent) {
-        return dispatch({ type: "userTypingError" });
-      } else {
-        dispatch({ type: "errorFree" });
-      }
-    }
-  }, [state.userInput, currentStory, state.userError]);
-
   const updateUserPostWin = useCallback(
     (
-      userData: UserSchema.User,
-      currentStory: StorySchema.StoryResponse,
+      userData: UserAPI.Response,
+      currentStory: StoryAPI.Response,
       score: number
-    ): TE.TaskEither<DBError.DBError, UserSchema.User> =>
+    ): TE.TaskEither<DBError.DBError, UserAPI.Response> =>
       F.pipe(
         buildPostWinUser(
           userData,
@@ -226,20 +263,30 @@ export const useGame = (): UseGame => {
   );
 
   const winGame = useCallback(
-    (
-      currentStory: StorySchema.StoryResponse,
-      user: UserSchema.User,
-      seconds: number
-    ) =>
+    (currentStory: StoryAPI.Response, user: UserAPI.Response, score: number) =>
       F.pipe(
-        () => dispatch({ type: "win", wpm: wpm(seconds) }),
+        () =>
+          F.pipe(
+            isInGame(),
+            O.match(
+              F.constVoid,
+              F.flow(
+                ({ userInput }): WinState => ({
+                  _tag: "win" as const,
+                  userInput,
+                  score,
+                }),
+                setGameState
+              )
+            )
+          ),
         TE.fromIO,
-        TE.chain(() => updateUserPostWin(user, currentStory, wpm(seconds))),
+        TE.chain(() => updateUserPostWin(user, currentStory, score)),
         TE.chain((updatedUser) =>
           createPrevGame({
             userId: updatedUser.id,
             story: currentStory,
-            wpm: wpm(seconds),
+            wpm: score,
           })
         ),
         TE.fold(
@@ -252,32 +299,84 @@ export const useGame = (): UseGame => {
           () => T.of(undefined)
         )
       ),
-    [createPrevGame, updateUserPostWin]
+    [isInGame, createPrevGame, updateUserPostWin]
   );
 
   // Listen for game completion
   useEffect(() => {
-    if (state.userInput === currentStory?.storyText) {
+    if (
+      gameState._tag === "in-game" &&
+      gameState.userInput === currentStory?.storyText
+    ) {
       F.pipe(
         // Force new line
-        winGame(currentStory, user, timer.totalSeconds),
+        winGame(currentStory, user, wpm(timer.totalSeconds)),
         (unsafeRunTask) => unsafeRunTask()
       );
     }
-  }, [state.userInput, currentStory, user, timer.totalSeconds, winGame]);
+  }, [gameState, currentStory, user, timer.totalSeconds, winGame]);
 
-  return {
-    currentStory,
-    status: state.status,
-    inputValue: state.userInput,
-    userError: state.userError,
-    onInputChange: handleInputChange,
-    onInitCountdown: initCountdown,
-    countdown,
-    timer,
-    wpm: state.wpm,
-    onResetClick: handleResetClick,
-    onSkipClick: handleSkipClick,
-    onNextClick: nextStory,
-  };
+  switch (gameState._tag) {
+    case "pre-game":
+      return {
+        _tag: "pre-game",
+        currentStory,
+        countdown,
+        onInitCountdown: () => setGameState({ _tag: "countdown" }),
+        onSkipClick: handleSkipClick,
+      };
+    case "countdown":
+      return {
+        _tag: "countdown",
+        countdown,
+        currentStory,
+        onResetClick: reset,
+      };
+    case "in-game":
+      return {
+        _tag: "in-game",
+        currentStory,
+        onInputChange: handleInputChange,
+        userInput: gameState.userInput,
+        userErrorIsPresent: gameState.userErrorIsPresent,
+        timer,
+        onResetClick: reset,
+      };
+    case "win":
+      return {
+        _tag: "win",
+        currentStory,
+        timer,
+        wpm: wpm(timer.totalSeconds),
+        onResetClick: reset,
+        onNextClick: nextStory,
+      };
+    case "lose":
+      return {
+        _tag: "lose",
+        currentStory,
+        userErrorIsPresent: gameState.userErrorIsPresent,
+        onResetClick: reset,
+        onSkipClick: handleSkipClick,
+      };
+  }
 };
+
+const wpm = (totalSeconds: number): number =>
+  Math.round(50 * (60 / totalSeconds));
+
+const buildGame = ({
+  userId,
+  story,
+  wpm,
+}: {
+  readonly userId: string;
+  readonly story: StoryAPI.Response;
+  readonly wpm: number;
+}): PrevGameSchema.PrevGameBody => ({
+  userId: userId,
+  storyId: story.id,
+  storyTitle: story.title,
+  storyHtml: story.storyHtml,
+  score: wpm,
+});

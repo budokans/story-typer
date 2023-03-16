@@ -1,4 +1,3 @@
-import { option as O, function as F } from "fp-ts";
 import { User, Story } from "api-schemas";
 
 type User = User.User;
@@ -8,7 +7,7 @@ export const buildPostWinUser = (
   user: User,
   story: Story,
   score: number,
-  leastRecentStoryPublishedDate: O.Option<string>
+  leastRecentStoryPublishedDate: string
 ): User => {
   const updatedPersonalBest =
     !user.personalBest || score > user.personalBest ? score : user.personalBest;
@@ -40,7 +39,7 @@ export const buildPostWinUser = (
 export const buildPostSkipUser = (
   user: User,
   story: Story,
-  leastRecentStoryPublishedDate: O.Option<string>
+  leastRecentStoryPublishedDate: string
 ): User => ({
   ...user,
   newestPlayedStoryPublishedDate: getMostRecentDate(
@@ -70,15 +69,13 @@ const getMostRecentDate = (
 const getOldestDate = (
   oldestPlayedStoryPublishedDate: string | null,
   currentStoryDate: string,
-  leastRecentStoryPublishedDate: O.Option<string>
+  leastRecentStoryPublishedDate: string
 ) => {
   if (!oldestPlayedStoryPublishedDate) return currentStoryDate;
   const parsedStoredDate = Date.parse(oldestPlayedStoryPublishedDate);
   const parsedCurrentStoryDate = Date.parse(currentStoryDate);
-  const parsedLeastRecentStoryPublishedDate = F.pipe(
-    leastRecentStoryPublishedDate,
-    O.map(Date.parse),
-    O.getOrElseW(F.constNull)
+  const parsedLeastRecentStoryPublishedDate = Date.parse(
+    leastRecentStoryPublishedDate
   );
 
   if (parsedCurrentStoryDate === parsedLeastRecentStoryPublishedDate) {

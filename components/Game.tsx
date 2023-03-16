@@ -1,5 +1,4 @@
-import { useEffect, useRef, ReactElement, ChangeEvent } from "react";
-import { io as IO, task as T, function as F } from "fp-ts";
+import { useEffect, useRef, ReactElement } from "react";
 import {
   Container as ChakraContainer,
   Flex,
@@ -7,15 +6,14 @@ import {
   IconButton,
   IconButtonProps,
   Input as ChakraInput,
+  InputProps as ChakraInputProps,
   Skeleton as ChakraSkeleton,
   SkeletonCircle,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
-import { RiRestartFill, RiSkipForwardFill } from "react-icons/ri";
 import { ChildrenProps } from "components";
-import { GameStatus } from "@/reducers/GameReducer";
 
 export const Game = ({ children }: ChildrenProps): ReactElement => (
   <Container>{children}</Container>
@@ -95,40 +93,32 @@ export const Pad = ({ children }: ChildrenProps): ReactElement => (
 );
 
 interface InputProps {
-  readonly onInputClick: () => void;
-  readonly onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  readonly value: string;
-  readonly error: boolean;
-  readonly gameStatus: GameStatus;
+  readonly isFocused?: boolean;
+  readonly value?: string;
 }
 
 export const Input = ({
-  onInputClick,
-  onInputChange,
+  isFocused,
   value,
-  gameStatus,
-  error,
-}: InputProps): ReactElement => {
+  ...props
+}: InputProps & ChakraInputProps): ReactElement => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    gameStatus === "inGame" && inputRef?.current?.focus();
-  }, [gameStatus]);
+    if (isFocused) inputRef?.current?.focus();
+  }, [isFocused]);
 
   return (
     <ChakraInput
-      placeholder={gameStatus === "idle" ? "Click here to begin" : ""}
-      bg={error ? "red.300" : "white"}
       w="clamp(12rem, 50vw, 20rem)"
       mr="auto"
-      onClick={onInputClick}
-      onChange={onInputChange}
-      value={value}
-      disabled={gameStatus === "countdown"}
+      value={value ?? ""}
       ref={inputRef}
       autoCapitalize="off"
       autoComplete="off"
-      // onPaste={(e) => e.preventDefault()}
+      onPaste={(e) => e.preventDefault()}
+      bg="white"
+      {...props}
     />
   );
 };
@@ -144,63 +134,7 @@ export const ErrorAlert = (): ReactElement => (
   />
 );
 
-type RestartButtonProps = {
-  readonly _tag: "restart";
-  readonly onResetClick: IO.IO<void>;
-};
-type SkipButtonProps = {
-  readonly _tag: "skip";
-  readonly onSkipClick: T.Task<void>;
-};
-type NewGameButtonProps = {
-  readonly _tag: "new";
-  readonly onNextClick: IO.IO<void>;
-};
-
-type NextGameButtonProps =
-  | RestartButtonProps
-  | SkipButtonProps
-  | NewGameButtonProps;
-
-export const NextGameButton = (props: NextGameButtonProps): ReactElement => {
-  switch (props._tag) {
-    case "restart":
-      return (
-        <NextGameButtonInternal
-          aria-label="Restart game"
-          icon={<RiRestartFill />}
-          bg="gold"
-          onClick={() =>
-            F.pipe(props.onResetClick, (unsafePerformIO) => unsafePerformIO())
-          }
-        />
-      );
-    case "skip":
-      return (
-        <NextGameButtonInternal
-          aria-label="Skip game"
-          icon={<RiSkipForwardFill />}
-          bg="lime"
-          onClick={() =>
-            F.pipe(props.onSkipClick, (unsafeRunRask) => unsafeRunRask())
-          }
-        />
-      );
-    case "new":
-      return (
-        <NextGameButtonInternal
-          aria-label="New game"
-          icon={<RiSkipForwardFill />}
-          bg="lime"
-          onClick={() =>
-            F.pipe(props.onNextClick, (unsafePerformIO) => unsafePerformIO())
-          }
-        />
-      );
-  }
-};
-
-const NextGameButtonInternal = (props: IconButtonProps): ReactElement => (
+export const NextGameButton = (props: IconButtonProps): ReactElement => (
   <IconButton
     isRound
     cursor="pointer"
@@ -225,21 +159,14 @@ export const Countdown = ({
 );
 
 interface StopWatchProps {
-  readonly gameStatus: GameStatus;
+  readonly isActive?: boolean;
 }
 
 export const StopWatch = ({
-  gameStatus,
+  isActive,
   children,
 }: StopWatchProps & ChildrenProps): ReactElement => (
-  <Heading
-    as="h4"
-    color={
-      gameStatus === "idle" || gameStatus === "complete"
-        ? "gray.500"
-        : "blackAlpha.800"
-    }
-  >
+  <Heading as="h4" color={isActive ? "blackAlpha.800" : "gray.500"}>
     {children}
   </Heading>
 );

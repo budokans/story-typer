@@ -12,23 +12,28 @@ import {
   function as F,
   readonlyArray as A,
   readonlyNonEmptyArray as NEA,
+  io as IO,
 } from "fp-ts";
-import { ChildrenProps } from "components";
+import { useMediaQuery } from "@chakra-ui/react";
+import { ChildrenProps, Game } from "components";
 import { Story as StoryAPI, Util as APIUtil } from "api-client";
+import { GameContainer } from "containers";
 
 interface StoryContext {
   readonly stories: readonly StoryAPI.Response[];
   readonly setStories: Dispatch<SetStateAction<readonly StoryAPI.Response[]>>;
-  readonly isFetching: boolean;
-  readonly fetchNext: () => void;
+  readonly currentStory: StoryAPI.Response;
+  readonly fetchNext: IO.IO<void>;
   readonly currentStoryIdx: number;
   readonly setCurrentStoryIdx: Dispatch<SetStateAction<number>>;
-  readonly leastRecentStoryPublishedDate: O.Option<string>;
+  readonly leastRecentStoryPublishedDate: string;
 }
 
 const storiesContext = createContext<O.Option<StoryContext>>(O.none);
 
 export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
+  const [mediaQuery] = useMediaQuery("(min-width: 769px)");
+  const viewportIsWiderThan768 = mediaQuery!;
   const [currentStoryIdx, setCurrentStoryIdx] = useState(0);
   const [stories, setStories] = useState<readonly StoryAPI.Response[]>([]);
   const {
@@ -42,14 +47,15 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
     options: {
       onSuccess: (data) =>
         F.pipe(
-          data?.pages,
+          data.pages,
           A.last,
           O.chain(({ data }) => (A.isNonEmpty(data) ? O.some(data) : O.none)),
           O.match(
             () => () => fetchNextPage(),
             F.flow(
               NEA.map(StoryAPI.serializeStory),
-              (serialized) => () => setStories([...stories, ...serialized])
+              (serialized) => () =>
+                setStories((prevStories) => [...prevStories, ...serialized])
             )
           ),
           (unsafePerformIO) => unsafePerformIO()
@@ -61,18 +67,43 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
     fetchNextPage();
   }, [fetchNextPage]);
 
-  // TODO: Handle each of these errors separately.
-  if (error || leastRecentStoryPublishedDateError) {
-    error && console.error(error);
-    leastRecentStoryPublishedDateError &&
-      console.error(leastRecentStoryPublishedDateError);
+  //TODO: Tidy up this mess.
 
+  if (isFetching || leastRecentStoryPublishedDateIsLoading) {
+    // TODO: Render appropriate loading UI depending on route
     return (
-      <p>
-        Sorry, we are having trouble loading the stories. Please try refreshing
-        the page.
-      </p>
+      <GameContainer.GameWrapper>
+        <Game.Skeleton isLargeViewport={viewportIsWiderThan768} />
+      </GameContainer.GameWrapper>
     );
+  }
+
+  if (error) {
+    console.error(error);
+    return <p>Error page</p>;
+  }
+
+  if (leastRecentStoryPublishedDateError) {
+    console.error(leastRecentStoryPublishedDateError);
+    return <p>Error page</p>;
+  }
+
+  if (A.isEmpty(stories)) console.error("No stories were found.");
+
+  if (!leastRecentStoryPublishedDate)
+    console.error("No leastRecentStoryPublishedDate found.");
+
+  const currentStory = stories[currentStoryIdx];
+  if (!currentStory) console.error("Current story is undefined.");
+
+  if (
+    error ||
+    leastRecentStoryPublishedDateError ||
+    A.isEmpty(stories) ||
+    !leastRecentStoryPublishedDate ||
+    !currentStory
+  ) {
+    return storiesErrorContent;
   }
 
   return (
@@ -80,7 +111,7 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
       value={O.some({
         stories,
         setStories,
-        isFetching: isFetching || leastRecentStoryPublishedDateIsLoading,
+        currentStory,
         fetchNext,
         currentStoryIdx,
         setCurrentStoryIdx,
@@ -91,6 +122,13 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
     </storiesContext.Provider>
   );
 };
+
+const storiesErrorContent = (
+  <p>
+    Sorry, we are having trouble loading the stories. Please try refreshing the
+    page. If that fails, please contact the creator.
+  </p>
+);
 
 export const useStoriesContext = (): StoryContext => {
   const context = useContext(storiesContext);

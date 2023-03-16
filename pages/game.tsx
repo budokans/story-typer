@@ -60,7 +60,7 @@ const ContainerToggler = (): ReactElement => {
 
   switch (location) {
     case "game":
-      return <GameContainer />;
+      return <GameContainer.GameContainer />;
     case "archive":
       return (
         <Archive.Archive>
