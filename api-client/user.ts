@@ -30,7 +30,7 @@ export const serializeUser = (userDoc: Document): Response => ({
 });
 
 type UseUser =
-  | APIUtil.UseQuery<Response>
+  | APIUtil.UseQuery<DBError.DBError, Response>
   | {
       _tag: "create-new-user";
     };

@@ -7,7 +7,6 @@ import {
 import { useCallback } from "react";
 import {
   function as F,
-  array as AMut,
   readonlyArray as A,
   either as E,
   taskEither as TE,
@@ -41,7 +40,7 @@ type FavoritesQueryKey = [FavoritesQueryString, string, string];
 
 export const useFavorite = (
   storyId: string
-): APIUtil.UseQuery<Response | undefined> => {
+): APIUtil.UseQuery<DBError.DBError, Response | undefined> => {
   const { id: userId } = UserContext.useUserContext();
 
   const {
@@ -144,14 +143,16 @@ export const useDeleteFavorite = (): {
 
 export const useFavoritesInfinite = (
   userId: string
-): APIUtil.UseInfiniteQuery<
-  FavoritesWithCursor<Response, DBFavorite.FavoriteDocumentMetaType>,
-  FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>
+): APIUtil.UseArchiveInfinite<
+  DBError.DBError,
+  FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>,
+  readonly Response[]
 > => {
   const {
     data: rawData,
     error,
     isFetching,
+    isLoading,
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery<
@@ -177,20 +178,23 @@ export const useFavoritesInfinite = (
     }
   );
 
+  if (isLoading) return { _tag: "loading" };
+
   return {
-    data: rawData
-      ? {
-          pages: F.pipe(
-            rawData.pages,
-            AMut.map((page) => ({
-              data: F.pipe(page.data, A.map(serializeFavorite)),
-              cursor: page.cursor,
-            }))
-          ),
-          pageParams: rawData.pageParams,
-        }
-      : undefined,
-    error,
+    _tag: "settled",
+    data: F.pipe(
+      rawData,
+      E.fromNullable(
+        error ?? new DBError.Unknown("Unknown error. Is the query disabled?")
+      ),
+      E.map(({ pages }) =>
+        F.pipe(
+          pages,
+          A.chain(({ data }) => data),
+          A.map(serializeFavorite)
+        )
+      )
+    ),
     isFetching,
     fetchNextPage,
     hasNextPage,

@@ -5,10 +5,12 @@ import { Styles } from "styles";
 
 interface CenterContentProps {
   readonly observeLayout?: boolean;
+  readonly furtherVerticalOffset?: number;
 }
 
 export const CenterContent = ({
   observeLayout,
+  furtherVerticalOffset = 0,
   children,
 }: CenterContentProps & ChildrenProps): ReactElement => {
   const [mediaQuery] = useMediaQuery("(min-width: 769px)");
@@ -30,7 +32,7 @@ export const CenterContent = ({
     <Center
       minH={
         observeLayout
-          ? `calc(100vh - ${headerHeight}px - ${footerHeight}px - ${mainYPadding}px)`
+          ? `calc(100vh - ${headerHeight}px - ${footerHeight}px - ${mainYPadding}px - ${furtherVerticalOffset}px)`
           : "100vh"
       }
     >

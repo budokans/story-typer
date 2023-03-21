@@ -2,9 +2,9 @@ import { useInfiniteQuery, useMutation, useQueryClient } from "react-query";
 import { useCallback } from "react";
 import {
   function as F,
-  array as AMut,
   readonlyArray as A,
   taskEither as TE,
+  either as E,
 } from "fp-ts";
 import { MetaType, QueryDocumentSnapshot } from "firelordjs";
 import { PrevGame as DBPrevGame, Error as DBError } from "db";
@@ -18,8 +18,6 @@ export type PrevGamesWithCursor<
   A,
   R extends MetaType
 > = DBPrevGame.PrevGamesWithCursor<A, R>;
-
-const prevGamesQueryString = "prev-games" as const;
 
 export const useAddPrevGame = (): {
   readonly mutateAsync: (body: Body) => TE.TaskEither<DBError.DBError, string>;
@@ -67,15 +65,19 @@ const serializePrevGame = (prevGameDoc: Document): Response => ({
   datePlayed: prevGameDoc.datePlayed.toDate().toISOString(),
 });
 
+type PrevGamesQueryKey = "prev-games";
+
 export const usePrevGamesInfinite = (
   userId: string
-): APIUtil.UseInfiniteQuery<
-  PrevGamesWithCursor<Response, DBPrevGame.PrevGameDocumentMetaType>,
-  PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>
+): APIUtil.UseArchiveInfinite<
+  DBError.DBError,
+  PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>,
+  readonly Response[]
 > => {
   const {
     data: rawData,
     error,
+    isLoading,
     isFetching,
     fetchNextPage,
     hasNextPage,
@@ -83,7 +85,7 @@ export const usePrevGamesInfinite = (
     PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>,
     DBError.DBError,
     PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>,
-    typeof prevGamesQueryString
+    PrevGamesQueryKey
   >(
     "prev-games",
     ({
@@ -102,20 +104,23 @@ export const usePrevGamesInfinite = (
     }
   );
 
+  if (isLoading) return { _tag: "loading" };
+
   return {
-    data: rawData
-      ? {
-          pages: F.pipe(
-            rawData.pages,
-            AMut.map((page) => ({
-              data: F.pipe(page.data, A.map(serializePrevGame)),
-              cursor: page.cursor,
-            }))
-          ),
-          pageParams: rawData.pageParams,
-        }
-      : undefined,
-    error,
+    _tag: "settled",
+    data: F.pipe(
+      rawData,
+      E.fromNullable(
+        error ?? new DBError.Unknown("Unknown error. Is the query disabled?")
+      ),
+      E.map(({ pages }) =>
+        F.pipe(
+          pages,
+          A.chain(({ data }) => data),
+          A.map(serializePrevGame)
+        )
+      )
+    ),
     isFetching,
     fetchNextPage,
     hasNextPage,

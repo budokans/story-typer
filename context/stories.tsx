@@ -49,7 +49,7 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
     case "settled":
       return F.pipe(
         E.Do,
-        E.bind("stories", () => storiesQuery.stories),
+        E.bind("stories", () => storiesQuery.data),
         E.bind(
           "leastRecentStoryPublishedDate",
           () => storiesQuery.leastRecentStoryPublishedDate
