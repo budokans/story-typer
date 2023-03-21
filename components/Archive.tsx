@@ -240,9 +240,7 @@ export const PlayAgainButton = ({
       (unsafePerformIO) => unsafePerformIO()
     ),
     onError: F.flow(
-      (err) => () => {
-        console.error(new Error(String(err)));
-      },
+      (error) => () => console.error(error),
       IO.chain(toastIO),
       (unsafePerformIO) => unsafePerformIO()
     ),
