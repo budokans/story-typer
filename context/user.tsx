@@ -55,7 +55,7 @@ export const UserLoader = ({
         E.match(
           (error) => <p>{error.message}</p>,
           (data) => (
-            <userContext.Provider value={O.some(data)}>
+            <userContext.Provider value={O.some<UserSchema.User>(data)}>
               {children}
             </userContext.Provider>
           )

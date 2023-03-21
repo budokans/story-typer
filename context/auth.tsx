@@ -10,9 +10,9 @@ import { useRouter } from "next/router";
 import { firebaseApp } from "db";
 import { ChildrenProps } from "components";
 
-const authContext = createContext<O.Option<Auth>>(O.none);
+const authContext = createContext<O.Option<AuthContext>>(O.none);
 
-export interface Auth {
+export interface AuthContext {
   readonly authUser: FirebaseUser | null | undefined;
   readonly authStateIsLoading: boolean;
   readonly authStateIsError: Error | undefined;
@@ -62,7 +62,7 @@ export const AuthLoader = ({ children }: ChildrenProps): ReactElement => {
 
   return (
     <authContext.Provider
-      value={O.some({
+      value={O.some<AuthContext>({
         authUser,
         authStateIsLoading,
         authStateIsError,
@@ -79,7 +79,7 @@ export const AuthLoader = ({ children }: ChildrenProps): ReactElement => {
   );
 };
 
-export const useAuthContext = (): Auth => {
+export const useAuthContext = (): AuthContext => {
   const context = useContext(authContext);
 
   return F.pipe(

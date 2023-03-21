@@ -41,7 +41,7 @@ export const CardIsExpandedProvider = ({
 
   return (
     <cardIsExpandedContext.Provider
-      value={O.some({ isExpanded, setIsExpanded })}
+      value={O.some<CardIsExpandedContext>({ isExpanded, setIsExpanded })}
     >
       {children}
     </cardIsExpandedContext.Provider>
