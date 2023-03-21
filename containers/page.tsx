@@ -86,7 +86,11 @@ const ContentWrapper = ({ children }: ChildrenProps): ReactElement => (
     as="main"
     maxW="930px"
     margin="0 auto"
-    py={[`${Styles.mainPaddingYMobile}px`, `${Styles.mainPaddingYDesktop}px`]}
+    py={[
+      `${Styles.mainPaddingYMobile}px`,
+      `${Styles.mainPaddingYMobile}px`,
+      `${Styles.mainPaddingYDesktop}px`,
+    ]}
     px={[1, 4, 4, 0]}
   >
     {children}

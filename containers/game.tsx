@@ -14,7 +14,7 @@ export const GameContainer = (): ReactElement => (
 );
 
 export const GameWrapper = ({ children }: ChildrenProps): ReactElement => (
-  <CenterContent>
+  <CenterContent observeLayout>
     <Game.Game>{children}</Game.Game>
   </CenterContent>
 );

@@ -2,7 +2,7 @@ export const headerHeightMobile = 41;
 export const headerHeightDesktop = 61;
 export const headerBorderHeight = 5;
 export const footerHeightDesktop = headerHeightDesktop - headerBorderHeight;
-export const footerHeightMobile = headerHeightMobile - headerBorderHeight;
+export const footerHeightMobile = headerHeightMobile;
 
 export const headerFooterHeight = (
   device: "mobile" | "desktop",
