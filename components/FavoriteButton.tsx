@@ -4,11 +4,10 @@ import { IconButton, Tooltip } from "@chakra-ui/react";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { FaExclamation } from "react-icons/fa";
 import { Favorite as FavoriteAPI } from "api-client";
-import { Favorite as FavoriteSchema } from "api-schemas";
 import { Spinner } from "components";
 
 interface FavoriteButtonProps {
-  readonly storyDetails: FavoriteSchema.StoryData;
+  readonly storyDetails: FavoriteAPI.StoryData;
 }
 
 export const FavoriteButton = ({

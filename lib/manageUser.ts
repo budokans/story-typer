@@ -1,7 +1,7 @@
-import { User, Story } from "api-schemas";
+import { User as UserAPI, Story as StoryAPI } from "api-client";
 
-type User = User.User;
-type Story = Story.StoryResponse;
+type User = UserAPI.Response;
+type Story = StoryAPI.Response;
 
 export const buildPostWinUser = (
   user: User,

@@ -7,9 +7,12 @@ import {
   option as O,
 } from "fp-ts";
 import { useCountdown, Timer } from "hooks";
-import { User as UserAPI, Story as StoryAPI } from "api-client";
+import {
+  User as UserAPI,
+  Story as StoryAPI,
+  PrevGame as PrevGameAPI,
+} from "api-client";
 import { User as UserContext, Stories as StoriesContext } from "context";
-import { PrevGame as PrevGameSchema } from "api-schemas";
 import { buildPostSkipUser, buildPostWinUser } from "lib/manageUser";
 import { PrevGame as DBPrevGame, Error as DBError } from "db";
 
@@ -363,7 +366,7 @@ const buildGame = ({
   readonly userId: string;
   readonly story: StoryAPI.Response;
   readonly wpm: number;
-}): PrevGameSchema.PrevGameBody => ({
+}): PrevGameAPI.Body => ({
   userId: userId,
   storyId: story.id,
   storyTitle: story.title,

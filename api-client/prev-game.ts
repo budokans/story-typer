@@ -5,9 +5,10 @@ import { PrevGame as PrevGameSchema } from "api-schemas";
 import { Util as APIUtil } from "api-client";
 import { MetaType, QueryDocumentSnapshot } from "firelordjs";
 
-type Document = DBPrevGame.DocumentRead;
-type Response = PrevGameSchema.PrevGameResponse;
-type PrevGamesWithCursor<
+export type Body = PrevGameSchema.PrevGameBody;
+export type Document = DBPrevGame.DocumentRead;
+export type Response = PrevGameSchema.PrevGameResponse;
+export type PrevGamesWithCursor<
   A,
   R extends MetaType
 > = DBPrevGame.PrevGamesWithCursor<A, R>;

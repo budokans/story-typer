@@ -1,10 +1,11 @@
 import axios from "axios";
-import { Story } from "api-schemas";
 import { Story as DBStory, Metadata as DBMetadata } from "db";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
   GetPostsOverPagesRecursive,
+  Posts,
+  ScrapedStories,
 } from "./getStories.types";
 
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
@@ -39,7 +40,7 @@ const getPageUrl = (
   return encodeURI(`${endpoint}?${defaultParamsStr}&page=${pageNum}`);
 };
 
-const getPosts = async (url: string): Promise<Story.Post[]> => {
+const getPosts = async (url: string): Promise<Posts> => {
   const { data: posts } = await axios.get(url);
   return posts;
 };
@@ -49,7 +50,7 @@ const getPostsOverPagesRecursive = async (
   url: string,
   pageNum: number,
   pageLimit: number
-): Promise<Story.Post[]> => {
+): Promise<Posts> => {
   const onePage = await getPosts(url);
   if (pageNum < pageLimit) {
     const nextPageUrl = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS, pageNum + 1);
@@ -68,9 +69,7 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
   getPostsOverPagesRecursive
 );
 
-type ScrapedStory = Story.StoryBody;
-
-const getLatestStories = (): Promise<ScrapedStory[] | void> => {
+const getLatestStories = (): Promise<ScrapedStories | void> => {
   return DBStory.mostRecentStoryPublishedDate()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)

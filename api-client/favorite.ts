@@ -19,6 +19,7 @@ import { Util as APIUtil } from "api-client";
 import { User as UserContext } from "context";
 
 export type Document = DBFavorite.DocumentRead;
+export type StoryData = FavoriteSchema.StoryData;
 export type Body = FavoriteSchema.FavoriteBody;
 export type Response = FavoriteSchema.FavoriteResponse;
 export type FavoritesWithCursor<
@@ -70,7 +71,7 @@ export const useFavorite = (
 
 export const useAddFavorite = (): {
   readonly mutateAsync: (
-    storyDetails: FavoriteSchema.StoryData
+    storyDetails: StoryData
   ) => TE.TaskEither<DBError.DBError, string>;
   readonly isLoading: boolean;
 } => {
@@ -88,7 +89,7 @@ export const useAddFavorite = (): {
 
   return {
     mutateAsync: useCallback(
-      (storyDetails: FavoriteSchema.StoryData) =>
+      (storyDetails: StoryData) =>
         F.pipe(
           storyDetails,
           (storyDetails): Body => ({

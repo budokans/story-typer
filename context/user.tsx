@@ -7,11 +7,11 @@ import {
   task as T,
   either as E,
 } from "fp-ts";
-import { User as UserSchema } from "api-schemas";
 import { User as UserAPI } from "api-client";
 import { CenterContent, ChildrenProps, Spinner } from "components";
 
-const userContext = createContext<O.Option<UserSchema.User>>(O.none);
+export type UserContext = UserAPI.Response;
+const userContext = createContext<O.Option<UserContext>>(O.none);
 
 export const UserLoader = ({
   authUser,
@@ -55,7 +55,7 @@ export const UserLoader = ({
         E.match(
           (error) => <p>{error.message}</p>,
           (data) => (
-            <userContext.Provider value={O.some<UserSchema.User>(data)}>
+            <userContext.Provider value={O.some<UserContext>(data)}>
               {children}
             </userContext.Provider>
           )
@@ -64,7 +64,7 @@ export const UserLoader = ({
   }
 };
 
-export const useUserContext = (): UserSchema.User => {
+export const useUserContext = (): UserContext => {
   const context = useContext(userContext);
 
   return F.pipe(

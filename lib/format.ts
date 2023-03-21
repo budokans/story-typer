@@ -1,10 +1,7 @@
 import * as R from "ramda";
 import * as entities from "entities";
 import unidecode from "unidecode";
-import { Story } from "api-schemas";
-
-type Post = Story.Post;
-type ScrapedStory = Story.StoryBody;
+import { Post, Posts, ScrapedStory, ScrapedStories } from "./getStories.types";
 
 const checkBioExists = (text: string): boolean => text.includes("<hr");
 
@@ -39,7 +36,7 @@ const prune = (post: Post): ScrapedStory => ({
   datePublished: post.date,
 });
 
-const prunePosts = (posts: Post[]): ScrapedStory[] => {
+const prunePosts = (posts: Posts): ScrapedStories => {
   return posts.map(prune);
 };
 
@@ -64,7 +61,7 @@ const formatStory = (story: ScrapedStory): ScrapedStory => ({
   datePublished: story.datePublished,
 });
 
-const formatPosts = (stories: ScrapedStory[]): ScrapedStory[] => {
+const formatPosts = (stories: ScrapedStories): ScrapedStories => {
   return stories.map(formatStory);
 };
 

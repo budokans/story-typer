@@ -15,7 +15,7 @@ import {
   task as T,
 } from "fp-ts";
 import { Story as DBStory, Error as DBError } from "db";
-import { Story as StorySchema, User as UserSchema } from "api-schemas";
+import { Story as StorySchema } from "api-schemas";
 import { User as UserContext } from "context";
 
 export type Document = DBStory.DocumentRead;
@@ -82,7 +82,7 @@ export const leastRecentStoryPublishedDateKey =
   "least-recent-story-published-date" as const;
 
 const getInitialParams = (
-  user: UserSchema.User,
+  user: UserContext.UserContext,
   limit: number
 ): InfiniteQueryParams =>
   user.newestPlayedStoryPublishedDate
