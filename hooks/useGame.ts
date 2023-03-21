@@ -14,7 +14,7 @@ import {
 } from "api-client";
 import { User as UserContext, Stories as StoriesContext } from "context";
 import { buildPostSkipUser, buildPostWinUser } from "lib/manageUser";
-import { PrevGame as DBPrevGame, Error as DBError } from "db";
+import { Error as DBError } from "db";
 
 // State
 type PreGameState = {
@@ -98,6 +98,7 @@ export const useGame = (): UseGame => {
   const [gameState, setGameState] = useState<State>({ _tag: "pre-game" });
   const user = UserContext.useUserContext();
   const setUserAPI = UserAPI.useSetUser();
+  const addPrevGameAPI = PrevGameAPI.useAddPrevGame();
   const { currentStory, setCurrentStoryIdx, leastRecentStoryPublishedDate } =
     StoriesContext.useStoriesContext();
   const countdown = useCountdown(gameState._tag === "countdown");
@@ -187,13 +188,7 @@ export const useGame = (): UseGame => {
   }) => TE.TaskEither<DBError.DBError, string> = F.flow(
     // Force new line
     buildPrevGame,
-    (prevGame) =>
-      // TODO: Move this to prev-game API module
-      TE.tryCatch(
-        () => DBPrevGame.createPrevGame(prevGame),
-        // Note: Casting dangerously for now, as that's what our DB function will error with.
-        (error) => error as DBError.DBError
-      )
+    addPrevGameAPI.mutateAsync
   );
 
   const reset: IO.IO<void> = () => setGameState({ _tag: "pre-game" });
