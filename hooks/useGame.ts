@@ -186,7 +186,7 @@ export const useGame = (): UseGame => {
     readonly wpm: number;
   }) => TE.TaskEither<DBError.DBError, string> = F.flow(
     // Force new line
-    buildGame,
+    buildPrevGame,
     (prevGame) =>
       // TODO: Move this to prev-game API module
       TE.tryCatch(
@@ -358,7 +358,7 @@ export const useGame = (): UseGame => {
 const wpm = (totalSeconds: number): number =>
   Math.round(50 * (60 / totalSeconds));
 
-const buildGame = ({
+const buildPrevGame = ({
   userId,
   story,
   wpm,
