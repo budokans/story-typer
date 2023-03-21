@@ -6,18 +6,15 @@ import {
   taskEither as TE,
   either as E,
 } from "fp-ts";
-import { MetaType, QueryDocumentSnapshot } from "firelordjs";
 import { PrevGame as DBPrevGame, Error as DBError } from "db";
 import { PrevGame as PrevGameSchema } from "api-schemas";
 import { Util as APIUtil } from "api-client";
 
 export type Body = PrevGameSchema.PrevGameBody;
 export type Document = DBPrevGame.DocumentRead;
+export type Cursor = DBPrevGame.Cursor;
+export type PrevGamesWithCursor = DBPrevGame.PrevGamesWithCursor;
 export type Response = PrevGameSchema.PrevGameResponse;
-export type PrevGamesWithCursor<
-  A,
-  R extends MetaType
-> = DBPrevGame.PrevGamesWithCursor<A, R>;
 
 export const useAddPrevGame = (): {
   readonly mutateAsync: (body: Body) => TE.TaskEither<DBError.DBError, string>;
@@ -29,7 +26,7 @@ export const useAddPrevGame = (): {
     string,
     DBError.DBError,
     Body,
-    PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>
+    PrevGamesWithCursor
   >((body: Body) => DBPrevGame.createPrevGame(body), {
     onSuccess: () => queryClient.invalidateQueries("prev-games"),
   });
@@ -71,8 +68,8 @@ export const usePrevGamesInfinite = (
   userId: string
 ): APIUtil.UseArchiveInfinite<
   DBError.DBError,
-  PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>,
-  readonly Response[]
+  PrevGamesWithCursor,
+  Response
 > => {
   const {
     data: rawData,
@@ -82,17 +79,13 @@ export const usePrevGamesInfinite = (
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery<
-    PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>,
+    PrevGamesWithCursor,
     DBError.DBError,
-    PrevGamesWithCursor<Document, DBPrevGame.PrevGameDocumentMetaType>,
+    PrevGamesWithCursor,
     PrevGamesQueryKey
   >(
     "prev-games",
-    ({
-      pageParam = null,
-    }: {
-      readonly pageParam?: QueryDocumentSnapshot<DBPrevGame.PrevGameDocumentMetaType> | null;
-    }) =>
+    ({ pageParam = null }: { readonly pageParam?: Cursor }) =>
       DBPrevGame.getPrevGames({
         userId: userId!,
         last: pageParam,

@@ -11,7 +11,6 @@ import {
   either as E,
   taskEither as TE,
 } from "fp-ts";
-import { MetaType, QueryDocumentSnapshot } from "firelordjs";
 import { Favorite as DBFavorite, Error as DBError } from "db";
 import { Favorite as FavoriteSchema } from "api-schemas";
 import { Util as APIUtil } from "api-client";
@@ -20,11 +19,8 @@ import { User as UserContext } from "context";
 export type Document = DBFavorite.DocumentRead;
 export type StoryData = FavoriteSchema.StoryData;
 export type Body = FavoriteSchema.FavoriteBody;
+export type FavoritesWithCursor = DBFavorite.FavoritesWithCursor;
 export type Response = FavoriteSchema.FavoriteResponse;
-export type FavoritesWithCursor<
-  A,
-  R extends MetaType
-> = DBFavorite.FavoritesWithCursor<A, R>;
 
 export const serializeFavorite = (favoriteDoc: Document): Response => ({
   id: favoriteDoc.id,
@@ -81,8 +77,7 @@ export const useAddFavorite = (): {
     string,
     DBError.DBError,
     Body,
-    | Response
-    | FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>
+    Response | FavoritesWithCursor
   >((favorite: Body) => DBFavorite.createFavorite(favorite), {
     onSuccess: () => queryClient.invalidateQueries("favorites"),
   });
@@ -121,7 +116,7 @@ export const useDeleteFavorite = (): {
     void,
     DBError.DBError,
     string,
-    Response | readonly Response[]
+    Response | FavoritesWithCursor
   >((id: string) => DBFavorite.deleteFavorite(id), {
     onSuccess: () => queryClient.invalidateQueries("favorites"),
   });
@@ -145,8 +140,8 @@ export const useFavoritesInfinite = (
   userId: string
 ): APIUtil.UseArchiveInfinite<
   DBError.DBError,
-  FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>,
-  readonly Response[]
+  FavoritesWithCursor,
+  Response
 > => {
   const {
     data: rawData,
@@ -156,17 +151,13 @@ export const useFavoritesInfinite = (
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery<
-    FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>,
+    FavoritesWithCursor,
     DBError.DBError,
-    FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>,
+    FavoritesWithCursor,
     FavoritesQueryString
   >(
     "favorites",
-    ({
-      pageParam = null,
-    }: {
-      readonly pageParam?: QueryDocumentSnapshot<DBFavorite.FavoriteDocumentMetaType> | null;
-    }) =>
+    ({ pageParam = null }: { readonly pageParam?: DBFavorite.Cursor }) =>
       DBFavorite.getFavorites({
         userId: userId!,
         last: pageParam,

@@ -4,7 +4,6 @@ import {
   getDocs,
   getFirelord,
   limit,
-  MetaType,
   MetaTypeCreator,
   orderBy,
   query,
@@ -53,16 +52,14 @@ export const createPrevGame: (
       .catch(DBError.catchError)
 );
 
-export interface PrevGamesWithCursor<A, R extends MetaType> {
-  readonly data: readonly A[];
-  readonly cursor: QueryDocumentSnapshot<R> | null;
-}
+export type Cursor = QueryDocumentSnapshot<PrevGameDocumentMetaType> | null;
+export type PrevGamesWithCursor = DBUtil.WithCursor<DocumentRead, Cursor>;
 
 export const getPrevGames = (params: {
   readonly userId: string;
   readonly last: QueryDocumentSnapshot<PrevGameDocumentMetaType> | null;
   readonly _limit: number;
-}): Promise<PrevGamesWithCursor<DocumentRead, PrevGameDocumentMetaType>> =>
+}): Promise<PrevGamesWithCursor> =>
   F.pipe(
     params,
     ({ userId, last, _limit }) =>

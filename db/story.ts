@@ -161,11 +161,6 @@ type Cursor =
   | OlderThanCursor
   | OlderThanCursorFinal;
 
-export interface StoriesWithCursor<T> {
-  readonly data: readonly T[];
-  readonly cursor: Cursor;
-}
-
 const buildCursor =
   (snapshot: QuerySnapshot<StoriesDocumentMetaType>) =>
   (params: InfiniteQueryParams): Cursor =>
@@ -195,9 +190,11 @@ const buildCursor =
       )
     );
 
+export type StoriesWithCursor = DBUtil.WithCursor<DocumentRead, Cursor>;
+
 export const getStories = (
   params: InfiniteQueryParams
-): Promise<StoriesWithCursor<DocumentRead>> =>
+): Promise<StoriesWithCursor> =>
   F.pipe(
     // Force new line
     params,

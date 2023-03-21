@@ -19,9 +19,9 @@ import { Story as StorySchema } from "api-schemas";
 import { User as UserContext } from "context";
 
 export type Document = DBStory.DocumentRead;
-export type Response = StorySchema.StoryResponse;
-export type StoriesWithCursor<T> = DBStory.StoriesWithCursor<T>;
 export type InfiniteQueryParams = DBStory.InfiniteQueryParams;
+export type StoriesWithCursor = DBStory.StoriesWithCursor;
+export type Response = StorySchema.StoryResponse;
 
 export const serializeStory = (storyDoc: Document): Response => ({
   id: storyDoc.id,
@@ -119,9 +119,9 @@ export const useStoriesInfinite = ({
   const user = UserContext.useUserContext();
   const [stories, setStories] = useState<readonly Response[]>([]);
   const { error, isFetching, fetchNextPage } = useInfiniteQuery<
-    StoriesWithCursor<Document>,
+    StoriesWithCursor,
     DBError.DBError,
-    StoriesWithCursor<Document>,
+    StoriesWithCursor,
     StoriesQueryKey
   >(
     "stories",
@@ -131,9 +131,7 @@ export const useStoriesInfinite = ({
       readonly pageParam?: InfiniteQueryParams;
     }) => DBStory.getStories(pageParam),
     {
-      getNextPageParam: ({
-        cursor,
-      }: StoriesWithCursor<Document>): InfiniteQueryParams =>
+      getNextPageParam: ({ cursor }: StoriesWithCursor): InfiniteQueryParams =>
         F.pipe(
           cursor,
           (cursor) => {

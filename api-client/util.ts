@@ -19,7 +19,7 @@ export type UseArchiveInfinite<Err, T, U> =
     }
   | {
       _tag: "settled";
-      readonly data: E.Either<DBError.DBError, U>;
+      readonly data: E.Either<DBError.DBError, readonly U[]>;
       readonly isFetching: boolean;
       readonly hasNextPage: boolean | undefined;
       readonly fetchNextPage: () => Promise<

@@ -11,3 +11,8 @@ export const buildDocumentRead = <T extends MetaType>(
   id: doc.id,
   ...doc.data({ serverTimestamps: "estimate" }),
 });
+
+export interface WithCursor<T, C> {
+  readonly data: readonly T[];
+  readonly cursor: C;
+}

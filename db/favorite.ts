@@ -4,7 +4,6 @@ import {
   getDocs,
   getFirelord,
   limit,
-  MetaType,
   MetaTypeCreator,
   orderBy,
   query,
@@ -81,16 +80,14 @@ export const getFavorite = (
         .catch(DBError.catchError)
   );
 
-export interface FavoritesWithCursor<A, R extends MetaType> {
-  readonly data: readonly A[];
-  readonly cursor: QueryDocumentSnapshot<R> | null;
-}
+export type Cursor = QueryDocumentSnapshot<FavoriteDocumentMetaType> | null;
+export type FavoritesWithCursor = DBUtil.WithCursor<DocumentRead, Cursor>;
 
 export const getFavorites = (params: {
   readonly userId: string;
   readonly last: QueryDocumentSnapshot<FavoriteDocumentMetaType> | null;
   readonly _limit: number;
-}): Promise<FavoritesWithCursor<DocumentRead, FavoriteDocumentMetaType>> =>
+}): Promise<FavoritesWithCursor> =>
   F.pipe(
     params,
     ({ userId, last, _limit }) =>
