@@ -1,7 +1,7 @@
 import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
-  collectCoverageFrom: ["<rootDir>/lib/**"],
+  collectCoverageFrom: ["<rootDir>/scraper/**/*.ts"],
   coverageThreshold: {
     global: {
       branches: 90,

@@ -1,4 +1,4 @@
-import { formatStories, testables } from "lib/format";
+import { formatStories, testables } from "scraper/format";
 const {
   checkBioExists,
   getHrElement,

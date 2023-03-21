@@ -6,7 +6,7 @@ import {
   GetPostsOverPagesRecursive,
   Posts,
   ScrapedStories,
-} from "./getStories.types";
+} from "./types";
 
 const API_ENDPOINT = "http://fiftywordstories.com/wp-json/wp/v2/posts";
 const CATEGORIES = 112; // Submissions

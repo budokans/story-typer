@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import * as entities from "entities";
 import unidecode from "unidecode";
-import { Post, Posts, ScrapedStory, ScrapedStories } from "./getStories.types";
+import { Post, Posts, ScrapedStory, ScrapedStories } from "./types";
 
 const checkBioExists = (text: string): boolean => text.includes("<hr");
 
