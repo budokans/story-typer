@@ -82,7 +82,8 @@ export const useAddFavorite = (): {
     string,
     DBError.DBError,
     Body,
-    Response | readonly Response[]
+    | Response
+    | FavoritesWithCursor<Document, DBFavorite.FavoriteDocumentMetaType>
   >((favorite: Body) => DBFavorite.createFavorite(favorite), {
     onSuccess: () => queryClient.invalidateQueries("favorites"),
   });
