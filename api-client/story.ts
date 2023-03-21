@@ -5,15 +5,17 @@ import {
   useQuery,
   UseQueryOptions,
 } from "react-query";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   function as F,
-  array as AMut,
   readonlyArray as A,
+  readonlyNonEmptyArray as NEA,
   option as O,
+  either as E,
+  task as T,
 } from "fp-ts";
 import { Story as DBStory, Error as DBError } from "db";
 import { Story as StorySchema, User as UserSchema } from "api-schemas";
-import { Util as APIUtil } from "api-client";
 import { User as UserContext } from "context";
 
 export type Document = DBStory.DocumentRead;
@@ -38,7 +40,7 @@ export const useStory = (
   id: string,
   options?: UseQueryOptions<
     Document | undefined,
-    unknown,
+    DBError.DBError,
     Document | undefined,
     StoryQueryKey
   >
@@ -55,7 +57,7 @@ export const useStory = (
     refetch,
   } = useQuery<
     Document | undefined,
-    unknown,
+    DBError.DBError,
     Document | undefined,
     StoryQueryKey
   >(["story", id], () => DBStory.getStory(id), {
@@ -75,14 +77,9 @@ export const useStory = (
   };
 };
 
-const serializePagesData: (
-  pages: StoriesWithCursor<Document>[]
-) => StoriesWithCursor<Response>[] = AMut.map((page) => ({
-  data: F.pipe(page.data, A.map(serializeStory)),
-  cursor: page.cursor,
-}));
-
-type StoriesQueryKey = "stories";
+export const storiesQueryKey = "stories" as const;
+export const leastRecentStoryPublishedDateKey =
+  "least-recent-story-published-date" as const;
 
 const getInitialParams = (
   user: UserSchema.User,
@@ -101,34 +98,45 @@ const getInitialParams = (
         startAfter: O.none,
       };
 
+type UseInfiniteStories =
+  | {
+      readonly _tag: "loading";
+    }
+  | {
+      readonly _tag: "settled";
+      readonly stories: E.Either<
+        DBError.DBError | Error,
+        NEA.ReadonlyNonEmptyArray<Response>
+      >;
+      readonly setStories: Dispatch<SetStateAction<readonly Response[]>>;
+      readonly leastRecentStoryPublishedDate: E.Either<
+        DBError.DBError | Error,
+        string
+      >;
+    };
+
 export const useStoriesInfinite = ({
   limit,
+  currentStoryIdx,
   options,
 }: {
   readonly limit: number;
+  readonly currentStoryIdx: number;
   readonly options?: UseInfiniteQueryOptions<
     StoriesWithCursor<Document>,
     DBError.DBError,
     StoriesWithCursor<Document>,
     StoriesWithCursor<Document>,
-    StoriesQueryKey
+    typeof storiesQueryKey
   >;
-}): APIUtil.UseInfiniteQuery<
-  StoriesWithCursor<Response>,
-  StoriesWithCursor<Document>
-> => {
+}): UseInfiniteStories => {
   const user = UserContext.useUserContext();
-  const {
-    data: rawData,
-    error,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-  } = useInfiniteQuery<
+  const [stories, setStories] = useState<readonly Response[]>([]);
+  const { error, isFetching, fetchNextPage } = useInfiniteQuery<
     StoriesWithCursor<Document>,
     DBError.DBError,
     StoriesWithCursor<Document>,
-    StoriesQueryKey
+    typeof storiesQueryKey
   >(
     "stories",
     ({
@@ -174,59 +182,77 @@ export const useStoriesInfinite = ({
             _limit: limit,
           })
         ),
+      onSuccess: ({ pages }) =>
+        F.pipe(
+          pages,
+          A.last,
+          O.chain(({ data }) => NEA.fromReadonlyArray(data)),
+          O.map(NEA.map(serializeStory)),
+          O.matchW(
+            () => () => fetchNextPage(),
+            (newStories) =>
+              F.pipe(
+                () =>
+                  setStories((prevStories) => [...prevStories, ...newStories]),
+                T.fromIO
+              )
+          ),
+          (unsafePerformTask) => unsafePerformTask()
+        ),
       refetchOnWindowFocus: false,
       ...options,
     }
   );
 
-  return {
-    data: F.pipe(
-      rawData,
-      O.fromNullable,
-      O.map((raw) => ({
-        pages: serializePagesData(raw.pages),
-        pageParams: raw.pageParams,
-      })),
-      O.getOrElseW(F.constUndefined)
-    ),
-    error,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-  };
-};
-
-type LeastRecentStoryPublishedDateKey = "least-recent-story-published-date";
-
-export const useLeastRecentStoryPublishedDate = (
-  options?: UseQueryOptions<
-    string,
-    unknown,
-    string,
-    LeastRecentStoryPublishedDateKey
-  >
-): {
-  readonly data: string | undefined;
-  readonly isLoading: boolean;
-  readonly error: unknown;
-} => {
-  const { data, isLoading, error } = useQuery<
-    string,
-    unknown,
-    string,
-    LeastRecentStoryPublishedDateKey
+  const {
+    data: leastRecentStoryPublishedDateData,
+    isLoading: leastRecentStoryPublishedDateIsLoading,
+    error: leastRecentStoryPublishedDateError,
+  } = useQuery<
+    string | undefined,
+    DBError.DBError,
+    string | undefined,
+    typeof leastRecentStoryPublishedDateKey
   >(
     "least-recent-story-published-date",
     () => DBStory.leastRecentStoryPublishedDate(),
     {
       refetchOnWindowFocus: false,
-      ...options,
     }
   );
 
+  useEffect(() => {
+    if (stories.length - 1 === currentStoryIdx) fetchNextPage();
+  }, [stories.length, currentStoryIdx, fetchNextPage]);
+
+  if (
+    isFetching ||
+    leastRecentStoryPublishedDateIsLoading ||
+    (!error && stories.length === 0)
+  ) {
+    return { _tag: "loading" };
+  }
+
   return {
-    data,
-    isLoading,
-    error,
+    _tag: "settled",
+    stories: F.pipe(
+      stories,
+      E.fromPredicate(
+        (stories): stories is NEA.ReadonlyNonEmptyArray<Response> =>
+          A.isNonEmpty(stories),
+        () =>
+          error ?? new DBError.Unknown("Unknown error. Is the query disabled?")
+      )
+    ),
+    setStories,
+    leastRecentStoryPublishedDate: F.pipe(
+      leastRecentStoryPublishedDateData,
+      E.fromNullable(
+        leastRecentStoryPublishedDateError ??
+          new DBError.NotFound(
+            "A least recent story published date was not found."
+          )
+      )
+    ),
   };
 };

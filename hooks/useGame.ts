@@ -95,15 +95,8 @@ export const useGame = (): UseGame => {
   const [gameState, setGameState] = useState<State>({ _tag: "pre-game" });
   const user = UserContext.useUserContext();
   const setUserAPI = UserAPI.useSetUser();
-
-  const {
-    stories,
-    currentStory,
-    currentStoryIdx,
-    setCurrentStoryIdx,
-    fetchNext,
-    leastRecentStoryPublishedDate,
-  } = StoriesContext.useStoriesContext();
+  const { currentStory, setCurrentStoryIdx, leastRecentStoryPublishedDate } =
+    StoriesContext.useStoriesContext();
   const countdown = useCountdown(gameState._tag === "countdown");
   const timer = Timer.useTimer(gameState._tag === "in-game", TIME_LIMIT);
 
@@ -205,13 +198,10 @@ export const useGame = (): UseGame => {
   const nextStory: IO.IO<void> = useCallback(
     () =>
       F.pipe(
-        () => setCurrentStoryIdx(currentStoryIdx + 1),
-        IO.apFirst(() => {
-          if (stories.length - 1 === currentStoryIdx) fetchNext();
-        }),
+        () => setCurrentStoryIdx((prev) => prev + 1),
         IO.apFirst(() => setGameState({ _tag: "pre-game" }))
       )(),
-    [fetchNext, currentStoryIdx, setCurrentStoryIdx, stories.length]
+    [setCurrentStoryIdx]
   );
 
   const handleSkipClick = useCallback(

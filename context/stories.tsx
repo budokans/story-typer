@@ -5,14 +5,13 @@ import {
   Dispatch,
   SetStateAction,
   ReactElement,
-  useCallback,
 } from "react";
 import {
   option as O,
   function as F,
   readonlyArray as A,
   readonlyNonEmptyArray as NEA,
-  io as IO,
+  either as E,
 } from "fp-ts";
 import { useMediaQuery } from "@chakra-ui/react";
 import { ChildrenProps, Game } from "components";
@@ -20,10 +19,9 @@ import { Story as StoryAPI, Util as APIUtil } from "api-client";
 import { GameContainer } from "containers";
 
 interface StoryContext {
-  readonly stories: readonly StoryAPI.Response[];
+  readonly stories: NEA.ReadonlyNonEmptyArray<StoryAPI.Response>;
   readonly setStories: Dispatch<SetStateAction<readonly StoryAPI.Response[]>>;
   readonly currentStory: StoryAPI.Response;
-  readonly fetchNext: IO.IO<void>;
   readonly currentStoryIdx: number;
   readonly setCurrentStoryIdx: Dispatch<SetStateAction<number>>;
   readonly leastRecentStoryPublishedDate: string;
@@ -35,100 +33,62 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
   const [mediaQuery] = useMediaQuery("(min-width: 769px)");
   const viewportIsWiderThan768 = mediaQuery!;
   const [currentStoryIdx, setCurrentStoryIdx] = useState(0);
-  const [stories, setStories] = useState<readonly StoryAPI.Response[]>([]);
-  const {
-    data: leastRecentStoryPublishedDate,
-    isLoading: leastRecentStoryPublishedDateIsLoading,
-    error: leastRecentStoryPublishedDateError,
-  } = StoryAPI.useLeastRecentStoryPublishedDate();
-
-  const { error, isFetching, fetchNextPage } = StoryAPI.useStoriesInfinite({
+  const storiesQuery = StoryAPI.useStoriesInfinite({
     limit: APIUtil.defaultInfiniteQueryLimit,
-    options: {
-      onSuccess: (data) =>
-        F.pipe(
-          data.pages,
-          A.last,
-          O.chain(({ data }) => (A.isNonEmpty(data) ? O.some(data) : O.none)),
-          O.match(
-            () => () => fetchNextPage(),
-            F.flow(
-              NEA.map(StoryAPI.serializeStory),
-              (serialized) => () =>
-                setStories((prevStories) => [...prevStories, ...serialized])
-            )
-          ),
-          (unsafePerformIO) => unsafePerformIO()
-        ),
-    },
+    currentStoryIdx,
   });
 
-  const fetchNext = useCallback(() => {
-    fetchNextPage();
-  }, [fetchNextPage]);
+  switch (storiesQuery._tag) {
+    case "loading":
+      // TODO: Render appropriate loading UI depending on route
+      return (
+        <GameContainer.GameWrapper>
+          <Game.Skeleton isLargeViewport={viewportIsWiderThan768} />
+        </GameContainer.GameWrapper>
+      );
+    case "settled":
+      return F.pipe(
+        E.Do,
+        E.bind("stories", () => storiesQuery.stories),
+        E.bind(
+          "leastRecentStoryPublishedDate",
+          () => storiesQuery.leastRecentStoryPublishedDate
+        ),
+        E.bind("currentStory", ({ stories }) =>
+          A.isOutOfBound(currentStoryIdx, stories)
+            ? E.left(new Error(`Story not found at index ${currentStoryIdx}`))
+            : // Asserting here because we have checked the existence of the idx
+              E.right(stories[currentStoryIdx]!)
+        ),
+        E.match(
+          (error) => {
+            // Any of our errors render our game potentially unplayable, so
+            // rather than letting the game container and children render
+            // and fail with unusable data, we'll render an error page.
 
-  //TODO: Tidy up this mess.
-
-  if (isFetching || leastRecentStoryPublishedDateIsLoading) {
-    // TODO: Render appropriate loading UI depending on route
-    return (
-      <GameContainer.GameWrapper>
-        <Game.Skeleton isLargeViewport={viewportIsWiderThan768} />
-      </GameContainer.GameWrapper>
-    );
+            //TODO: Create error page
+            console.error(error);
+            return <p>Error: {error.message}</p>;
+          },
+          (data) => (
+            <storiesContext.Provider
+              value={O.some<StoryContext>({
+                stories: data.stories,
+                setStories: storiesQuery.setStories,
+                currentStory: data.currentStory,
+                currentStoryIdx,
+                setCurrentStoryIdx,
+                leastRecentStoryPublishedDate:
+                  data.leastRecentStoryPublishedDate,
+              })}
+            >
+              {children}
+            </storiesContext.Provider>
+          )
+        )
+      );
   }
-
-  if (error) {
-    console.error(error);
-    return <p>Error page</p>;
-  }
-
-  if (leastRecentStoryPublishedDateError) {
-    console.error(leastRecentStoryPublishedDateError);
-    return <p>Error page</p>;
-  }
-
-  if (A.isEmpty(stories)) console.error("No stories were found.");
-
-  if (!leastRecentStoryPublishedDate)
-    console.error("No leastRecentStoryPublishedDate found.");
-
-  const currentStory = stories[currentStoryIdx];
-  if (!currentStory) console.error("Current story is undefined.");
-
-  if (
-    error ||
-    leastRecentStoryPublishedDateError ||
-    A.isEmpty(stories) ||
-    !leastRecentStoryPublishedDate ||
-    !currentStory
-  ) {
-    return storiesErrorContent;
-  }
-
-  return (
-    <storiesContext.Provider
-      value={O.some({
-        stories,
-        setStories,
-        currentStory,
-        fetchNext,
-        currentStoryIdx,
-        setCurrentStoryIdx,
-        leastRecentStoryPublishedDate,
-      })}
-    >
-      {children}
-    </storiesContext.Provider>
-  );
 };
-
-const storiesErrorContent = (
-  <p>
-    Sorry, we are having trouble loading the stories. Please try refreshing the
-    page. If that fails, please contact the creator.
-  </p>
-);
 
 export const useStoriesContext = (): StoryContext => {
   const context = useContext(storiesContext);

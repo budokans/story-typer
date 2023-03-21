@@ -226,7 +226,7 @@ export const mostRecentStoryPublishedDate = (): Promise<string> =>
             A.head,
             O.fold(
               () => {
-                throw new Error(
+                throw new DBError.NotFound(
                   "No date found. Are there stories in the database?"
                 );
               },
@@ -237,7 +237,7 @@ export const mostRecentStoryPublishedDate = (): Promise<string> =>
         .catch(DBError.catchError)
   );
 
-export const leastRecentStoryPublishedDate = (): Promise<string> =>
+export const leastRecentStoryPublishedDate = (): Promise<string | undefined> =>
   F.pipe(
     query(stories.collection(), orderBy("datePublished", "asc"), limit(1)),
     (q) =>
@@ -248,11 +248,9 @@ export const leastRecentStoryPublishedDate = (): Promise<string> =>
             A.fromArray,
             A.head,
             O.fold(
-              () => {
-                throw new Error(
-                  "No date found. Are there stories in the database?"
-                );
-              },
+              // We'll return undefined rather than throw here because react-query will
+              // retry the query if we throw an error.
+              F.constUndefined,
               (docSnapshot) => docSnapshot.data().datePublished
             )
           )
