@@ -1,6 +1,5 @@
 import { InfiniteQueryObserverResult } from "react-query";
 import { either as E, readonlyRecord as R } from "fp-ts";
-import { Error as DBError } from "db";
 
 export const defaultInfiniteQueryLimit = 10;
 
@@ -19,7 +18,7 @@ export type UseArchiveInfinite<Err, T, U> =
     }
   | {
       _tag: "settled";
-      readonly data: E.Either<DBError.DBError, readonly U[]>;
+      readonly data: E.Either<Err, readonly U[]>;
       readonly isFetching: boolean;
       readonly hasNextPage: boolean | undefined;
       readonly fetchNextPage: () => Promise<
