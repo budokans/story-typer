@@ -48,7 +48,5 @@ export const throwError = (error: DBError): never => {
   throw error;
 };
 
-export const catchError = (error: NotFound | FirestoreError): never =>
-  error instanceof NotFound
-    ? throwError(error)
-    : F.pipe(error, buildFirestoreError, throwError);
+export const catchError = (error: FirestoreError): never =>
+  F.pipe(error, buildFirestoreError, throwError);
