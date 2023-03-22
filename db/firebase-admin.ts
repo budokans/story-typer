@@ -1,13 +1,15 @@
 import * as firebaseAdmin from "firebase-admin";
+import { cert } from "firebase-admin/app";
+import { getFirestore } from "firelord";
+import serviceAccount from "../serviceAccount.json";
 
-if (!firebaseAdmin.apps.length) {
-  firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.cert({
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY!,
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-    }),
-  });
+if (firebaseAdmin.apps.length === 0) {
+  firebaseAdmin.initializeApp(
+    {
+      credential: cert(serviceAccount as firebaseAdmin.ServiceAccount),
+    },
+    "admin"
+  );
 }
 
-export const dbAdmin = firebaseAdmin.firestore();
+export const dbAdmin = getFirestore();
