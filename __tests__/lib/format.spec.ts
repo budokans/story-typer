@@ -9,6 +9,7 @@ const {
   removeLineBreaks,
   removeDoubleDashes,
   removeHtmlTags,
+  replaceMultiSpaces,
   formatText,
   formatStory,
 } = testables;
@@ -150,6 +151,15 @@ describe("removeHtmlTags", () => {
       '<em>The Twin Bill</em>. Follow him on Twitter at <a href="https://twitter.com/jonsfain" rel="noopener" target="_blank">@jonsfain</a>.';
     const expectedResult = "The Twin Bill. Follow him on Twitter at @jonsfain.";
     const result = removeHtmlTags(sampleString);
+    expect(result).toEqual(expectedResult);
+  });
+});
+
+describe("replaceMultiSpaces", () => {
+  test("replaces multiple consecutive spaces with a single space", () => {
+    const sampleString = "I   am very  spacey";
+    const expectedResult = "I am very spacey";
+    const result = replaceMultiSpaces(sampleString);
     expect(result).toEqual(expectedResult);
   });
 });

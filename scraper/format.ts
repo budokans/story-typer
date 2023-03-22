@@ -43,6 +43,8 @@ const prunePosts = (posts: Posts): ScrapedStories => {
 const removeLineBreaks = (text: string): string => text.replace(/\n/g, " ");
 const removeDoubleDashes = (text: string): string => text.replace(/--/g, " - ");
 const removeHtmlTags = (text: string): string => text.replace(/<.+?>/g, "");
+const replaceMultiSpaces = (text: string): string =>
+  text.replace(/\s{2,}/g, " ");
 
 const formatText = R.pipe(
   R.trim,
@@ -56,7 +58,11 @@ const formatStory = (story: ScrapedStory): ScrapedStory => ({
   title: formatText(story.title),
   authorBio: formatText(story.authorBio),
   storyHtml: formatText(story.storyHtml),
-  storyText: formatText(removeHtmlTags(story.storyText)),
+  storyText: R.pipe(
+    removeHtmlTags,
+    replaceMultiSpaces,
+    formatText
+  )(story.storyText),
   url: story.url,
   datePublished: story.datePublished,
 });
@@ -75,6 +81,7 @@ export const testables = {
   removeLineBreaks,
   removeDoubleDashes,
   removeHtmlTags,
+  replaceMultiSpaces,
   formatText,
   formatStory,
 };
