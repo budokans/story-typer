@@ -1,5 +1,4 @@
-import { formatStories } from "@/lib/format";
-import { testables } from "@/lib/format";
+import { formatStories, testables } from "scraper/format";
 const {
   checkBioExists,
   getHrElement,
@@ -10,6 +9,7 @@ const {
   removeLineBreaks,
   removeDoubleDashes,
   removeHtmlTags,
+  replaceMultiSpaces,
   formatText,
   formatStory,
 } = testables;
@@ -55,9 +55,9 @@ describe("getStartIndex", () => {
     const case1 = ["</p>\n<hr>\n<p>Marie writes poetry", "<hr>"];
     const case2 = ["</p>\n<hr/>\n<p>Marie writes poetry", "<hr/>"];
     const case3 = ["</p>\n<hr />\n<p>Marie writes poetry", "<hr />"];
-    expect(getStartIndex(case1[0], case1[1])).toEqual(9);
-    expect(getStartIndex(case2[0], case2[1])).toEqual(10);
-    expect(getStartIndex(case3[0], case3[1])).toEqual(11);
+    expect(getStartIndex(case1[0]!, case1[1]!)).toEqual(9);
+    expect(getStartIndex(case2[0]!, case2[1]!)).toEqual(10);
+    expect(getStartIndex(case3[0]!, case3[1]!)).toEqual(11);
   });
 });
 
@@ -151,6 +151,15 @@ describe("removeHtmlTags", () => {
       '<em>The Twin Bill</em>. Follow him on Twitter at <a href="https://twitter.com/jonsfain" rel="noopener" target="_blank">@jonsfain</a>.';
     const expectedResult = "The Twin Bill. Follow him on Twitter at @jonsfain.";
     const result = removeHtmlTags(sampleString);
+    expect(result).toEqual(expectedResult);
+  });
+});
+
+describe("replaceMultiSpaces", () => {
+  test("replaces multiple consecutive spaces with a single space", () => {
+    const sampleString = "I   am very  spacey";
+    const expectedResult = "I am very spacey";
+    const result = replaceMultiSpaces(sampleString);
     expect(result).toEqual(expectedResult);
   });
 });

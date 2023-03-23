@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { ReactElement } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../public/story-typer-logo.png";
@@ -13,118 +13,134 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { RiStarFill } from "react-icons/ri";
-import { useUser } from "@/hooks/useUser";
-import { HeaderCompound } from "./types/Header.types";
+import { ChildrenProps } from "components";
+import { Styles } from "styles";
+import { ArchiveQuery } from "./util.types";
 
-export const Header: HeaderCompound = ({ children }) => {
-  return (
-    <Container>
-      <Inner>
-        <Logo />
-        {children}
-      </Inner>
-    </Container>
-  );
-};
+export const Header = ({ children }: ChildrenProps): ReactElement => (
+  <Container>
+    <Inner>
+      <Logo />
+      {children}
+    </Inner>
+  </Container>
+);
 
-const Container: FC = ({ children }) => {
-  return (
+const Container = ({ children }: ChildrenProps): ReactElement => (
+  <Box
+    as="header"
+    h={[
+      `${Styles.headerHeightMobile}px`,
+      `${Styles.headerHeightMobile}px`,
+      `${Styles.headerHeightDesktop}px`,
+    ]}
+  >
     <Box
       as="nav"
       position="relative"
       zIndex="2"
       bg="white"
-      borderTop="5px solid"
+      borderTop={`${Styles.headerBorderHeight}px solid`}
       borderColor="brand.500"
+      h="100%"
     >
       {children}
     </Box>
-  );
-};
+  </Box>
+);
 
-const Inner: FC = ({ children }) => {
-  return (
-    <Flex
-      as="ul"
-      align="center"
-      justify="space-between"
-      h={[9, 9, 14]}
-      px={[2, 4, 4, 0]}
-      maxW="930px"
-      margin="0 auto"
-    >
-      {children}
-    </Flex>
-  );
-};
+export const HeaderBorderOnly = (): ReactElement => (
+  <Box
+    position="relative"
+    zIndex="2"
+    bg="white"
+    borderTop={`${Styles.headerBorderHeight}px solid`}
+    borderColor="brand.500"
+    h="100%"
+  />
+);
 
-const Logo: FC = () => {
-  return (
-    <Box
-      as="li"
-      mr="auto"
-      h={["1.85rem", "1.85rem", "3rem"]}
-      w={["1.85rem", "1.85rem", "3rem"]}
-      alignSelf="flex-start"
-    >
-      <Link href="/">
-        <a>
-          <Image src={logo} alt="Story Typer Logo" priority />
-        </a>
-      </Link>
-    </Box>
-  );
-};
+const Inner = ({ children }: ChildrenProps): ReactElement => (
+  <Flex
+    as="ul"
+    align="center"
+    justify="space-between"
+    h="100%"
+    px={[2, 4, 4, 0]}
+    maxW="930px"
+    margin="0 auto"
+  >
+    {children}
+  </Flex>
+);
 
-Header.UserMenu = function HeaderUserMenu({ children }) {
-  const { data: user } = useUser();
+const Logo = (): ReactElement => (
+  <Box
+    as="li"
+    mr="auto"
+    h={["1.85rem", "1.85rem", "3rem"]}
+    w={["1.85rem", "1.85rem", "3rem"]}
+    alignSelf="flex-start"
+  >
+    <a>
+      <Image src={logo} alt="Story Typer Logo" priority />
+    </a>
+  </Box>
+);
 
-  return (
-    <Box as="li">
-      <Menu>
-        <MenuButton
-          as={Avatar}
+interface UserMenuProps {
+  readonly photoURL?: string | null;
+}
+
+export const UserMenu = ({
+  photoURL,
+  children,
+}: UserMenuProps & ChildrenProps): ReactElement => (
+  <Box as="li">
+    <Menu>
+      <MenuButton>
+        <Avatar
           h={[7, 7, 10]}
           w={[7, 7, 10]}
-          src={user?.photoURL}
           cursor="pointer"
+          bg="brand.800"
+          color="white"
+          // This will default to a generic avatar image if user.photoURL is
+          // nullish
+          {...(photoURL ? { src: photoURL } : {})}
         />
-        <MenuList fontSize={["sm", "sm", "md"]}>{children}</MenuList>
-      </Menu>
-    </Box>
-  );
-};
+      </MenuButton>
+      <MenuList fontSize={["sm", "sm", "md"]}>{children}</MenuList>
+    </Menu>
+  </Box>
+);
 
-Header.StatsContainer = function HeaderStatsContainer({ children }) {
-  return (
-    <Flex as="li" mr={[3, 3, 5]}>
-      {children}
-    </Flex>
-  );
-};
+export const StatsContainer = ({ children }: ChildrenProps): ReactElement => (
+  <Flex as="li" mr={[3, 3, 5]}>
+    {children}
+  </Flex>
+);
 
-Header.StatsType = function HeaderStatsType({ children }) {
-  return (
-    <Text
-      as="h3"
-      mr={2}
-      fontSize="clamp(0.75rem, 2.5vw, 1rem)"
-      fontWeight="medium"
-    >
-      {children}
-    </Text>
-  );
-};
+export const StatsType = ({ children }: ChildrenProps): ReactElement => (
+  <Text
+    as="h3"
+    mr={2}
+    fontSize="clamp(0.75rem, 2.5vw, 1rem)"
+    fontWeight="medium"
+  >
+    {children}
+  </Text>
+);
 
-Header.Stat = function HeaderStat({ children }) {
-  return (
-    <Text fontSize="clamp(0.75rem, 2.5vw, 1rem)" fontWeight="semibold">
-      {children}
-    </Text>
-  );
-};
+export const Stat = ({ children }: ChildrenProps): ReactElement => (
+  <Text fontSize="clamp(0.75rem, 2.5vw, 1rem)" fontWeight="semibold">
+    {children}
+  </Text>
+);
 
-Header.Archive = function HeaderArchive() {
+export const Archive = (): ReactElement => {
+  const query: ArchiveQuery = { location: "archive" };
+
   return (
     <Box
       as="li"
@@ -132,18 +148,27 @@ Header.Archive = function HeaderArchive() {
       fontSize="clamp(0.75rem, 2.5vw, 1rem)"
       fontWeight="medium"
     >
-      <Link href="/previous">Previous</Link>
+      <Link
+        href={{
+          pathname: "/game",
+          query,
+        }}
+      >
+        Previous
+      </Link>
     </Box>
   );
 };
 
-Header.Favorites = function HeaderFavorites() {
+export const Favorites = (): ReactElement => {
+  const query: ArchiveQuery = { location: "archive", favorites: "true" };
+
   return (
     <Box as="li" mr={[3, 3, 5]}>
       <Link
         href={{
-          pathname: "/previous",
-          query: { favorites: true },
+          pathname: "/game",
+          query,
         }}
         passHref
       >

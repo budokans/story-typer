@@ -1,13 +1,7 @@
 import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
-  collectCoverageFrom: [
-    "<rootDir>/hooks/**",
-    "<rootDir>/lib/**",
-    "!<rootDir>/lib/firebase.ts",
-    "!<rootDir>/lib/firestore.ts",
-    "!**/*.types.ts",
-  ],
+  collectCoverageFrom: ["<rootDir>/scraper/**/*.ts"],
   coverageThreshold: {
     global: {
       branches: 90,
@@ -17,15 +11,19 @@ const config: Config.InitialOptions = {
     },
   },
   coverageReporters: ["html", "text"],
+  rootDir: ".",
+  roots: ["<rootDir>"],
+  modulePaths: ["<rootDir>"],
   moduleDirectories: ["node_modules"],
+  moduleNameMapper: {
+    "firebase-admin/firestore": "firebase-admin/lib/firestore",
+    "firebase-admin/app": "firebase-admin/lib/app",
+  },
   setupFilesAfterEnv: ["./jest.setup.ts"],
   testEnvironment: "jsdom",
-  moduleNameMapper: {
-    "@/lib/(.*)": ["<rootDir>/lib/$1"],
-    "@/hooks/(.*)": ["<rootDir>/hooks/$1"],
-    "@/components/(.*)": ["<rootDir>/components/$1"],
-    "@/containers/(.*)": ["<rootDir>/containers/$1"],
-    "@/context/(.*)": ["<rootDir>/context/$1"],
+  transformIgnorePatterns: ["node_modules/(?!(firelordjs)/)"],
+  transform: {
+    "^.+\\.[t|j]sx?$": "ts-jest",
   },
 };
 

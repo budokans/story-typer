@@ -1,10 +1,13 @@
-import { GameState } from "@/hooks/types/Game.types";
-import { User, StoryWithId } from "interfaces";
+import { User as UserAPI, Story as StoryAPI } from "api-client";
 
-export const createPostWinUser = (
+type User = UserAPI.Response;
+type Story = StoryAPI.Response;
+
+export const buildPostWinUser = (
   user: User,
-  story: StoryWithId,
-  score: GameState["wpm"]
+  story: Story,
+  score: number,
+  leastRecentStoryPublishedDate: string
 ): User => {
   const updatedPersonalBest =
     !user.personalBest || score > user.personalBest ? score : user.personalBest;
@@ -19,7 +22,8 @@ export const createPostWinUser = (
   );
   const updatedOldestPlayedStoryPublishedDate = getOldestDate(
     user.oldestPlayedStoryPublishedDate,
-    story.datePublished
+    story.datePublished,
+    leastRecentStoryPublishedDate
   );
 
   return {
@@ -32,7 +36,11 @@ export const createPostWinUser = (
   };
 };
 
-export const createPostSkipUser = (user: User, story: StoryWithId): User => ({
+export const buildPostSkipUser = (
+  user: User,
+  story: Story,
+  leastRecentStoryPublishedDate: string
+): User => ({
   ...user,
   newestPlayedStoryPublishedDate: getMostRecentDate(
     user.newestPlayedStoryPublishedDate,
@@ -40,13 +48,14 @@ export const createPostSkipUser = (user: User, story: StoryWithId): User => ({
   ),
   oldestPlayedStoryPublishedDate: getOldestDate(
     user.oldestPlayedStoryPublishedDate,
-    story.datePublished
+    story.datePublished,
+    leastRecentStoryPublishedDate
   ),
 });
 
 const getMostRecentDate = (
   storedDate: User["newestPlayedStoryPublishedDate"],
-  currentStoryDate: StoryWithId["datePublished"]
+  currentStoryDate: Story["datePublished"]
 ) => {
   if (!storedDate) return currentStoryDate;
   const parsedStoredDate = Date.parse(storedDate);
@@ -58,21 +67,28 @@ const getMostRecentDate = (
 };
 
 const getOldestDate = (
-  storedDate: User["oldestPlayedStoryPublishedDate"],
-  currentStoryDate: StoryWithId["datePublished"]
+  oldestPlayedStoryPublishedDate: string | null,
+  currentStoryDate: string,
+  leastRecentStoryPublishedDate: string
 ) => {
-  if (!storedDate) return currentStoryDate;
-  const parsedStoredDate = Date.parse(storedDate);
+  if (!oldestPlayedStoryPublishedDate) return currentStoryDate;
+  const parsedStoredDate = Date.parse(oldestPlayedStoryPublishedDate);
   const parsedCurrentStoryDate = Date.parse(currentStoryDate);
+  const parsedLeastRecentStoryPublishedDate = Date.parse(
+    leastRecentStoryPublishedDate
+  );
 
+  if (parsedCurrentStoryDate === parsedLeastRecentStoryPublishedDate) {
+    return null;
+  }
   return parsedCurrentStoryDate < parsedStoredDate
     ? currentStoryDate
-    : storedDate;
+    : oldestPlayedStoryPublishedDate;
 };
 
 const updateUserLastTenScores = (
   scores: User["lastTenScores"],
-  newScore: GameState["wpm"]
+  newScore: number
 ) => {
   return scores.length < 10
     ? [newScore, ...scores]

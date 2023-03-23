@@ -1,37 +1,59 @@
-import { Fragment, useRef, FC } from "react";
-import { useInfiniteQuery } from "react-query";
-import { Divider, Text } from "@chakra-ui/react";
-import { Archive } from "@/components/Archive";
-import { Spinner } from "@/components/Spinner";
-import { FavoriteButton } from "@/components/FavoriteButton";
-import { queryPrevGames } from "@/lib/db";
-import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import { useAuth } from "@/context/auth";
+import { useRef, ReactElement } from "react";
+import { function as F, either as E } from "fp-ts";
+import { Divider } from "@chakra-ui/react";
+import {
+  Archive,
+  CenterContent,
+  FavoriteButton,
+  InfiniteScroll,
+  Spinner,
+} from "components";
+import { useIntersectionObserver } from "hooks";
+import { User as UserContext } from "context";
+import { PrevGame as PrevGameAPI } from "api-client";
+import { ErrorContainer } from "containers";
 
-export const PrevGamesContainer: FC = () => {
-  const { userId } = useAuth();
+export const PrevGamesContainer = (): ReactElement => {
+  const { id: userId } = UserContext.useUserContext();
+  const prevGamesQuery = PrevGameAPI.usePrevGamesInfinite(userId);
 
-  const {
-    data,
-    error,
-    isFetching,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-  } = useInfiniteQuery(
-    "prevGames",
-    async ({ pageParam = null }) => {
-      const res = await queryPrevGames(userId!, pageParam);
-      return res;
-    },
-    {
-      enabled: !!userId,
-      getNextPageParam: (lastPage) => lastPage.cursor,
-      refetchOnWindowFocus: false,
-    }
-  );
+  switch (prevGamesQuery._tag) {
+    case "loading":
+      return (
+        <CenterContent observeLayout furtherVerticalOffset={250}>
+          <Spinner />
+        </CenterContent>
+      );
+    case "settled":
+      return F.pipe(
+        prevGamesQuery.data,
+        E.match(
+          (error) => <ErrorContainer error={error} />,
+          (data) => (
+            <PrevGames
+              data={data}
+              isFetching={prevGamesQuery.isFetching}
+              fetchNextPage={prevGamesQuery.fetchNextPage}
+              hasNextPage={prevGamesQuery.hasNextPage}
+            />
+          )
+        )
+      );
+  }
+};
 
-  const loadMoreRef = useRef(null);
+const PrevGames = ({
+  data,
+  isFetching,
+  fetchNextPage,
+  hasNextPage,
+}: {
+  readonly data: readonly PrevGameAPI.Response[];
+  readonly isFetching: boolean;
+  readonly fetchNextPage: () => void;
+  readonly hasNextPage: boolean | undefined;
+}) => {
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useIntersectionObserver({
     target: loadMoreRef,
@@ -41,53 +63,37 @@ export const PrevGamesContainer: FC = () => {
 
   return (
     <>
-      {data ? (
-        data.pages.map((page, pageIdx) => (
-          <Fragment key={pageIdx}>
-            {page.prevGames.map((prevGame, idx) => (
-              <Archive.Card key={idx}>
-                <Archive.CardHeader id={idx}>
-                  <Archive.CardTitle>{prevGame.storyTitle}</Archive.CardTitle>
-                  <Archive.CardScore>{prevGame.score}</Archive.CardScore>
-                  <Archive.CardDate dateString={prevGame.datePlayed} />
-                  <Archive.CloseCardIcon id={idx} />
-                </Archive.CardHeader>
-                <Archive.CardExpandedSection id={idx}>
-                  <Divider mt={4} />
-                  <Archive.FullStory story={prevGame.storyHtml} />
-                  <Divider my={4} />
-                  <Archive.Buttons>
-                    <Archive.PlayAgainButton storyId={prevGame.storyId} />
-                    <FavoriteButton
-                      storyDetails={{
-                        storyId: prevGame.storyId,
-                        storyTitle: prevGame.storyTitle,
-                        storyHtml: prevGame.storyHtml,
-                      }}
-                    />
-                  </Archive.Buttons>
-                </Archive.CardExpandedSection>
-              </Archive.Card>
-            ))}
-          </Fragment>
-        ))
-      ) : error ? (
-        <Text>
-          Sorry, that didn&apos;t quite work. Please refresh the page.
-        </Text>
-      ) : null}
-
-      <div ref={loadMoreRef} style={{ margin: "4rem 0 2rem" }}>
-        {isFetchingNextPage || isFetching ? (
-          <Spinner />
-        ) : hasNextPage ? (
-          <Text>Load more</Text>
-        ) : data?.pages[0].prevGames.length === 0 ? (
-          <Text>No previous games found.</Text>
-        ) : data && data?.pages[0].prevGames.length < 10 ? null : (
-          <Text>No more results.</Text>
-        )}
-      </div>
+      {data.map((prevGame, idx) => (
+        <Archive.Card key={idx}>
+          <Archive.CardHeader>
+            <Archive.CardTitle>{prevGame.storyTitle}</Archive.CardTitle>
+            <Archive.CardScore>{prevGame.score}</Archive.CardScore>
+            <Archive.CardDate dateString={prevGame.datePlayed} />
+            <Archive.CloseCardIcon />
+          </Archive.CardHeader>
+          <Archive.CardExpandedSection>
+            <Divider mt={4} />
+            <Archive.Story story={prevGame.storyHtml} />
+            <Divider my={4} />
+            <Archive.Buttons>
+              <Archive.PlayAgainButton storyId={prevGame.storyId} />
+              <FavoriteButton
+                storyDetails={{
+                  storyId: prevGame.storyId,
+                  storyTitle: prevGame.storyTitle,
+                  storyHtml: prevGame.storyHtml,
+                }}
+              />
+            </Archive.Buttons>
+          </Archive.CardExpandedSection>
+        </Archive.Card>
+      ))}
+      <InfiniteScroll
+        ref={loadMoreRef}
+        isFetching={isFetching}
+        hasNext={hasNextPage}
+        data={data}
+      />
     </>
   );
 };

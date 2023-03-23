@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { addLatestStories } from "@/lib/getStories";
+import { addLatestStories } from "scraper/getStories";
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,55 +1,102 @@
 import {
-  Context,
   createContext,
   useContext,
   useState,
   Dispatch,
   SetStateAction,
-  useEffect,
-  FC,
+  ReactElement,
 } from "react";
-import { useProvideStories } from "@/hooks/useProvideStories";
-import { StoryWithId } from "interfaces";
-import { useUser } from "@/hooks/useUser";
+import {
+  option as O,
+  function as F,
+  readonlyArray as A,
+  readonlyNonEmptyArray as NEA,
+  either as E,
+} from "fp-ts";
+import { useMediaQuery } from "@chakra-ui/react";
+import { ChildrenProps, Game } from "components";
+import { Story as StoryAPI, Util as APIUtil } from "api-client";
+import { GameContainer, ErrorContainer } from "containers";
 
 interface StoryContext {
-  stories: StoryWithId[];
-  isLoading: boolean;
-  gameCount: number;
-  setGameCount: Dispatch<SetStateAction<number>>;
-  handlePlayArchiveStoryClick: (id: StoryWithId["uid"]) => void;
+  readonly stories: NEA.ReadonlyNonEmptyArray<StoryAPI.Response>;
+  readonly setStories: Dispatch<SetStateAction<readonly StoryAPI.Response[]>>;
+  readonly currentStory: StoryAPI.Response;
+  readonly currentStoryIdx: number;
+  readonly setCurrentStoryIdx: Dispatch<SetStateAction<number>>;
+  readonly leastRecentStoryPublishedDate: string;
 }
 
-const storiesContext = createContext<StoryContext | null>(null);
+const storiesContext = createContext<O.Option<StoryContext>>(O.none);
 
-export const StoriesProvider: FC = ({ children }) => {
-  const [gameCount, setGameCount] = useState(1);
-  const { stories, isLoading, handlePlayArchiveStoryClick } =
-    useProvideStories(gameCount);
-  const { data: user } = useUser();
+export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
+  const [mediaQuery] = useMediaQuery("(min-width: 769px)");
+  const viewportIsWiderThan768 = mediaQuery!;
+  const [currentStoryIdx, setCurrentStoryIdx] = useState(0);
+  const storiesQuery = StoryAPI.useStoriesInfinite({
+    limit: APIUtil.defaultInfiniteQueryLimit,
+    currentStoryIdx,
+  });
 
-  // Listen for no user (signed out) and reset gameCount
-  useEffect(() => {
-    if (!user) {
-      setGameCount(1);
-    }
-  }, [user]);
-
-  return (
-    <storiesContext.Provider
-      value={{
-        stories,
-        isLoading,
-        gameCount,
-        setGameCount,
-        handlePlayArchiveStoryClick,
-      }}
-    >
-      {children}
-    </storiesContext.Provider>
-  );
+  switch (storiesQuery._tag) {
+    case "loading":
+      // TODO: Render appropriate loading UI depending on route
+      return (
+        <GameContainer.GameWrapper>
+          <Game.Skeleton isLargeViewport={viewportIsWiderThan768} />
+        </GameContainer.GameWrapper>
+      );
+    case "settled":
+      return F.pipe(
+        E.Do,
+        E.bind("stories", () => storiesQuery.data),
+        E.bind(
+          "leastRecentStoryPublishedDate",
+          () => storiesQuery.leastRecentStoryPublishedDate
+        ),
+        E.bind("currentStory", ({ stories }) =>
+          A.isOutOfBound(currentStoryIdx, stories)
+            ? E.left(new Error(`Story not found at index ${currentStoryIdx}`))
+            : // Asserting here because we have checked the existence of the idx
+              E.right(stories[currentStoryIdx]!)
+        ),
+        E.match(
+          // Any of our errors render our game potentially unplayable, so
+          // rather than letting the game container and children render
+          // and fail with unusable data, we'll render an error page.
+          (error) => <ErrorContainer error={error} />,
+          (data) => (
+            <storiesContext.Provider
+              value={O.some<StoryContext>({
+                stories: data.stories,
+                setStories: storiesQuery.setStories,
+                currentStory: data.currentStory,
+                currentStoryIdx,
+                setCurrentStoryIdx,
+                leastRecentStoryPublishedDate:
+                  data.leastRecentStoryPublishedDate,
+              })}
+            >
+              {children}
+            </storiesContext.Provider>
+          )
+        )
+      );
+  }
 };
 
-export const useStories = (): StoryContext => {
-  return useContext(storiesContext as Context<StoryContext>);
+export const useStoriesContext = (): StoryContext => {
+  const context = useContext(storiesContext);
+
+  return F.pipe(
+    context,
+    O.match(
+      () => {
+        throw new Error(
+          "useStoriesContext was called where storiesContext does not exist."
+        );
+      },
+      (context) => context
+    )
+  );
 };

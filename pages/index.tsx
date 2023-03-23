@@ -1,14 +1,20 @@
+import { ReactElement } from "react";
 import { GetStaticProps } from "next";
-import { useRouter } from "next/router";
-import { Box } from "@chakra-ui/react";
-import { getStoriesCount } from "@/lib/db-admin";
-import { useAuth } from "@/context/auth";
-import { DocHead } from "@/components/DocHead";
-import { Page } from "@/components/Page";
-import { Home } from "@/components/Home";
-import { FiftyWordStoriesLink } from "@/components/FiftyWordStoriesLink";
-import { CountUp } from "@/components/CountUp";
-import { GoogleIcon } from "@/components/GoogleIcon";
+import { Box, Text } from "@chakra-ui/react";
+import { getStoriesCount } from "db/admin";
+import { Auth as AuthContext } from "context";
+import { Page } from "containers";
+import {
+  DocHead,
+  Home,
+  CountUp,
+  FiftyWordStoriesLink,
+  GoogleIcon,
+} from "components";
+
+interface IndexProps {
+  readonly storiesCount: number;
+}
 
 export const getStaticProps: GetStaticProps = async () => {
   const storiesCount = await getStoriesCount();
@@ -18,18 +24,15 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
-  const { userId, signInWithGoogle } = useAuth();
-  const userIsLoggedIn = !!userId;
-  const router = useRouter();
+const Index = ({ storiesCount }: IndexProps): ReactElement => {
+  const { signIn, signInError } = AuthContext.useAuthContext();
 
   return (
     <>
       <DocHead />
-      <Page>
-        <Home>
+      <Page.Unauthenticated>
+        <Home.Home>
           <Home.Brand />
-
           <Home.HeadlinesWrapper>
             <Home.Headline>
               The speed-typing game for lovers of short stories.
@@ -51,15 +54,13 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
           </Home.HeadlinesWrapper>
 
           <Box pt={2} pb={4}>
-            {!userIsLoggedIn ? (
-              <Home.PlayBtn onClick={() => signInWithGoogle()}>
-                <GoogleIcon />
-                Continue with Google
-              </Home.PlayBtn>
-            ) : (
-              <Home.PlayBtn onClick={() => router.push("/play")}>
-                Play Now
-              </Home.PlayBtn>
+            <Home.PlayButton onClick={() => signIn()}>
+              <GoogleIcon />
+              Continue with Google
+            </Home.PlayButton>
+
+            {signInError && (
+              <Text color={"red"}>Sign in failed. Please try again.</Text>
             )}
           </Box>
 
@@ -72,8 +73,8 @@ const Index: React.FC<{ storiesCount: number }> = ({ storiesCount }) => {
               <Home.Feature>Keep track of your top scores</Home.Feature>
             </Home.Features>
           </Home.FeaturesWrapper>
-        </Home>
-      </Page>
+        </Home.Home>
+      </Page.Unauthenticated>
     </>
   );
 };
