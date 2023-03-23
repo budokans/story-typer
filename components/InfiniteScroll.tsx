@@ -19,7 +19,7 @@ export const InfiniteScroll = forwardRef(function InfiniteScroll(
       ) : hasNext ? (
         <Text>Load more</Text>
       ) : data?.length === 0 ? (
-        <Text>No favorites found.</Text>
+        <Text>No results found.</Text>
       ) : (
         <Text>No more results.</Text>
       )}
