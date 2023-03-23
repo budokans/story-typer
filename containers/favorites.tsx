@@ -5,6 +5,7 @@ import { Archive, CenterContent, InfiniteScroll, Spinner } from "components";
 import { useIntersectionObserver } from "hooks";
 import { Favorite as FavoriteAPI } from "api-client";
 import { User as UserContext } from "context";
+import { ErrorContainer } from "containers";
 
 export const FavoritesContainer = (): ReactElement => {
   const { id: userId } = UserContext.useUserContext();
@@ -21,11 +22,7 @@ export const FavoritesContainer = (): ReactElement => {
       return F.pipe(
         favoritesQuery.data,
         E.match(
-          (error) => {
-            console.error(error);
-            //TODO: Error page
-            return <p>{error}</p>;
-          },
+          (error) => <ErrorContainer error={error} />,
           (data) => (
             <Favorites
               data={data}

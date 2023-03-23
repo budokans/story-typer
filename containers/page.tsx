@@ -24,17 +24,17 @@ export const Authenticated = ({
   children,
 }: { readonly authUser: FirebaseUser } & ChildrenProps): ReactElement => (
   <UserContext.UserLoader authUser={authUser}>
-    <StoriesContext.StoriesLoader>
-      <Main>
-        <Header.Header>
-          <AuthenticatedHeaderContent />
-        </Header.Header>
+    <Main>
+      <Header.Header>
+        <AuthenticatedHeaderContent />
+      </Header.Header>
 
-        <ContentWrapper>{children}</ContentWrapper>
+      <ContentWrapper>
+        <StoriesContext.StoriesLoader>{children}</StoriesContext.StoriesLoader>
+      </ContentWrapper>
 
-        <FooterContainer />
-      </Main>
-    </StoriesContext.StoriesLoader>
+      <FooterContainer />
+    </Main>
   </UserContext.UserLoader>
 );
 

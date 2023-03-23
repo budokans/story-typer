@@ -16,7 +16,7 @@ import {
 import { useMediaQuery } from "@chakra-ui/react";
 import { ChildrenProps, Game } from "components";
 import { Story as StoryAPI, Util as APIUtil } from "api-client";
-import { GameContainer } from "containers";
+import { GameContainer, ErrorContainer } from "containers";
 
 interface StoryContext {
   readonly stories: NEA.ReadonlyNonEmptyArray<StoryAPI.Response>;
@@ -61,15 +61,10 @@ export const StoriesLoader = ({ children }: ChildrenProps): ReactElement => {
               E.right(stories[currentStoryIdx]!)
         ),
         E.match(
-          (error) => {
-            // Any of our errors render our game potentially unplayable, so
-            // rather than letting the game container and children render
-            // and fail with unusable data, we'll render an error page.
-
-            //TODO: Create error page
-            console.error(error);
-            return <p>Error: {error.message}</p>;
-          },
+          // Any of our errors render our game potentially unplayable, so
+          // rather than letting the game container and children render
+          // and fail with unusable data, we'll render an error page.
+          (error) => <ErrorContainer error={error} />,
           (data) => (
             <storiesContext.Provider
               value={O.some<StoryContext>({

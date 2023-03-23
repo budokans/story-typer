@@ -11,6 +11,7 @@ import {
 import { useIntersectionObserver } from "hooks";
 import { User as UserContext } from "context";
 import { PrevGame as PrevGameAPI } from "api-client";
+import { ErrorContainer } from "containers";
 
 export const PrevGamesContainer = (): ReactElement => {
   const { id: userId } = UserContext.useUserContext();
@@ -27,11 +28,7 @@ export const PrevGamesContainer = (): ReactElement => {
       return F.pipe(
         prevGamesQuery.data,
         E.match(
-          (error) => {
-            console.error(error);
-            //TODO: Error page
-            return <p>{error}</p>;
-          },
+          (error) => <ErrorContainer error={error} />,
           (data) => (
             <PrevGames
               data={data}
