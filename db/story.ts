@@ -1,6 +1,5 @@
 import { function as F, readonlyArray as A, option as O } from "fp-ts";
 import {
-  addDoc,
   endBefore,
   getDoc,
   getDocs,
@@ -11,7 +10,6 @@ import {
   Query,
   query,
   QuerySnapshot,
-  serverTimestamp,
   ServerTimestamp,
   startAfter,
 } from "firelordjs";
@@ -33,7 +31,7 @@ export type StoriesDocumentMetaType = MetaTypeCreator<
 export type DocumentWrite = DBUtil.Write<StoriesDocumentMetaType>;
 export type DocumentRead = DBUtil.Read<StoriesDocumentMetaType>;
 
-interface CreateStoryData {
+export interface CreateStoryData {
   readonly title: string;
   readonly authorBio: string;
   readonly storyHtml: string;
@@ -43,18 +41,6 @@ interface CreateStoryData {
 }
 
 export const stories = getFirelord<StoriesDocumentMetaType>(db, "stories");
-
-export const createStory: (createData: CreateStoryData) => Promise<string> =
-  F.flow(
-    (createData): DocumentWrite => ({
-      dateScraped: serverTimestamp(),
-      ...createData,
-    }),
-    (body) =>
-      addDoc(stories.collection(), body)
-        .then((res) => res.id)
-        .catch(DBError.catchError)
-  );
 
 export const getStory = (id: string): Promise<DocumentRead | undefined> =>
   getDoc(stories.doc(id))
@@ -206,31 +192,6 @@ export const getStories = (
           data: snapshot.docs.map(DBUtil.buildDocumentRead),
           cursor: buildCursor(snapshot)(params),
         }))
-        .catch(DBError.catchError)
-  );
-
-// TODO: We can safely use a TaskEither here, but the scraper will need to be refactored too.
-// We should also decode here for runtime type safety as this will bypass api-client
-export const mostRecentStoryPublishedDate = (): Promise<string> =>
-  F.pipe(
-    query(stories.collection(), orderBy("datePublished", "desc"), limit(1)),
-    (q) =>
-      getDocs(q)
-        .then(({ docs }) =>
-          F.pipe(
-            docs,
-            A.fromArray,
-            A.head,
-            O.fold(
-              () => {
-                throw new DBError.NotFound(
-                  "No date found. Are there stories in the database?"
-                );
-              },
-              (docSnapshot) => docSnapshot.data().datePublished
-            )
-          )
-        )
         .catch(DBError.catchError)
   );
 

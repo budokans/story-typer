@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Story as DBStory, Metadata as DBMetadata } from "db";
+import * as DBAdmin from "db/admin";
 import { formatStories } from "./format";
 import {
   GetPostsOverPages,
@@ -13,7 +13,7 @@ const CATEGORIES = 112; // Submissions
 const EXCLUDED_CATEGORIES = 16; // News
 const PER_PAGE = 100;
 const STARTING_PAGE = 1;
-const PAGE_LIMIT = 15;
+const SEED_PAGE_LIMIT = 54;
 const DEFAULT_PARAMS = [
   `per_page=${PER_PAGE}`,
   `categories=${CATEGORIES}`,
@@ -69,37 +69,35 @@ const getPostsOverPages: GetPostsOverPages = getPostsOverPagesFactory(
   getPostsOverPagesRecursive
 );
 
-const getLatestStories = (): Promise<ScrapedStories | void> => {
-  return DBStory.mostRecentStoryPublishedDate()
+const getLatestStories = (): Promise<ScrapedStories | void> =>
+  DBAdmin.mostRecentStoryPublishedDate()
     .then((timestamp) =>
       getLatestPostsUrl(API_ENDPOINT, DEFAULT_PARAMS, timestamp)
     )
     .then((url) => getPosts(url))
     .then((posts) => formatStories(posts))
     .catch((e) => console.error(e));
-};
 
-export const addLatestStories = (): Promise<number | void> => {
-  return getLatestStories()
+export const addLatestStories = (): Promise<number | void> =>
+  getLatestStories()
     .then((stories) => {
       if (stories) {
-        stories.forEach(DBStory.createStory);
+        stories.forEach(DBAdmin.createStory);
         const storiesCount = stories.length;
-        DBMetadata.incrementStoriesCount(storiesCount);
+        DBAdmin.incrementStoriesCount(storiesCount);
         return storiesCount;
       }
       return;
     })
     .catch((e) => console.error(e));
-};
 
 export const seed = (): Promise<void> => {
   const url = getPageUrl(API_ENDPOINT, DEFAULT_PARAMS);
-  return getPostsOverPages(url, STARTING_PAGE, PAGE_LIMIT)
+  return getPostsOverPages(url, STARTING_PAGE, SEED_PAGE_LIMIT)
     .then((posts) => formatStories(posts))
     .then((stories) => {
-      stories.forEach(DBStory.createStory);
-      DBMetadata.incrementStoriesCount(stories.length);
+      stories.forEach(DBAdmin.createStory);
+      DBAdmin.incrementStoriesCount(stories.length);
     })
     .catch((e) => console.error(e));
 };

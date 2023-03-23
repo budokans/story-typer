@@ -15,6 +15,10 @@ const config: Config.InitialOptions = {
   roots: ["<rootDir>"],
   modulePaths: ["<rootDir>"],
   moduleDirectories: ["node_modules"],
+  moduleNameMapper: {
+    "firebase-admin/firestore": "firebase-admin/lib/firestore",
+    "firebase-admin/app": "firebase-admin/lib/app",
+  },
   setupFilesAfterEnv: ["./jest.setup.ts"],
   testEnvironment: "jsdom",
   transformIgnorePatterns: ["node_modules/(?!(firelordjs)/)"],

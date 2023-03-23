@@ -1,15 +1,16 @@
-import * as firebaseAdmin from "firebase-admin";
-import { cert } from "firebase-admin/app";
+import {
+  initializeApp,
+  cert,
+  ServiceAccount,
+  getApps,
+} from "firebase-admin/app";
 import { getFirestore } from "firelord";
 import serviceAccount from "../serviceAccount.json";
 
-if (firebaseAdmin.apps.length === 0) {
-  firebaseAdmin.initializeApp(
-    {
-      credential: cert(serviceAccount as firebaseAdmin.ServiceAccount),
-    },
-    "admin"
-  );
+if (getApps().length === 0) {
+  initializeApp({
+    credential: cert(serviceAccount as ServiceAccount),
+  });
 }
 
 export const dbAdmin = getFirestore();
