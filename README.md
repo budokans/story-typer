@@ -21,7 +21,6 @@ Component composition is heavily used throughout, with the compound or 'composit
 Almost all application state is stored and manipulated in custom hooks, with global state (auth) and authenticated-only state (user, stories) passed down via context.
 
 Partly tested with Jest, the rest of the project will be functionally tested with a combination of Jest and React Testing Library.
-not applied to fare changes
 
 ## Installation
 
