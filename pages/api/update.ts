@@ -5,7 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  if (req.method === "POST") {
+  if (req.method === "GET") {
     try {
       const { authorization } = req.headers;
       if (authorization === `Bearer ${process.env.API_ACCESS_TOKEN}`) {
@@ -25,7 +25,7 @@ export default async function handler(
       console.log(e);
     }
   } else {
-    res.setHeader("Allow", "POST");
+    res.setHeader("Allow", "GET");
     res.status(405).end("Method not allowed.");
   }
 }
