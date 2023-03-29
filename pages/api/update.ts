@@ -7,16 +7,12 @@ export default async function handler(
 ): Promise<void> {
   if (req.method === "GET") {
     try {
-      if ("cron" in req.query && req.query.cron === "true") {
-        const storiesCount = await addLatestStories();
-        res.status(200).json({
-          message: storiesCount
-            ? `Successfully scraped ${storiesCount} stories`
-            : "No new stories scraped",
-        });
-      } else {
-        res.status(403).json({ message: "Access denied - no cron" });
-      }
+      const storiesCount = await addLatestStories();
+      res.status(200).json({
+        message: storiesCount
+          ? `Successfully scraped ${storiesCount} stories`
+          : "No new stories scraped",
+      });
     } catch (e) {
       res.status(500).json({
         status: `Story scraping failed. See logs for info`,
