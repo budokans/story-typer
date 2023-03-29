@@ -7,8 +7,7 @@ export default async function handler(
 ): Promise<void> {
   if (req.method === "GET") {
     try {
-      const { authorization } = req.headers;
-      if (authorization === `Bearer ${process.env.API_ACCESS_TOKEN}`) {
+      if ("cron" in req.query && req.query.cron === "true") {
         const storiesCount = await addLatestStories();
         res.status(200).json({
           message: storiesCount
@@ -16,7 +15,7 @@ export default async function handler(
             : "No new stories scraped",
         });
       } else {
-        res.status(403).json({ message: "Access denied" });
+        res.status(403).json({ message: "Access denied - no cron" });
       }
     } catch (e) {
       res.status(500).json({
