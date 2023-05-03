@@ -20,7 +20,7 @@ const config: Config.InitialOptions = {
     "firebase-admin/app": "firebase-admin/lib/app",
   },
   setupFilesAfterEnv: ["./jest.setup.ts"],
-  testEnvironment: "jsdom",
+  testEnvironment: "node",
   transformIgnorePatterns: ["node_modules/(?!(firelordjs)/)"],
   transform: {
     "^.+\\.[t|j]sx?$": "ts-jest",
