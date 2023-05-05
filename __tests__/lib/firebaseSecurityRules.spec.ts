@@ -19,8 +19,10 @@ let unAuthUserFirestore: ReturnType<RulesTestContext["firestore"]>;
 // User setup
 const authUserId = "authUserId";
 const authUserDocPath = `users/${authUserId}`;
-const otherUserId = "testUserId";
-const otherUserDocPath = `users/${otherUserId}`;
+const existingUserId = "existingUserId";
+const existingUserDocPath = `users/${existingUserId}`;
+const newUserId = "newUserId";
+const newUserDocPath = `users/${newUserId}`;
 type UserReadOnlyFields = {
   readonly id: string;
   readonly email: string;
@@ -39,7 +41,8 @@ const buildTestUser = (id: string): TestUser => ({
   lastSignInTime: "testLastSignInTime",
 });
 const authUser = buildTestUser(authUserId);
-const otherUser = buildTestUser(otherUserId);
+const existingUser = buildTestUser(existingUserId);
+const newUser = buildTestUser(newUserId);
 
 // Favorites setup
 const userOwnedFavoriteDocPath = "favorites/userOwnedFavoriteTestId";
@@ -52,8 +55,8 @@ const buildTestFavorite = (userId: string): TestFavorite => ({
   userId,
 });
 const userOwnedFavorite = buildTestFavorite(authUserId);
-const otherUserExistingFavorite = buildTestFavorite(otherUserId);
-const newOtherUserFavorite = buildTestFavorite("newOtherUserId");
+const otherUserExistingFavorite = buildTestFavorite(existingUserId);
+const newOtherUserFavorite = buildTestFavorite(newUserId);
 
 // PrevGames setup
 const userOwnedPrevGameDocPath = "favorites/userOwnedPrevGameTestId";
@@ -66,8 +69,8 @@ const buildTestPrevGame = (userId: string): TestPrevGame => ({
   userId,
 });
 const userOwnedPrevGame = buildTestPrevGame(authUserId);
-const otherUserExistingPrevGame = buildTestPrevGame(otherUserId);
-const newOtherUserPrevGame = buildTestPrevGame("newOtherUserId");
+const otherUserExistingPrevGame = buildTestPrevGame(existingUserId);
+const newOtherUserPrevGame = buildTestPrevGame(newUserId);
 
 // Metadata setup
 const metadataDocPath = "metadata/data";
@@ -103,7 +106,7 @@ describe("Security Rules", () => {
 
     // Create existing data
     await testEnv.withSecurityRulesDisabled(async (context) => {
-      await setDoc(doc(context.firestore(), otherUserDocPath), otherUser);
+      await setDoc(doc(context.firestore(), existingUserDocPath), existingUser);
     });
 
     await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -157,41 +160,35 @@ describe("Security Rules", () => {
   test("Unauthorised users cannot CRUD in users collection", async () => {
     // Create
     await assertFails(
-      setDoc(doc(unAuthUserFirestore, authUserDocPath), {
-        id: authUserId,
-      })
+      setDoc(doc(unAuthUserFirestore, newUserDocPath), newUser)
     );
     // Read
-    await assertFails(getDoc(doc(unAuthUserFirestore, `users/${otherUserId}`)));
+    await assertFails(getDoc(doc(unAuthUserFirestore, existingUserDocPath)));
     // Update
     await assertFails(
-      setDoc(doc(unAuthUserFirestore, otherUserDocPath), {
-        ...otherUser,
+      setDoc(doc(unAuthUserFirestore, existingUserDocPath), {
+        ...existingUser,
         personalBest: 1,
       })
     );
     // Delete
-    await assertFails(deleteDoc(doc(unAuthUserFirestore, otherUserDocPath)));
+    await assertFails(deleteDoc(doc(unAuthUserFirestore, existingUserDocPath)));
   });
 
   test("Authorised users cannot CRUD another user's user document", async () => {
     // Create
-    await assertFails(
-      setDoc(doc(authUserFirestore, otherUserDocPath), {
-        id: "testUserId",
-      })
-    );
+    await assertFails(setDoc(doc(authUserFirestore, newUserDocPath), newUser));
     // Read
-    await assertFails(getDoc(doc(authUserFirestore, otherUserDocPath)));
+    await assertFails(getDoc(doc(authUserFirestore, existingUserDocPath)));
     // Update
     await assertFails(
-      setDoc(doc(authUserFirestore, otherUserDocPath), {
-        ...otherUser,
+      setDoc(doc(authUserFirestore, existingUserDocPath), {
+        ...existingUser,
         personalBest: 1,
       })
     );
     // Delete
-    await assertFails(deleteDoc(doc(authUserFirestore, otherUserDocPath)));
+    await assertFails(deleteDoc(doc(authUserFirestore, existingUserDocPath)));
   });
 
   test("Authorised users can create and read their own user document", async () => {
