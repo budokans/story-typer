@@ -69,6 +69,12 @@ const userOwnedPrevGame = buildTestPrevGame(authUserId);
 const otherUserExistingPrevGame = buildTestPrevGame(otherUserId);
 const newOtherUserPrevGame = buildTestPrevGame("newOtherUserId");
 
+// Metadata setup
+const metadataDocPath = "metadata/data";
+const testMetadataDoc = {
+  storiesCount: 1000,
+};
+
 describe("Security Rules", () => {
   beforeAll(async () => {
     testEnv = await initializeTestEnvironment({
@@ -81,20 +87,28 @@ describe("Security Rules", () => {
     });
 
     await testEnv.clearFirestore();
+
+    // Create existing data
     await testEnv.withSecurityRulesDisabled(async (context) => {
       await setDoc(doc(context.firestore(), otherUserDocPath), otherUser);
     });
+
     await testEnv.withSecurityRulesDisabled(async (context) => {
       await setDoc(
         doc(context.firestore(), otherUserExistingFavoritesDocPath),
         otherUserExistingFavorite
       );
     });
+
     await testEnv.withSecurityRulesDisabled(async (context) => {
       await setDoc(
         doc(context.firestore(), otherUserExistingPrevGamesDocPath),
         otherUserExistingPrevGame
       );
+    });
+
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), metadataDocPath), testMetadataDoc);
     });
 
     authUserFirestore = testEnv.authenticatedContext(authUserId).firestore();
@@ -377,5 +391,28 @@ describe("Security Rules", () => {
     await assertSucceeds(
       deleteDoc(doc(authUserFirestore, userOwnedPrevGameDocPath))
     );
+  });
+
+  // Metadata Collection
+  test("No user can create or update in metadata collection", async () => {
+    // Create
+    await assertFails(
+      setDoc(doc(authUserFirestore, "metadata/otherData"), { some: "data" })
+    );
+    // Update
+    await assertFails(
+      setDoc(doc(authUserFirestore, metadataDocPath), {
+        ...testMetadataDoc,
+        storiesCount: 1001,
+      })
+    );
+  });
+
+  test("Unauthorised users can read data document in metadata collection", async () => {
+    await assertSucceeds(getDoc(doc(unAuthUserFirestore, metadataDocPath)));
+  });
+
+  test("No user can delete in metadata collection", async () => {
+    await assertFails(deleteDoc(doc(authUserFirestore, metadataDocPath)));
   });
 });

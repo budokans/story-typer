@@ -36,8 +36,8 @@ service cloud.firestore {
     }
 
     // The admin SDK bypasses this rule
-    match /metadata/storiesCount {
-    	allow read: if true;
+    match /metadata/{id} {
+    	allow read: if id == "data";
       allow write, update, delete: if false;
     }
 
