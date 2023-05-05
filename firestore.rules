@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+	function isUnchanged(key) {
+    return (key in resource.data) 
+      && (key in request.resource.data) 
+      && (resource.data[key] == request.resource.data[key]);
+  }
+  
+  function isContentOwner(userId) {
+  	return userId == request.auth.uid;
+  }
+  
+  function noNewFieldsAdded() {
+  	return request.resource.data.keys() == resource.data.keys();
+  }
+  
+  match /databases/{database}/documents {
+    match /users/{id} {
+    	allow read, create: if isContentOwner(id);
+      allow update: if isContentOwner(id)
+      	&& noNewFieldsAdded()
+      	&& isUnchanged("email")
+        && isUnchanged("id")
+        && isUnchanged("lastSignInTime")
+        && isUnchanged("registeredDate");
+    }
+    
+    match /favorites/{id} {
+      allow create: if isContentOwner(request.resource.data.userId);
+    	allow read, delete: if isContentOwner(resource.data.userId);
+    }
+    
+    match /prevGames/{id} {
+    	allow create: if isContentOwner(request.resource.data.userId);
+    	allow read, delete: if isContentOwner(resource.data.userId);
+    }
+
+    // The admin SDK bypasses this rule
+    match /metadata/{id} {
+    	allow read: if id == "data";
+      allow write, update, delete: if false;
+    }
+
+    // The admin SDK bypasses this rule
+    match /stories/{id} {
+      allow read: if request.auth != null;
+    }
+  }
+}

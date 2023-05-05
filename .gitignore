@@ -39,3 +39,8 @@ serviceAccount.json
 
 # tsc
 tsconfig.tsbuildinfo
+
+# Firebase
+ui-debug.log
+firebase-debug.log
+firestore-debug.log
