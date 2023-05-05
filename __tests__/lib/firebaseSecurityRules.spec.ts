@@ -75,6 +75,19 @@ const testMetadataDoc = {
   storiesCount: 1000,
 };
 
+// Stories setup
+const existingStoryDocPath = "stories/existingStoryId";
+const newStoryDocPath = "stories/newStoryId";
+type TestStory = {
+  readonly title: string;
+};
+const existingStoryDoc: TestStory = {
+  title: "existingStoryTitle",
+};
+const newStoryDoc: TestStory = {
+  title: "newStoryTitle",
+};
+
 describe("Security Rules", () => {
   beforeAll(async () => {
     testEnv = await initializeTestEnvironment({
@@ -109,6 +122,13 @@ describe("Security Rules", () => {
 
     await testEnv.withSecurityRulesDisabled(async (context) => {
       await setDoc(doc(context.firestore(), metadataDocPath), testMetadataDoc);
+    });
+
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(
+        doc(context.firestore(), existingStoryDocPath),
+        existingStoryDoc
+      );
     });
 
     authUserFirestore = testEnv.authenticatedContext(authUserId).firestore();
@@ -235,7 +255,7 @@ describe("Security Rules", () => {
 
   // Favorites Collection
   test("Unauthorised users cannot CRUD in favorites collection", async () => {
-    // Create Favorite
+    // Create
     await assertFails(
       setDoc(
         doc(unAuthUserFirestore, userOwnedFavoriteDocPath),
@@ -414,5 +434,30 @@ describe("Security Rules", () => {
 
   test("No user can delete in metadata collection", async () => {
     await assertFails(deleteDoc(doc(authUserFirestore, metadataDocPath)));
+  });
+
+  // Stories Collection
+  test("Unauthorised users cannot read from stories collection", async () => {
+    await assertFails(getDoc(doc(unAuthUserFirestore, existingStoryDocPath)));
+  });
+
+  test("No user can create, update or delete in stories collection", async () => {
+    // Create
+    await assertFails(
+      setDoc(doc(authUserFirestore, newStoryDocPath), newStoryDoc)
+    );
+    // Update
+    await assertFails(
+      setDoc(doc(authUserFirestore, existingStoryDocPath), {
+        ...existingStoryDoc,
+        title: "newTitle",
+      })
+    );
+    // Delete
+    await assertFails(deleteDoc(doc(authUserFirestore, existingStoryDocPath)));
+  });
+
+  test("Authorised users can read from stories collection", async () => {
+    await assertSucceeds(getDoc(doc(authUserFirestore, existingStoryDocPath)));
   });
 });
