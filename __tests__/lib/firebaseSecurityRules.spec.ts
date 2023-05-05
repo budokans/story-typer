@@ -55,6 +55,20 @@ const userOwnedFavorite = buildTestFavorite(authUserId);
 const otherUserExistingFavorite = buildTestFavorite(otherUserId);
 const newOtherUserFavorite = buildTestFavorite("newOtherUserId");
 
+// PrevGames setup
+const userOwnedPrevGameDocPath = "favorites/userOwnedPrevGameTestId";
+const otherUserExistingPrevGamesDocPath = "favorites/otherUserPrevGameTestId";
+const newOtherUserPrevGameDocPath = "favorites/newOtherUserPrevGameId";
+type TestPrevGame = {
+  readonly userId: string;
+};
+const buildTestPrevGame = (userId: string): TestPrevGame => ({
+  userId,
+});
+const userOwnedPrevGame = buildTestPrevGame(authUserId);
+const otherUserExistingPrevGame = buildTestPrevGame(otherUserId);
+const newOtherUserPrevGame = buildTestPrevGame("newOtherUserId");
+
 describe("Security Rules", () => {
   beforeAll(async () => {
     testEnv = await initializeTestEnvironment({
@@ -74,6 +88,12 @@ describe("Security Rules", () => {
       await setDoc(
         doc(context.firestore(), otherUserExistingFavoritesDocPath),
         otherUserExistingFavorite
+      );
+    });
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(
+        doc(context.firestore(), otherUserExistingPrevGamesDocPath),
+        otherUserExistingPrevGame
       );
     });
 
@@ -201,7 +221,7 @@ describe("Security Rules", () => {
 
   // Favorites Collection
   test("Unauthorised users cannot CRUD in favorites collection", async () => {
-    // Create
+    // Create Favorite
     await assertFails(
       setDoc(
         doc(unAuthUserFirestore, userOwnedFavoriteDocPath),
@@ -225,7 +245,7 @@ describe("Security Rules", () => {
     );
   });
 
-  test("Authorised users cannot CRUD another user's favorite document", async () => {
+  test("Authorised users cannot CRUD another user's favorites document", async () => {
     // Create
     await assertFails(
       setDoc(
@@ -250,7 +270,7 @@ describe("Security Rules", () => {
     );
   });
 
-  test("Authorised users can create and read their own favorite documents", async () => {
+  test("Authorised users can create and read their own favorites documents", async () => {
     // Create
     await assertSucceeds(
       setDoc(
@@ -264,7 +284,7 @@ describe("Security Rules", () => {
     );
   });
 
-  test("Authorised users cannot update their own favorite documents", async () => {
+  test("Authorised users cannot update their own favorites documents", async () => {
     await assertFails(
       setDoc(doc(authUserFirestore, userOwnedFavoriteDocPath), {
         ...userOwnedFavorite,
@@ -273,9 +293,89 @@ describe("Security Rules", () => {
     );
   });
 
-  test("Authorised users can delete their own favorite documents", async () => {
+  test("Authorised users can delete their own favorites documents", async () => {
     await assertSucceeds(
       deleteDoc(doc(authUserFirestore, userOwnedFavoriteDocPath))
+    );
+  });
+
+  // PrevGames Collection
+  test("Unauthorised users cannot CRUD in prevGames collection", async () => {
+    // Create Favorite
+    await assertFails(
+      setDoc(
+        doc(unAuthUserFirestore, userOwnedPrevGameDocPath),
+        userOwnedPrevGame
+      )
+    );
+    // Read
+    await assertFails(
+      getDoc(doc(unAuthUserFirestore, otherUserExistingPrevGamesDocPath))
+    );
+    // Update
+    await assertFails(
+      setDoc(doc(unAuthUserFirestore, otherUserExistingPrevGamesDocPath), {
+        ...otherUserExistingPrevGame,
+        userId: "newUserId",
+      })
+    );
+    // Delete
+    await assertFails(
+      deleteDoc(doc(unAuthUserFirestore, otherUserExistingPrevGamesDocPath))
+    );
+  });
+
+  test("Authorised users cannot CRUD another user's prevGames document", async () => {
+    // Create
+    await assertFails(
+      setDoc(
+        doc(authUserFirestore, newOtherUserPrevGameDocPath),
+        newOtherUserPrevGame
+      )
+    );
+    // Read
+    await assertFails(
+      getDoc(doc(authUserFirestore, otherUserExistingPrevGamesDocPath))
+    );
+    // Update
+    await assertFails(
+      setDoc(doc(authUserFirestore, otherUserExistingPrevGamesDocPath), {
+        ...otherUserExistingPrevGame,
+        userId: "newUserId",
+      })
+    );
+    // Delete
+    await assertFails(
+      deleteDoc(doc(authUserFirestore, otherUserExistingPrevGamesDocPath))
+    );
+  });
+
+  test("Authorised users can create and read their own prevGames documents", async () => {
+    // Create
+    await assertSucceeds(
+      setDoc(
+        doc(authUserFirestore, userOwnedPrevGameDocPath),
+        userOwnedPrevGame
+      )
+    );
+    // Read
+    await assertSucceeds(
+      getDoc(doc(authUserFirestore, userOwnedPrevGameDocPath))
+    );
+  });
+
+  test("Authorised users cannot update their own prevGames documents", async () => {
+    await assertFails(
+      setDoc(doc(authUserFirestore, userOwnedPrevGameDocPath), {
+        ...userOwnedPrevGame,
+        userId: "newUserId",
+      })
+    );
+  });
+
+  test("Authorised users can delete their own prevGames documents", async () => {
+    await assertSucceeds(
+      deleteDoc(doc(authUserFirestore, userOwnedPrevGameDocPath))
     );
   });
 });
