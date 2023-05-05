@@ -15,11 +15,12 @@ import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 let testEnv: RulesTestEnvironment;
 let authUserFirestore: ReturnType<RulesTestContext["firestore"]>;
 let unAuthUserFirestore: ReturnType<RulesTestContext["firestore"]>;
+
+// User setup
 const authUserId = "authUserId";
 const authUserDocPath = `users/${authUserId}`;
 const otherUserId = "testUserId";
 const otherUserDocPath = `users/${otherUserId}`;
-
 type UserReadOnlyFields = {
   readonly id: string;
   readonly email: string;
@@ -30,7 +31,6 @@ type UserTestUpdateField = {
   readonly name: string;
 };
 type TestUser = UserReadOnlyFields & UserTestUpdateField;
-
 const buildTestUser = (id: string): TestUser => ({
   id: id,
   name: "testUser",
@@ -38,9 +38,22 @@ const buildTestUser = (id: string): TestUser => ({
   registeredDate: "testRegisteredDate",
   lastSignInTime: "testLastSignInTime",
 });
-
 const authUser = buildTestUser(authUserId);
 const otherUser = buildTestUser(otherUserId);
+
+// Favorites setup
+const userOwnedFavoriteDocPath = "favorites/userOwnedFavoriteTestId";
+const otherUserExistingFavoritesDocPath = "favorites/otherUserFavoriteTestId";
+const newOtherUserFavoriteDocPath = "favorites/newOtherUserFavoriteId";
+type TestFavorite = {
+  readonly userId: string;
+};
+const buildTestFavorite = (userId: string): TestFavorite => ({
+  userId,
+});
+const userOwnedFavorite = buildTestFavorite(authUserId);
+const otherUserExistingFavorite = buildTestFavorite(otherUserId);
+const newOtherUserFavorite = buildTestFavorite("newOtherUserId");
 
 describe("Security Rules", () => {
   beforeAll(async () => {
@@ -56,6 +69,12 @@ describe("Security Rules", () => {
     await testEnv.clearFirestore();
     await testEnv.withSecurityRulesDisabled(async (context) => {
       await setDoc(doc(context.firestore(), otherUserDocPath), otherUser);
+    });
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(
+        doc(context.firestore(), otherUserExistingFavoritesDocPath),
+        otherUserExistingFavorite
+      );
     });
 
     authUserFirestore = testEnv.authenticatedContext(authUserId).firestore();
@@ -178,5 +197,85 @@ describe("Security Rules", () => {
 
   test("Authorised users cannot delete their user document", async () => {
     await assertFails(deleteDoc(doc(authUserFirestore, authUserDocPath)));
+  });
+
+  // Favorites Collection
+  test("Unauthorised users cannot CRUD in favorites collection", async () => {
+    // Create
+    await assertFails(
+      setDoc(
+        doc(unAuthUserFirestore, userOwnedFavoriteDocPath),
+        userOwnedFavorite
+      )
+    );
+    // Read
+    await assertFails(
+      getDoc(doc(unAuthUserFirestore, otherUserExistingFavoritesDocPath))
+    );
+    // Update
+    await assertFails(
+      setDoc(doc(unAuthUserFirestore, otherUserExistingFavoritesDocPath), {
+        ...otherUserExistingFavorite,
+        userId: "newUserId",
+      })
+    );
+    // Delete
+    await assertFails(
+      deleteDoc(doc(unAuthUserFirestore, otherUserExistingFavoritesDocPath))
+    );
+  });
+
+  test("Authorised users cannot CRUD another user's favorite document", async () => {
+    // Create
+    await assertFails(
+      setDoc(
+        doc(authUserFirestore, newOtherUserFavoriteDocPath),
+        newOtherUserFavorite
+      )
+    );
+    // Read
+    await assertFails(
+      getDoc(doc(authUserFirestore, otherUserExistingFavoritesDocPath))
+    );
+    // Update
+    await assertFails(
+      setDoc(doc(authUserFirestore, otherUserExistingFavoritesDocPath), {
+        ...otherUserExistingFavorite,
+        userId: "newUserId",
+      })
+    );
+    // Delete
+    await assertFails(
+      deleteDoc(doc(authUserFirestore, otherUserExistingFavoritesDocPath))
+    );
+  });
+
+  test("Authorised users can create and read their own favorite documents", async () => {
+    // Create
+    await assertSucceeds(
+      setDoc(
+        doc(authUserFirestore, userOwnedFavoriteDocPath),
+        userOwnedFavorite
+      )
+    );
+    // Read
+    await assertSucceeds(
+      getDoc(doc(authUserFirestore, userOwnedFavoriteDocPath))
+    );
+  });
+
+  test("Authorised users cannot update their own favorite documents", async () => {
+    await assertFails(
+      setDoc(doc(authUserFirestore, userOwnedFavoriteDocPath), {
+        ...userOwnedFavorite,
+        userId: "newUserId",
+      })
+    );
+  });
+
+  test("Authorised users can delete their own favorite documents", async () => {
+    await assertSucceeds(
+      deleteDoc(doc(authUserFirestore, userOwnedFavoriteDocPath))
+    );
   });
 });
