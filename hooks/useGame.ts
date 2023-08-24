@@ -335,7 +335,7 @@ export const useGame = (): UseGame => {
         _tag: "win",
         currentStory,
         timer,
-        wpm: wpm(timer.totalSeconds),
+        wpm: gameState.score,
         onResetClick: reset,
         onNextClick: nextStory,
       };
